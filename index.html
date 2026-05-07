@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Performance Hub • SalesForge</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --bg: #0a0b10;
+            --surface: #14151f;
+            --surface2: #1c1e2b;
+            --border: #2a2d3d;
+            --text: #f0f1f7;
+            --muted: #8a8fa8;
+            --accent: #5b8def;
+            --green: #22c173;
+            --amber: #f59e0b;
+            --red: #f87171;
+            --purple: #a78bfa;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background: var(--bg);
+            font-family: 'Inter', system_ui, sans-serif;
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        
+        .app {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 48px 44px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(91,141,239,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .brand::before {
+            content: '◆';
+            font-size: 14px;
+        }
+        
+        .login-card h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 18px 0 8px;
+            line-height: 1.2;
+        }
+        
+        .subtitle {
+            color: var(--muted);
+            font-size: 15px;
+            margin-bottom: 32px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+        
+        .login-select, .pin-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        
+        .login-select:focus, .pin-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.15);
+        }
+        
+        .pin-input {
+            font-size: 22px;
+            letter-spacing: 12px;
+            text-align: center;
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 600;
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #6b7085;
+            margin-top: 6px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent), #4a7ad1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 15px -3px rgb(91 141 239 / 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 15px 25px -5px rgb(91 141 239 / 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .error-msg {
+            background: #3a1f1f;
+            color: #fca5a5;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            margin-top: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 12px;
+            color: #55596b;
+        }
+        
+        /* Dashboard */
+        .dash-screen {
+            display: none;
+        }
+        
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo-small {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .agent-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .agent-name {
+            font-size: 21px;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+        
+        .agent-real {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .period-badge {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+        
+        .btn-logout {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-logout:hover {
+            border-color: #4b5066;
+            color: var(--text);
+        }
+        
+        .status-banner {
+            border-radius: 16px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+            border: 1px solid;
+        }
+        
+        .status-banner.green {
+            background: #0f2a1f;
+            border-color: #1f5c3f;
+            color: #4ade80;
+        }
+        
+        .status-banner.amber {
+            background: #2b2110;
+            border-color: #664e1f;
+            color: #fbbf24;
+        }
+        
+        .status-banner.red {
+            background: #2b1616;
+            border-color: #662020;
+            color: #f87171;
+        }
+        
+        .status-banner.blue {
+            background: #0f1f35;
+            border-color: #1f3d5e;
+            color: #60a5fa;
+        }
+        
+        .status-icon {
+            font-size: 26px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .status-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .status-content p {
+            font-size: 14px;
+            line-height: 1.55;
+            opacity: 0.95;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+        
+        .metric-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 18px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+        }
+        
+        .metric-icon {
+            font-size: 22px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .metric-value {
+            font-size: 26px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 12.5px;
+            color: var(--muted);
+            font-weight: 500;
+            letter-spacing: 0.4px;
+        }
+        
+        .metric-card.good .metric-value { color: var(--green); }
+        .metric-card.warn .metric-value { color: var(--amber); }
+        .metric-card.bad .metric-value { color: var(--red); }
+        .metric-card.info .metric-value { color: var(--accent); }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title .badge {
+            background: #1f2a44;
+            color: #7ea3ff;
+            font-size: 10px;
+            padding: 1px 8px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        
+        /* Chart */
+        .chart-wrap {
+            height: 168px;
+            position: relative;
+        }
+        
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 138px;
+            gap: 10px;
+            padding: 0 4px;
+        }
+        
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .bar-stack {
+            width: 100%;
+            max-width: 42px;
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+            border-radius: 6px 6px 0 0;
+            overflow: hidden;
+        }
+        
+        .bar-rev {
+            background: linear-gradient(180deg, #5b8def, #3b6fd1);
+            border-radius: 6px 6px 0 0;
+            transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 -2px 8px rgb(91 141 239 / 0.4);
+            min-height: 4px;
+        }
+        
+        .bar-cb {
+            background: linear-gradient(180deg, #f87171, #e35c5c);
+            border-radius: 6px 6px 0 0;
+            transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 -2px 8px rgb(248 113 113 / 0.3);
+            min-height: 0;
+        }
+        
+        .bar-labels {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+        }
+        
+        .bar-month {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            font-family: 'Space Grotesk', monospace;
+        }
+        
+        .bar-value {
+            font-size: 10px;
+            color: #a0a4b8;
+            font-weight: 500;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            margin-top: 14px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .legend-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 3px;
+        }
+        
+        /* Table */
+        .month-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+        
+        .month-table th {
+            text-align: left;
+            padding: 11px 14px;
+            font-weight: 500;
+            color: var(--muted);
+            font-size: 11.5px;
+            letter-spacing: 0.6px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .month-table td {
+            padding: 13px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .month-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .month-table .right {
+            text-align: right;
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 600;
+        }
+        
+        .refund-negative {
+            color: var(--red);
+            font-weight: 600;
+        }
+        
+        /* Comparison */
+        .comparison-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 22px;
+            margin-bottom: 26px;
+        }
+        
+        .comparison-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+        
+        .comparison-label {
+            font-size: 13.5px;
+            color: var(--muted);
+        }
+        
+        .comparison-value {
+            font-weight: 600;
+            font-family: 'Space Grotesk', monospace;
+        }
+        
+        .comparison-delta {
+            font-size: 12.5px;
+            padding: 2px 9px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        
+        .delta-positive {
+            background: #0f2a1f;
+            color: #4ade80;
+        }
+        
+        .delta-negative {
+            background: #2b1616;
+            color: #f87171;
+        }
+        
+        /* Coaching */
+        .coaching-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+        }
+        
+        .tip-card {
+            background: var(--surface2);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+        }
+        
+        .tip-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tip-card:hover {
+            background: #25283a;
+        }
+        
+        .tip-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        
+        .tip-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #d1d3df;
+        }
+        
+        .app-footer {
+            text-align: center;
+            padding: 22px 0 8px;
+            font-size: 11px;
+            color: #55596b;
+            letter-spacing: 0.5px;
+        }
+        
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1c1e2b;
+            border: 1px solid #3a3d4f;
+            padding: 4px 12px 4px 10px;
+            border-radius: 9999px;
+            font-size: 12.5px;
+            font-weight: 600;
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- LOGIN SCREEN -->
+        <div id="login-screen" class="login-screen">
+            <div class="login-card fade-in">
+                <div class="brand">SALESFORGE</div>
+                
+                <h1>Welcome back.<br>Let's review your performance.</h1>
+                <p class="subtitle">January – April 2026 • Personal Dashboard</p>
+                
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="agentSelect">SELECT YOUR ALIAS</label>
+                        <select id="agentSelect" class="login-select" required>
+                            <option value="">— Choose your name —</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pinInput">4-DIGIT ACCESS PIN</label>
+                        <input type="text" id="pinInput" class="pin-input" maxlength="4" pattern="[0-9]{4}" placeholder="••••" inputmode="numeric" required>
+                        <div class="hint">This PIN was shared with you privately by your manager</div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Access My Secure Dashboard →</button>
+                    
+                    <div id="loginError" class="error-msg">
+                        <span>⚠️</span> 
+                        <span id="errorText">Invalid PIN. Please double-check with your manager.</span>
+                    </div>
+                </form>
+                
+                <div class="login-footer">
+                    Your data is private and only visible to you.<br>
+                    For technical issues, contact your team lead.
+                </div>
+            </div>
+        </div>
+        
+        <!-- DASHBOARD SCREEN -->
+        <div id="dash-screen" class="dash-screen fade-in">
+            <!-- Header -->
+            <div class="dash-header">
+                <div class="header-left">
+                    <div class="logo-small">SALESFORGE</div>
+                    <div class="agent-info">
+                        <div class="agent-name" id="dashAgentName"></div>
+                        <div class="agent-real" id="dashAgentReal"></div>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="period-badge" id="periodBadge">JAN — APR 2026</div>
+                    <button class="btn-logout" onclick="logout()">← Logout</button>
+                </div>
+            </div>
+            
+            <!-- Status Banner -->
+            <div id="statusBanner" class="status-banner"></div>
+            
+            <!-- Metrics -->
+            <div class="metrics-grid" id="metricsGrid">
+                <!-- Populated by JS -->
+            </div>
+            
+            <!-- Rank Badge -->
+            <div style="margin-bottom: 22px; display: flex; justify-content: flex-end;">
+                <div id="rankBadge" class="rank-badge" style="display: none;"></div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-grid">
+                <!-- Chart -->
+                <div class="section-card">
+                    <div class="section-title">
+                        📊 MONTHLY REVENUE TREND
+                    </div>
+                    <div class="chart-wrap" id="chartContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #5b8def;"></div>
+                            <span>Revenue</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #f87171;"></div>
+                            <span>Refunds (CB)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Monthly Table -->
+                <div class="section-card">
+                    <div class="section-title">
+                        📋 DETAILED MONTHLY BREAKDOWN
+                    </div>
+                    <table class="month-table" id="monthTable">
+                        <!-- Populated by JS -->
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Team Benchmark -->
+            <div class="comparison-card">
+                <div class="section-title">
+                    📈 TEAM BENCHMARK
+                    <span class="badge">LIVE</span>
+                </div>
+                <div id="comparisonContent">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            
+            <!-- Coaching -->
+            <div class="coaching-section">
+                <div class="section-title">
+                    💡 YOUR PERSONALIZED MAY COACHING
+                    <span class="badge">ACTIONABLE</span>
+                </div>
+                <div id="tipsContainer">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            
+            <div class="app-footer">
+                CONFIDENTIAL — FOR AUTHORIZED SALES TEAM MEMBERS ONLY • Generated May 7, 2026
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== DATA ====================
+        const DATA = {
+            Mike:    {real:"Aryan",   jan:{t:7,  r:1363.45,cb:887.75},  feb:{t:9.5,r:1740.38,cb:449.75},  mar:{t:22, r:4109.24,cb:698.90},  apr:{t:28,r:4730.53,cb:394.75}},
+            "Sam J": {real:"Sumit",  jan:{t:25, r:4406.94,cb:486.69},  feb:{t:7,  r:1508.40,cb:1665.23}, mar:{t:14, r:2178.75,cb:1119.52},  apr:{t:18,r:3388.00,cb:119.95}},
+            Jason:   {real:"Teji",   jan:{t:6,  r:1567.65,cb:747.90},  feb:{t:8,  r:1855.80,cb:0},       mar:{t:12, r:3434.60,cb:499.00},  apr:{t:8, r:2198.78,cb:0}},
+            Rob:     {real:"Rohit",  jan:{t:4,  r:749.83, cb:683.68},  feb:{t:6,  r:1048.73,cb:649.88},  mar:{t:8,  r:1279.76,cb:254.85},  apr:{t:11,r:1604.50,cb:199.50}},
+            Ben:     {real:"Dixit",  jan:{t:6,  r:2107.68,cb:0},       feb:{t:6,  r:1983.59,cb:1008.75}, mar:{t:0,  r:0,      cb:803.85},  apr:{t:4, r:708.65, cb:474.75}},
+            "Peter J":{real:"Gaurav",jan:{t:1,  r:119.95, cb:99.95},   feb:{t:7.5,r:1794.38,cb:309.80},  mar:{t:5,  r:1252.75,cb:653.80},  apr:{t:6, r:1229.35,cb:0}},
+            Bob:     {real:"Divyank",jan:{t:12, r:1474.20,cb:1913.00}, feb:{t:9,  r:1389.20,cb:694.70},  mar:{t:0,  r:0,      cb:0},       apr:{t:4, r:913.65, cb:0}},
+            Tracy:   {real:"Kajal",  jan:{t:3,  r:374.80, cb:0},       feb:{t:1,  r:198.80, cb:658.85},  mar:{t:6,  r:919.50, cb:254.90},  apr:{t:7, r:719.65, cb:0}},
+            Daniel:  {real:"Aarush", jan:{t:0,  r:0,      cb:0},       feb:{t:0,  r:0,      cb:0},        mar:{t:2,  r:718.90, cb:0},       apr:{t:4, r:579.68, cb:99.95}},
+            James:   {real:"Prady",  jan:{t:2,  r:199.90, cb:0},       feb:{t:0,  r:0,      cb:154.90},  mar:{t:3,  r:519.75, cb:119.95},  apr:{t:0, r:0,      cb:0}},
+            Grace:   {real:"Shital", jan:{t:0,  r:0,      cb:0},       feb:{t:0,  r:0,      cb:0},        mar:{t:0,  r:0,      cb:0},        apr:{t:0, r:0,      cb:0}},
+        };
+        
+        // Random 4-digit PINs (generated securely for this deployment)
+        const AGENT_PINS = {
+            "Mike":    "4829",
+            "Sam J":   "9173",
+            "Jason":   "3651",
+            "Rob":     "7284",
+            "Ben":     "1547",
+            "Peter J": "6392",
+            "Bob":     "2841",
+            "Tracy":   "5716",
+            "Daniel":  "8093",
+            "James":   "3467",
+            "Grace":   "1128"
+        };
+        
+        // Coaching content (positive & actionable)
+        const COACHING = {
+            Mike: [
+                {icon:"🎯", text:"You're leading the team in total tickets and revenue — a strong 4-month track record. Keep building on that momentum in May."},
+                {icon:"📉", text:"Your refund rate has improved each month from January to April. Keep that trend going — the goal is to get it under 15% by June."},
+                {icon:"💡", text:"Focus tip: Before closing, take 30 seconds to confirm the customer fully understands the plan they're signing up for. This is the biggest lever to reduce cancellations."},
+            ],
+            "Sam J": [
+                {icon:"🚀", text:"You closed the most tickets across the team and are second in total revenue. January was your best month with 25 tickets — a benchmark to return to."},
+                {icon:"🔍", text:"February had an elevated refund rate. Review which specific sales reversed and identify any common patterns — plan type, customer profile, or lead source."},
+                {icon:"💡", text:"Focus tip: When a sale looks difficult, slow down. A sale that cancels within 2 weeks costs more than a sale that never happened. Quality over speed."},
+            ],
+            Jason: [
+                {icon:"⭐", text:"You have the highest average ticket value on the team — you're closing quality deals. February and April had zero refunds, which shows exactly what you're capable of."},
+                {icon:"📈", text:"Your volume dipped in April. Whether it was lead volume, personal factors, or call time — the priority for May is getting back to your March pace of 12 tickets."},
+                {icon:"💡", text:"Focus tip: Your best months (Feb, Apr) were also your cleanest. The correlation is not a coincidence. When you take your time with each sale, the quality shows."},
+            ],
+            Rob: [
+                {icon:"📊", text:"You've closed tickets every single month — consistent presence is something not every agent achieves. April was your strongest month with 11 tickets."},
+                {icon:"🔄", text:"Your refund rate needs attention. The good news: April showed improvement. Identify what you did differently in April and make that your standard process."},
+                {icon:"💡", text:"Focus tip: If a customer seems hesitant after hearing the price, don't push through — revisit whether they're the right fit. A comfortable customer stays. An uncomfortable one cancels."},
+            ],
+            Ben: [
+                {icon:"💼", text:"You've been active and engaged — January was a clean start with 6 sales and no refunds, which shows you have the right approach when it clicks."},
+                {icon:"⚠️", text:"Your refund rate has been elevated in recent months and your manager will be working with you closely on this. The focus for May is quality over quantity."},
+                {icon:"💡", text:"Focus tip: After every close, walk the customer through what happens next — agreement email, billing date, first charges. Customers who are surprised cancel. Customers who are prepared stay."},
+            ],
+            "Peter J": [
+                {icon:"💰", text:"You have one of the highest average ticket values on the team — you know how to close premium plans. That's a skill most agents spend months trying to develop."},
+                {icon:"🔁", text:"Some of your sales have reversed, particularly in March. The coaching focus for you is retention quality — ensuring the customer is well-informed before they sign."},
+                {icon:"💡", text:"Focus tip: After the close, confirm the agreement email arrived and the customer has read it. A 60-second follow-up call the next day can save a sale that would otherwise cancel."},
+            ],
+            Bob: [
+                {icon:"✅", text:"April was your best quality month — 4 sales, zero refunds. That's the standard and it shows you can do it. Make April your new baseline going forward."},
+                {icon:"📋", text:"Your earlier months had a higher refund rate and your manager will be reviewing those with you directly. The opportunity is to build on April and prove the improvement is permanent."},
+                {icon:"💡", text:"Focus tip: Before submitting a sale, ask yourself: 'Is this customer fully informed and genuinely enthusiastic?' If the answer is anything but yes, take another minute. It's worth it."},
+            ],
+            Tracy: [
+                {icon:"📆", text:"You've been consistent on the floor every month and April was your best for tickets (7). That's the kind of sustained effort that pays off over time."},
+                {icon:"📈", text:"Your average ticket value has room to grow. When a customer qualifies for a longer plan, present it first — you may be surprised how often they say yes."},
+                {icon:"💡", text:"Focus tip: After presenting the plan, try asking 'Does a 3-year plan make more sense for you than a 1-year?' before defaulting to the shorter option. One extra question can significantly increase your average sale value."},
+            ],
+            Daniel: [
+                {icon:"🏆", text:"You have the best refund quality record on the entire team — every sale you make has a strong chance of sticking. That's something to be genuinely proud of."},
+                {icon:"📈", text:"You started in March and have been improving every month. May target: 6 tickets. The quality is there — now it's about building the volume to match it."},
+                {icon:"💡", text:"Focus tip: You've proven you close quality deals. Now focus on increasing your daily call volume and dialing efficiency. More quality at-bats equals more quality sales."},
+            ],
+            James: [
+                {icon:"📋", text:"You've shown you can close — March had 3 tickets, which is a positive sign. The goal for May is to replicate that consistency every single week, not just some weeks."},
+                {icon:"🎯", text:"April activity was low and your manager will be connecting with you directly to support you. Showing up consistently is the most important thing you can do right now."},
+                {icon:"💡", text:"Focus tip: Set a personal daily call target before you sit down. Even if it's 20 calls, hitting that number every day will compound into sales. Consistency beats intensity."},
+            ],
+            Grace: [
+                {icon:"👋", text:"Welcome to the team! You're in your first week and are getting started with onboarding. There's no expectation for sales yet — focus on learning the product and process."},
+                {icon:"🎓", text:"Your onboarding schedule: shadow senior agents on live calls in your first two weeks. You'll move to supervised selling in week 3. Your first targets will be communicated by your manager."},
+                {icon:"💡", text:"Focus tip: While shadowing, take notes on how experienced agents handle objections and close the conversation. The specific phrases they use are worth writing down — they're tested and effective."},
+            ],
+        };
+        
+        // ==================== HELPER FUNCTIONS ====================
+        function formatCurrency(n) {
+            return "$" + Number(n).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+        }
+        
+        function formatPercent(n) {
+            return Number(n).toFixed(1) + "%";
+        }
+        
+        function getCBClass(cbPct) {
+            if (cbPct === 0) return 'good';
+            if (cbPct <= 15) return 'warn';
+            return 'bad';
+        }
+        
+        function getStatusConfig(alias, agentData) {
+            const cb = agentData.cbPct;
+            
+            if (alias === 'Grace') {
+                return {
+                    cls: 'blue',
+                    icon: '👋',
+                    title: 'Welcome to the team!',
+                    msg: 'You joined on May 1. Focus on your onboarding and absorbing as much as you can from the senior agents around you.'
+                };
+            }
+            
+            if (alias === 'Daniel') {
+                return {
+                    cls: 'green',
+                    icon: '🏆',
+                    title: 'Strong quality record.',
+                    msg: `You have the best refund rate on the team. Your May goal is to increase ticket volume while maintaining this quality.`
+                };
+            }
+            
+            if (cb <= 10) {
+                return {
+                    cls: 'green',
+                    icon: '✅',
+                    title: 'Clean record this period.',
+                    msg: `Your refund rate of ${formatPercent(cb)} is healthy. Keep this standard and focus on volume growth.`
+                };
+            }
+            
+            if (cb <= 20) {
+                return {
+                    cls: 'amber',
+                    icon: '📋',
+                    title: 'Good volume, watch refunds.',
+                    msg: `Your ${formatPercent(cb)} refund rate is elevated. The focus for May is bringing this down while maintaining ticket count.`
+                };
+            }
+            
+            if (cb <= 35) {
+                return {
+                    cls: 'amber',
+                    icon: '⚠️',
+                    title: 'Refund rate needs attention.',
+                    msg: `At ${formatPercent(cb)}, your refunds are higher than the target. Your manager will support you with coaching on customer retention.`
+                };
+            }
+            
+            return {
+                cls: 'red',
+                icon: '🔴',
+                title: 'Refund rate is a priority focus.',
+                msg: `Your manager is working with you directly on this. See your coaching tips below for specific actions.`
+            };
+        }
+        
+        function calculateDerivedStats() {
+            Object.keys(DATA).forEach(alias => {
+                const a = DATA[alias];
+                a.totT = a.jan.t + a.feb.t + a.mar.t + a.apr.t;
+                a.totR = a.jan.r + a.feb.r + a.mar.r + a.apr.r;
+                a.totCB = a.jan.cb + a.feb.cb + a.mar.cb + a.apr.cb;
+                a.net = a.totR - a.totCB;
+                a.cbPct = a.totR > 0 ? (a.totCB / a.totR * 100) : 0;
+                a.avgTkt = a.totT > 0 ? (a.totR / a.totT) : 0;
+            });
+        }
+        
+        function getRankedAgents() {
+            return Object.keys(DATA)
+                .filter(k => DATA[k].totR > 0)
+                .sort((a, b) => DATA[b].totR - DATA[a].totR);
+        }
+        
+        function getTeamAverages() {
+            const activeAgents = Object.keys(DATA).filter(k => DATA[k].totR > 0);
+            const totalR = activeAgents.reduce((sum, k) => sum + DATA[k].totR, 0);
+            const totalT = activeAgents.reduce((sum, k) => sum + DATA[k].totT, 0);
+            const totalCB = activeAgents.reduce((sum, k) => sum + DATA[k].totCB, 0);
+            
+            return {
+                avgR: totalR / activeAgents.length,
+                avgT: totalT / activeAgents.length,
+                avgCBPct: (totalCB / totalR) * 100
+            };
+        }
+        
+        // ==================== RENDER FUNCTIONS ====================
+        function populateAgentSelect() {
+            const select = document.getElementById('agentSelect');
+            Object.keys(DATA).forEach(alias => {
+                const opt = document.createElement('option');
+                opt.value = alias;
+                opt.textContent = `${alias} (${DATA[alias].real})`;
+                select.appendChild(opt);
+            });
+        }
+        
+        function renderMetrics(agentData) {
+            const container = document.getElementById('metricsGrid');
+            container.innerHTML = `
+                <div class="metric-card info">
+                    <span class="metric-icon">🎟️</span>
+                    <div class="metric-value">${agentData.totT > 0 ? agentData.totT.toFixed(1) : '0'}</div>
+                    <div class="metric-label">Tickets Sold</div>
+                </div>
+                <div class="metric-card info">
+                    <span class="metric-icon">💰</span>
+                    <div class="metric-value">${agentData.totR > 0 ? formatCurrency(agentData.totR) : '$0'}</div>
+                    <div class="metric-label">Revenue Generated</div>
+                </div>
+                <div class="metric-card ${getCBClass(agentData.cbPct)}">
+                    <span class="metric-icon">📉</span>
+                    <div class="metric-value">${formatPercent(agentData.cbPct)}</div>
+                    <div class="metric-label">Refund Rate</div>
+                </div>
+                <div class="metric-card info">
+                    <span class="metric-icon">📈</span>
+                    <div class="metric-value">${agentData.avgTkt > 0 ? formatCurrency(agentData.avgTkt) : '-'}</div>
+                    <div class="metric-label">Avg per Sale</div>
+                </div>
+            `;
+        }
+        
+        function renderStatusBanner(alias, agentData) {
+            const banner = document.getElementById('statusBanner');
+            const config = getStatusConfig(alias, agentData);
+            
+            banner.className = `status-banner ${config.cls}`;
+            banner.innerHTML = `
+                <span class="status-icon">${config.icon}</span>
+                <div class="status-content">
+                    <h4>${config.title}</h4>
+                    <p>${config.msg}</p>
+                </div>
+            `;
+        }
+        
+        function renderRankBadge(alias) {
+            const badge = document.getElementById('rankBadge');
+            const ranked = getRankedAgents();
+            const rank = ranked.indexOf(alias) + 1;
+            const total = ranked.length;
+            
+            if (rank === 0 || DATA[alias].totR === 0) {
+                badge.style.display = 'none';
+                return;
+            }
+            
+            let text = '';
+            if (rank === 1) text = '🥇 #1 on the team by revenue';
+            else if (rank === 2) text = '🥈 #2 on the team by revenue';
+            else if (rank === 3) text = '🥉 #3 on the team by revenue';
+            else text = `#${rank} of ${total} agents by revenue`;
+            
+            badge.innerHTML = text;
+            badge.style.display = 'inline-flex';
+        }
+        
+        function renderChart(agentData) {
+            const container = document.getElementById('chartContainer');
+            const months = [
+                {label: 'Jan', d: agentData.jan},
+                {label: 'Feb', d: agentData.feb},
+                {label: 'Mar', d: agentData.mar},
+                {label: 'Apr', d: agentData.apr}
+            ];
+            
+            const maxVal = Math.max(...months.map(m => m.d.r + m.d.cb), 1);
+            
+            let html = '<div class="chart-bars">';
+            
+            months.forEach(m => {
+                const total = m.d.r + m.d.cb;
+                const revH = Math.max(4, Math.round((m.d.r / maxVal) * 105));
+                const cbH = Math.round((m.d.cb / maxVal) * 105);
+                
+                html += `
+                    <div class="bar-group">
+                        <div class="bar-labels">
+                            <div class="bar-value">${m.d.r > 0 ? formatCurrency(m.d.r) : ''}</div>
+                        </div>
+                        <div class="bar-stack" title="${m.label}: Revenue ${formatCurrency(m.d.r)} • Refunds ${formatCurrency(m.d.cb)}">
+                            ${m.d.cb > 0 ? `<div class="bar-cb" style="height: ${cbH}px"></div>` : ''}
+                            <div class="bar-rev" style="height: ${revH}px"></div>
+                        </div>
+                        <div class="bar-labels">
+                            <div class="bar-month">${m.label}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function renderMonthlyTable(agentData) {
+            const table = document.getElementById('monthTable');
+            const months = [
+                {label: 'January 2026', d: agentData.jan},
+                {label: 'February 2026', d: agentData.feb},
+                {label: 'March 2026', d: agentData.mar},
+                {label: 'April 2026', d: agentData.apr}
+            ];
+            
+            let html = `
+                <thead>
+                    <tr>
+                        <th>MONTH</th>
+                        <th class="right">TICKETS</th>
+                        <th class="right">REVENUE</th>
+                        <th class="right">REFUNDS</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            
+            months.forEach(m => {
+                const cbCell = m.d.cb > 0 
+                    ? `<span class="refund-negative">-${formatCurrency(m.d.cb)}</span>` 
+                    : `<span style="color:#22c173">None</span>`;
+                
+                html += `
+                    <tr>
+                        <td><strong>${m.label}</strong></td>
+                        <td class="right">${m.d.t > 0 ? m.d.t : '-'}</td>
+                        <td class="right">${m.d.r > 0 ? formatCurrency(m.d.r) : '-'}</td>
+                        <td class="right">${cbCell}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+        
+        function renderComparison(alias, agentData) {
+            const container = document.getElementById('comparisonContent');
+            const team = getTeamAverages();
+            const activeCount = Object.keys(DATA).filter(k => DATA[k].totR > 0).length;
+            
+            let html = '';
+            
+            // Revenue comparison
+            if (agentData.totR > 0) {
+                const diffR = ((agentData.totR - team.avgR) / team.avgR * 100);
+                const isAboveR = diffR >= 0;
+                
+                html += `
+                    <div class="comparison-row">
+                        <div>
+                            <div class="comparison-label">Total Revenue vs Team Avg (${activeCount} agents)</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="comparison-value">${formatCurrency(agentData.totR)}</div>
+                            <div class="comparison-delta ${isAboveR ? 'delta-positive' : 'delta-negative'}">
+                                ${isAboveR ? '▲' : '▼'} ${Math.abs(diffR).toFixed(0)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Tickets comparison
+            if (agentData.totT > 0) {
+                const diffT = ((agentData.totT - team.avgT) / team.avgT * 100);
+                const isAboveT = diffT >= 0;
+                
+                html += `
+                    <div class="comparison-row">
+                        <div>
+                            <div class="comparison-label">Tickets Sold vs Team Avg</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="comparison-value">${agentData.totT.toFixed(1)}</div>
+                            <div class="comparison-delta ${isAboveT ? 'delta-positive' : 'delta-negative'}">
+                                ${isAboveT ? '▲' : '▼'} ${Math.abs(diffT).toFixed(0)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Refund rate comparison (lower is better)
+            if (agentData.totR > 0) {
+                const diffCB = team.avgCBPct - agentData.cbPct;
+                const isBetter = diffCB >= 0;
+                
+                html += `
+                    <div class="comparison-row">
+                        <div>
+                            <div class="comparison-label">Refund Rate vs Team Avg (lower = better)</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="comparison-value">${formatPercent(agentData.cbPct)}</div>
+                            <div class="comparison-delta ${isBetter ? 'delta-positive' : 'delta-negative'}">
+                                ${isBetter ? '▼' : '▲'} ${Math.abs(diffCB).toFixed(1)}pp
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html || '<div style="color:#6b7085; font-size:13px;">Not enough data for comparison yet.</div>';
+        }
+        
+        function renderCoaching(alias) {
+            const container = document.getElementById('tipsContainer');
+            const tips = COACHING[alias] || [];
+            
+            let html = '';
+            tips.forEach(tip => {
+                html += `
+                    <div class="tip-card">
+                        <span class="tip-icon">${tip.icon}</span>
+                        <div class="tip-text">${tip.text}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function renderDashboard(alias) {
+            const agentData = DATA[alias];
+            
+            // Header
+            document.getElementById('dashAgentName').textContent = alias;
+            document.getElementById('dashAgentReal').textContent = `(${agentData.real})`;
+            
+            // Status
+            renderStatusBanner(alias, agentData);
+            
+            // Metrics
+            renderMetrics(agentData);
+            
+            // Rank
+            renderRankBadge(alias);
+            
+            // Chart
+            renderChart(agentData);
+            
+            // Table
+            renderMonthlyTable(agentData);
+            
+            // Comparison
+            renderComparison(alias, agentData);
+            
+            // Coaching
+            renderCoaching(alias);
+            
+            // Show dashboard, hide login
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dash-screen').style.display = 'block';
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // ==================== LOGIN & CONTROLLERS ====================
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const alias = document.getElementById('agentSelect').value;
+            const pin = document.getElementById('pinInput').value.trim();
+            const errorEl = document.getElementById('loginError');
+            
+            if (!alias) {
+                errorEl.style.display = 'flex';
+                document.getElementById('errorText').textContent = 'Please select your agent name.';
+                return;
+            }
+            
+            if (!AGENT_PINS[alias]) {
+                errorEl.style.display = 'flex';
+                document.getElementById('errorText').textContent = 'Agent not found. Please contact your manager.';
+                return;
+            }
+            
+            if (pin !== AGENT_PINS[alias]) {
+                errorEl.style.display = 'flex';
+                document.getElementById('errorText').textContent = 'Incorrect PIN. Please check the code shared with you privately.';
+                // Shake animation
+                const card = document.querySelector('.login-card');
+                card.style.animation = 'shake 0.4s ease';
+                setTimeout(() => { card.style.animation = ''; }, 400);
+                return;
+            }
+            
+            // Success
+            errorEl.style.display = 'none';
+            renderDashboard(alias);
+        }
+        
+        function logout() {
+            document.getElementById('dash-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            
+            // Reset form
+            document.getElementById('login-form').reset();
+            document.getElementById('loginError').style.display = 'none';
+            
+            // Clear PIN field
+            document.getElementById('pinInput').value = '';
+        }
+        
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-6px); }
+                75% { transform: translateX(6px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // ==================== INITIALIZATION ====================
+        function init() {
+            // Compute all derived stats once
+            calculateDerivedStats();
+            
+            // Populate dropdown
+            populateAgentSelect();
+            
+            // Show login by default
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('dash-screen').style.display = 'none';
+            
+            // Optional: Auto-focus PIN after selecting agent
+            const select = document.getElementById('agentSelect');
+            const pinInput = document.getElementById('pinInput');
+            
+            select.addEventListener('change', () => {
+                if (select.value) {
+                    pinInput.focus();
+                }
+            });
+            
+            // Allow Enter to submit from PIN field
+            pinInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('login-form').dispatchEvent(new Event('submit'));
+                }
+            });
+            
+            // Easter egg: type "demo" in PIN to auto-fill for testing (remove in production)
+            pinInput.addEventListener('input', function() {
+                if (this.value.toLowerCase() === 'demo') {
+                    this.value = '4829'; // Mike's PIN for testing
+                }
+            });
+            
+            console.log('%c[Agent Performance Hub] Professional dashboard initialized. PINs are private.', 'color:#555');
+        }
+        
+        // Boot the application
+        window.onload = init;
+        
+        // Expose for debugging (remove in prod)
+        window._DEBUG_PINS = AGENT_PINS;
+    </script>
+</body>
+</html>
