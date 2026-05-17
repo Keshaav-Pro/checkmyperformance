@@ -31,6 +31,10 @@ html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:va
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 .fu{animation:fu .4s ease both;}.fu1{animation:fu .4s .08s ease both;}.fu2{animation:fu .4s .16s ease both;}.fu3{animation:fu .4s .24s ease both;}.fu4{animation:fu .4s .32s ease both;}
 .blink{animation:pulse 2s ease-in-out infinite;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+/* Manager panel — always outside all screens, controlled by JS */
+#mgr-panel{display:none;}
+#mgr-panel.open{display:flex!important;}
 /* Badges */
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
 .bg{background:rgba(78,222,163,.14);color:var(--primary);border:1px solid rgba(78,222,163,.28);}
@@ -50,7 +54,7 @@ html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:va
 .inp:focus{border-color:var(--primary);}
 .inp::placeholder{color:rgba(187,202,191,.38);}
 /* ═══ LOGIN ═══ */
-#sl{display:flex;align-items:center;justify-content:center;min-height:100dvh;padding:24px;}
+#sl{align-items:center;justify-content:center;min-height:100dvh;padding:24px;}
 #sl.active{display:flex;}
 .l-wrap{width:100%;max-width:440px;z-index:10;}
 .l-logo{font-size:clamp(28px,6vw,48px);font-weight:800;letter-spacing:-.025em;color:var(--primary);text-align:center;margin-bottom:4px;}
@@ -58,7 +62,7 @@ html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:va
 .l-card{padding:40px;border-radius:16px;position:relative;overflow:hidden;}
 .l-glow{position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:rgba(78,222,163,.08);border-radius:50%;filter:blur(60px);pointer-events:none;}
 .l-lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dim);margin-bottom:6px;margin-left:2px;}
-.l-ig{position:relative;}
+.l-ig{position:relative;} .l-ig .inp{padding-right:42px;}
 .l-ig .mso{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--on-dim);font-size:18px;transition:color .2s;pointer-events:none;}
 .l-ig:focus-within .mso{color:var(--primary);}
 .l-ig .inp{padding-left:42px;}
@@ -75,8 +79,8 @@ html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:va
 .l-footer a{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--on-dim);text-decoration:none;transition:color .2s;}
 .l-footer a:hover{color:var(--primary);}
 /* ═══ DASHBOARD ═══ */
-#sd{display:flex;min-height:100dvh;}
-#sd.active{display:flex;}
+#sd{min-height:100dvh;}
+#sd.active{display:flex;flex-direction:column;}
 /* Sidebar */
 .sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--surf);border-right:1px solid rgba(60,74,66,.3);display:flex;flex-direction:column;z-index:50;}
 .sb-brand{padding:24px 20px 18px;border-bottom:1px solid rgba(60,74,66,.2);}
@@ -253,42 +257,77 @@ html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:va
   <div class="l-sub fu1">The Performance Cockpit</div>
   <div class="l-card glass fu2">
     <div class="l-glow"></div>
-    <div style="margin-bottom:18px;">
+
+    <!-- Agent Name preview (read-only, auto-fills from extension) -->
+    <div style="margin-bottom:16px;">
       <label class="l-lbl">Agent Name</label>
       <div class="l-ig">
         <span class="mso">person</span>
-        <input class="inp" id="l-name" placeholder="Enter full name" type="text" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')"/>
+        <input class="inp" id="l-name" placeholder="← Type your Extension to auto-fill" type="text"
+               autocomplete="off" readonly tabindex="-1"
+               style="color:var(--primary);font-weight:600;cursor:default;letter-spacing:.02em;"/>
       </div>
     </div>
-    <div class="l-row" style="margin-bottom:18px;">
+
+    <!-- Extension + Access Key row -->
+    <div class="l-row" style="margin-bottom:6px;">
       <div>
-        <label class="l-lbl">Ext</label>
-        <input class="inp" id="l-ext" placeholder="1000" type="text" maxlength="4" inputmode="numeric" oninput="previewLogin(this.value)" style="text-align:center;font-size:16px;letter-spacing:.08em;"/>
+        <label class="l-lbl">Extension</label>
+        <input class="inp" id="l-ext" placeholder="e.g. 1002" type="text" maxlength="4"
+               inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off"
+               oninput="previewLogin(this.value);clearErr();"
+               onpaste="setTimeout(function(){previewLogin(document.getElementById('l-ext').value);},10);"
+               onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus();"
+               style="text-align:center;font-size:18px;letter-spacing:.15em;font-weight:800;"/>
       </div>
       <div>
         <label class="l-lbl">Access Key</label>
         <div class="l-ig">
           <span class="mso">lock</span>
-          <input class="inp" id="l-pass" placeholder="••••••" type="password" inputmode="numeric" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <input class="inp" id="l-pass" placeholder="6-digit code" type="password"
+                 inputmode="numeric" pattern="[0-9]*" maxlength="6"
+                 autocomplete="off" autocorrect="off" autocapitalize="off"
+                 spellcheck="false" name="access-key-nofill"
+                 oninput="clearErr();"
+                 onkeydown="if(event.key==='Enter')doLogin();"/>
+          <button type="button" onclick="togglePass()"
+                  style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
+                         background:none;border:none;cursor:pointer;color:var(--on-dim);
+                         font-family:'Material Symbols Outlined';font-size:18px;padding:4px;"
+                  id="pass-eye">visibility</button>
         </div>
       </div>
     </div>
-    <button class="btn-p" onclick="doLogin()">Sign In <span class="mso">bolt</span></button>
-    <div class="l-err" id="l-err">Invalid credentials — check your extension and access key.</div>
-    <div class="l-divider"><span>Elevated Access</span></div>
-    <button class="mgr-btn" onclick="quickMgr()">
+
+    <!-- Specific error message (shows which field is wrong) -->
+    <div id="l-err" class="l-err" style="min-height:20px;margin-bottom:12px;"></div>
+
+    <button class="btn-p" id="signin-btn" onclick="doLogin()" style="margin-bottom:0;">
+      Sign In&nbsp;<span class="mso">bolt</span>
+    </button>
+
+    <!-- Divider -->
+    <div class="l-divider" style="margin:20px 0;"><span>Manager Elevated Access</span></div>
+
+    <!-- Manager Access Button -->
+    <button class="mgr-btn" onclick="openMgrPanel()" type="button">
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="mgr-av">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc" alt="Teji" style="width:100%;height:100%;object-fit:cover;"/>
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc"
+               alt="Jason" style="width:100%;height:100%;object-fit:cover;"/>
         </div>
         <div style="text-align:left;">
-          <div style="font-size:12px;font-weight:700;color:var(--on);">Manager Access — Teji (Ext 1001)</div>
-          <div style="font-size:10px;color:var(--on-dim);">Privileged Session · One-click login</div>
+          <div style="font-size:13px;font-weight:700;color:var(--on);">Manager Access — Jason</div>
+          <div style="font-size:10px;color:var(--on-dim);margin-top:1px;">
+            Tap to enter your Access Key &nbsp;→&nbsp; Full dashboard
+          </div>
         </div>
       </div>
-      <span class="mso" style="color:var(--secondary);">arrow_forward</span>
+      <span class="mso" style="color:var(--primary);font-size:22px;">lock_open</span>
     </button>
   </div>
+
+
   <div class="l-footer">
     <a href="#">Forgot Password?</a>
     <a href="#" style="display:flex;align-items:center;gap:5px;">System Status <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--primary);" class="blink"></span></a>
@@ -402,7 +441,7 @@ function mkAv({bg,sk,hair,ht,gl,cr,ear,shirt,eyes}){
 // AGENT DATA
 // ═══════════════════════════════════════════════════════════
 const AGENTS={
-  '1001':{ext:'1001',pass:'748291',name:'Teji',mg:true,rank:10,
+  '1001':{ext:'1001',pass:'748291',name:'Jason',mg:true,rank:10,
     av:{bg:'#7D6608',sk:'#F4C28C',hair:'#1a1a1a',ht:'neat',eyes:'#3D2B1F',cr:true,shirt:'#0d0e12'},
     mgImg:'https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc',
     gross:499,refund:349,net:150,cb:0,rp:69.94,calls:32,txn:1,cr:3.12,aov:499,tgt:960,ta:15.62,status:'critical',
@@ -411,7 +450,7 @@ const AGENTS={
     str:['Premium closing ability ($499 AOV)','High call volume (32 calls)'],
     weak:['Critical refund rate (69.94%)','1 transaction from 32 calls'],
     focus:'Implement a 2-minute pre-close qualification checklist. Target Net: $750+'},
-  '1002':{ext:'1002',pass:'362819',name:'Divyank',mg:false,rank:2,
+  '1002':{ext:'1002',pass:'362819',name:'Bob',mg:false,rank:2,
     av:{bg:'#8B0000',sk:'#FFD699',hair:'#3D2314',ht:'spiky',eyes:'#2C2C2C',shirt:'#1a1b20'},
     gross:1103.60,refund:0,net:1103.60,cb:0,rp:0,calls:22,txn:5,cr:22.73,aov:220.72,tgt:660,ta:167.21,status:'active',
     daily:[0,0,199.90,703.80,199.90,0,0],
@@ -419,7 +458,7 @@ const AGENTS={
     str:['RPC $50.16 — 67% above target','Zero refunds — 100% retention','22.73% close rate'],
     weak:['Call volume (22) — room to take more'],
     focus:'Increase to 27+ calls. At your close rate, that is 2 more transactions. Target Net $1,300+'},
-  '1004':{ext:'1004',pass:'594732',name:'Shital',mg:false,rank:8,
+  '1004':{ext:'1004',pass:'594732',name:'Grace',mg:false,rank:8,
     av:{bg:'#5E35B1',sk:'#F0C080',hair:'#1a1a1a',ht:'long',eyes:'#2C2C2C',ear:true,shirt:'#1a1b20'},
     gross:509.70,refund:0,net:509.70,cb:0,rp:0,calls:32,txn:3,cr:9.38,aov:169.90,tgt:960,ta:53.09,status:'active',
     daily:[0,0,0,354.80,154.90,0,0],
@@ -427,7 +466,7 @@ const AGENTS={
     str:['Zero refunds — excellent quality','32 calls — joint highest volume'],
     weak:['Close rate 9.38% — below team average','RPC $15.93 — below $30 target'],
     focus:'Target 1 closing per 6 calls. Practice your closing question. Target Net $700+'},
-  '1005':{ext:'1005',pass:'281947',name:'Aryan',mg:false,rank:6,
+  '1005':{ext:'1005',pass:'281947',name:'Mike',mg:false,rank:6,
     av:{bg:'#0277BD',sk:'#FDBCB4',hair:'#2C1810',ht:'short',eyes:'#2C2C2C',shirt:'#1a1b20'},
     gross:608.65,refund:0,net:608.65,cb:0,rp:0,calls:27,txn:3,cr:11.11,aov:202.88,tgt:810,ta:75.14,status:'active',
     daily:[0,0,164.90,443.75,0,0,0],
@@ -435,7 +474,7 @@ const AGENTS={
     str:['Zero refunds — 100% retention','Good AOV $202.88','27-call volume'],
     weak:['Close rate 11.11% — 1 more close needed','RPC $22.54 — $7.46 below target'],
     focus:'Target 4 transactions next week. Open with vehicle age to anchor the plan. Target Net $750+'},
-  '1006':{ext:'1006',pass:'637284',name:'Rohit',mg:false,rank:7,
+  '1006':{ext:'1006',pass:'637284',name:'Rob',mg:false,rank:7,
     av:{bg:'#2E7D32',sk:'#C68642',hair:'#1a1a1a',ht:'short',eyes:'#2C2C2C',shirt:'#1a1b20'},
     gross:729.65,refund:149.99,net:579.66,cb:0,rp:20.56,calls:21,txn:4,cr:19.05,aov:182.41,tgt:630,ta:92.01,status:'risk',
     daily:[0,329.85,0,199.90,199.90,0,0],
@@ -443,7 +482,7 @@ const AGENTS={
     str:['2nd-best close rate (19.05%)','92% target achievement','4 solid transactions'],
     weak:['20.56% refund rate — 1 cancellation','RPC $27.60 — $2.40 below target'],
     focus:'Zero refunds next week. 5 transactions. Same-day follow-up call after every close. Target Net $800+'},
-  '1007':{ext:'1007',pass:'419623',name:'Prady',mg:false,rank:1,
+  '1007':{ext:'1007',pass:'419623',name:'James',mg:false,rank:1,
     av:{bg:'#D84315',sk:'#F5DEB3',hair:'#3D2B1F',ht:'short',eyes:'#3D2B1F',shirt:'#1a1b20'},
     gross:1147.95,refund:0,net:1147.95,cb:0,rp:0,calls:5,txn:2,cr:40,aov:573.98,tgt:150,ta:765.30,status:'active',
     daily:[0,0,598.95,549,0,0,0],
@@ -451,7 +490,7 @@ const AGENTS={
     str:['#1 this week — $1,147.95 net','RPC $229.59 — 7.6× above target','40% close rate — highest on team','Highest AOV $573.98 — zero refunds'],
     weak:['Only 5 calls — low volume limits impact','Revenue in 2 deals — concentration risk'],
     focus:'Challenge: 15+ calls next week. At 40% close rate, that is 6 deals at your AOV. Target Net $2,000+'},
-  '1008':{ext:'1008',pass:'853726',name:'Gaurav',mg:false,rank:3,
+  '1008':{ext:'1008',pass:'853726',name:'Peter',mg:false,rank:3,
     av:{bg:'#6A1B9A',sk:'#DEB887',hair:'#1a1a1a',ht:'curls',eyes:'#2C2C2C',shirt:'#1a1b20'},
     gross:1009.45,refund:0,net:1009.45,cb:0,rp:0,calls:22,txn:5,cr:22.73,aov:201.89,tgt:660,ta:152.95,status:'active',
     daily:[0,409.75,0,399.80,199.90,0,0],
@@ -459,7 +498,7 @@ const AGENTS={
     str:['$1,009 net — crossed the $1K mark','RPC $45.88 — 53% above target','Zero refunds — 5 clean transactions'],
     weak:['AOV $201.89 — room for premium plans','22 calls — slight room to increase'],
     focus:'Target one Lifetime/5-year plan per week — one premium close lifts net by $300+. Target Net $1,200+'},
-  '1009':{ext:'1009',pass:'192847',name:'Sumit',mg:false,rank:4,
+  '1009':{ext:'1009',pass:'192847',name:'Sam',mg:false,rank:4,
     av:{bg:'#1565C0',sk:'#F4A460',hair:'#2C1810',ht:'messy',eyes:'#2C2C2C',shirt:'#1a1b20'},
     gross:774.55,refund:154.90,net:619.65,cb:0,rp:20,calls:45,txn:6,cr:13.33,aov:129.09,tgt:1350,ta:45.90,status:'risk',
     daily:[0,0,319.85,274.80,179.90,0,0],
@@ -467,7 +506,7 @@ const AGENTS={
     str:['Most calls (45) — highest hustle','Most transactions (6) — closing volume'],
     weak:['Lowest AOV $129.09 — under-pitching','RPC $13.77 — well below $30 target','20% refund rate — Rose M Johnston'],
     focus:'Never close below 2-year. Present 3-year as standard. Target AOV $190+. Zero refunds. Target Net $1,000+'},
-  '1010':{ext:'1010',pass:'576319',name:'Kajal',mg:false,rank:9,
+  '1010':{ext:'1010',pass:'576319',name:'Tracy',mg:false,rank:9,
     av:{bg:'#AD1457',sk:'#D4A574',hair:'#6B4226',ht:'curly',eyes:'#3D2B1F',ear:true,shirt:'#1a1b20'},
     gross:354.80,refund:0,net:354.80,cb:0,rp:0,calls:21,txn:3,cr:14.29,aov:118.27,tgt:630,ta:56.32,status:'active',
     daily:[0,154.90,99.95,99.95,0,0,0],
@@ -475,7 +514,7 @@ const AGENTS={
     str:['Zero refunds — 100% retention','14.29% close rate — at team average','Consistent customer rapport'],
     weak:['Lowest AOV $118.27 — basic plan closes','RPC $16.90 — below $30 target'],
     focus:'Personal rule: never close below 2-year. AOV target $175+. Target Net $500+'},
-  '1011':{ext:'1011',pass:'834561',name:'Dixit',mg:false,rank:5,
+  '1011':{ext:'1011',pass:'834561',name:'Ben',mg:false,rank:5,
     av:{bg:'#00695C',sk:'#FAEBD7',hair:'#1a1a1a',ht:'neat',eyes:'#2C2C2C',gl:true,shirt:'#1a1b20'},
     gross:618.90,refund:0,net:618.90,cb:0,rp:0,calls:17,txn:2,cr:11.76,aov:309.45,tgt:510,ta:121.35,status:'active',
     daily:[0,0,0,119.90,499,0,0],
@@ -495,42 +534,117 @@ let me=null,curView='overview';
 // ═══════════════════════════════════════════════════════════
 function svgOf(k){return mkAv(AGENTS[k].av);}
 function $(id){return document.getElementById(id);}
+function $$(id){return document.getElementById(id);}  // alias for inline handlers
 function fmt(n,dec=2){return '$'+n.toFixed(dec);}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0);}
 function pct(val,max){return Math.min((val/max)*100,100);}
+// Safe RPC computation — a.rpc field doesn't exist in AGENTS, always compute from net/calls
+function agRpc(a){return a.calls>0?parseFloat((a.net/a.calls).toFixed(2)):0;}
 
 // ═══════════════════════════════════════════════════════════
 // LOGIN
 // ═══════════════════════════════════════════════════════════
+// ─── Login helpers ────────────────────────────────────────────
 function previewLogin(ext){
-  const ag=AGENTS[ext];
-  $('l-name').value=ag?ag.name+(ag.mg?' — Manager (Full Access)'):'';
+  var ag=AGENTS[ext.replace(/\s/g,'')];
+  var nm=$('l-name');
+  if(nm) nm.value=ag?ag.name+(ag.mg?' · Manager':''):'';
 }
-function quickMgr(){
-  $('l-ext').value='1001';
-  $('l-pass').value='748291';
-  previewLogin('1001');
-  setTimeout(doLogin,150);
+function clearErr(){
+  var e=$('l-err'); if(e){e.textContent='';e.classList.remove('on');}
 }
+function showErr(msg){
+  var e=$('l-err'); if(!e)return;
+  e.textContent=msg; e.classList.add('on');
+  // Shake the card
+  var card=document.querySelector('.l-card');
+  if(card){card.style.animation='shake .35s ease';
+    setTimeout(function(){card.style.animation='';},350);}
+}
+function togglePass(){
+  var f=$('l-pass'),e=$('pass-eye');
+  if(!f)return;
+  f.type=(f.type==='password')?'text':'password';
+  if(e)e.textContent=(f.type==='password')?'visibility':'visibility_off';
+}
+function toggleMgrPass(){
+  var f=$('mgr-pass'),e=$('mgr-pass-eye');
+  if(!f)return;
+  f.type=(f.type==='password')?'text':'password';
+  if(e)e.textContent=(f.type==='password')?'visibility':'visibility_off';
+}
+
+// ─── Regular agent login ───────────────────────────────────────
 function doLogin(){
-  const ext=$('l-ext').value.trim();
-  const pass=$('l-pass').value.trim();
-  const err=$('l-err');
-  if(AGENTS[ext]&&AGENTS[ext].pass===pass){
-    err.classList.remove('on');
-    me=AGENTS[ext];
-    buildDash();
-    show('sd');
-  }else{
-    err.classList.add('on');
-    $('l-pass').value='';
+  var ext=($('l-ext').value||'').replace(/\s/g,'');
+  var pass=($('l-pass').value||'').replace(/\s/g,'');
+  var btn=$('signin-btn');
+
+  // Field-specific error messages
+  if(!ext && !pass){ showErr('Please enter your Extension number and Access Key.'); return; }
+  if(!ext){ showErr('Extension is missing — please enter your extension number (e.g. 1002).'); return; }
+  if(!pass){ showErr('Access Key is missing — please enter your 6-digit access key.'); return; }
+  if(!AGENTS[ext]){ showErr('Extension “'+ext+'” not found. Double-check your extension number.'); return; }
+  if(AGENTS[ext].pass!==pass){
+    showErr('Wrong Access Key for Extension '+ext+'. Please try again.');
+    $('l-pass').value=''; $('l-pass').focus(); return;
   }
+
+  // Success — set me immediately, then show loading state
+  me=AGENTS[ext];
+  if(btn){btn.textContent='Signing in…';btn.disabled=true;}
+  setTimeout(function(){
+    if(btn){btn.innerHTML='Sign In <span class="mso">bolt</span>';btn.disabled=false;}
+    buildDash(); show('sd');
+  },250);
 }
+
+// ─── Manager panel ─────────────────────────────────────────────
+function openMgrPanel(){
+  var p=$('mgr-panel');
+  if(!p)return;
+  p.classList.add('open');    // class-toggle is more reliable than inline style
+  p.style.display='flex';     // belt AND suspenders
+  var mp=$('mgr-pass');
+  if(mp){mp.value=''; setTimeout(function(){mp.focus();},200);}
+  var me2=$('mgr-err');
+  if(me2){me2.style.display='none';me2.textContent='';}
+}
+function closeMgrPanel(){
+  var p=$('mgr-panel');
+  if(p){p.classList.remove('open'); p.style.display='none';}
+  var mp=$('mgr-pass'); if(mp) mp.value='';
+  var me2=$('mgr-err'); if(me2){me2.style.display='none';me2.textContent='';}
+}
+function doMgrLogin(){
+  var pass=($('mgr-pass').value||'').replace(/\s/g,'');
+  var err=$('mgr-err'), btn=$('mgr-login-btn');
+  if(!pass){
+    err.textContent='Please enter your Access Key.';
+    err.style.display='block'; return;
+  }
+  if(AGENTS['1001'].pass!==pass){
+    err.textContent='Wrong Access Key for Manager session. Please try again.';
+    err.style.display='block';
+    $('mgr-pass').value=''; $('mgr-pass').focus(); return;
+  }
+  me=AGENTS['1001'];        // set IMMEDIATELY before setTimeout
+  if(btn){btn.textContent='Signing in…';btn.disabled=true;}
+  setTimeout(function(){
+    if(btn){btn.innerHTML='Login as Manager <span class="mso">admin_panel_settings</span>';btn.disabled=false;}
+    closeMgrPanel();
+    buildDash(); show('sd');
+  },250);
+}
+
+// ─── Logout ────────────────────────────────────────────────────
 function doLogout(){
-  me=null;curView='overview';
-  $('l-ext').value='';$('l-pass').value='';$('l-name').value='';
-  const mh=document.querySelector('.mob-hdr');
-  if(mh)mh.classList.remove('visible');
+  me=null; curView='overview';
+  var ef=$('l-ext'),pf=$('l-pass'),nf=$('l-name');
+  if(ef)ef.value=''; if(pf)pf.value=''; if(nf)nf.value='';
+  clearErr(); closeMgrPanel();
+  var mh=document.querySelector('.mob-hdr');
+  if(mh) mh.classList.remove('visible');
   show('sl');
 }
 function flashRefresh(){const btn=document.querySelector('.btn-p');btn.textContent='Refreshed ✓';setTimeout(()=>{btn.innerHTML='Refresh Data';},1800);}
@@ -590,27 +704,41 @@ function buildMobNav(){
 function setView(v){
   curView=v;
   document.querySelectorAll('.nav-i,.mob-nav-i').forEach(el=>{
-    el.classList.toggle('act',el.id===`nav-${v}`||el.id===`mnav-${v}`);
+    el.classList.toggle('act',el.id===('nav-'+v)||el.id===('mnav-'+v));
   });
-  const dc=$('dcontent');
-  if(me.mg){
-    switch(v){
-      case'overview': dc.innerHTML=mgrOverview();break;
-      case'agents': dc.innerHTML=mgrAgents();break;
-      case'rpc': dc.innerHTML=rpcAnalysis();break;
-      case'voids': dc.innerHTML=voidsView();break;
-      default: dc.innerHTML=analyticsView();
+  var dc=$('dcontent');
+  if(!dc||!me)return;
+  try{
+    var html='';
+    if(me.mg){
+      switch(v){
+        case'overview':  html=mgrOverview();  break;
+        case'agents':    html=mgrAgents();    break;
+        case'rpc':       html=rpcAnalysis();  break;
+        case'voids':     html=voidsView();    break;
+        default:         html=analyticsView();
+      }
+    }else{
+      switch(v){
+        case'overview':
+        case'performance': html=agentView(me);     break;
+        case'rpc':         html=agentRpc(me);      break;
+        case'voids':       html=agentVoids(me);    break;
+        default:           html=agentAnalytics(me);
+      }
     }
-  }else{
-    switch(v){
-      case'overview':
-      case'performance': dc.innerHTML=agentView(me);break;
-      case'rpc': dc.innerHTML=agentRpc(me);break;
-      case'voids': dc.innerHTML=agentVoids(me);break;
-      default: dc.innerHTML=agentAnalytics(me);
-    }
+    dc.innerHTML=html;
+    setTimeout(animateBars,150);
+  }catch(err){
+    console.error('setView['+v+'] error:',err);
+    dc.innerHTML='<div style="padding:40px;text-align:center;">'
+      +'<div style="font-size:40px;margin-bottom:12px;">⚠️</div>'
+      +'<div style="font-size:17px;font-weight:700;color:#f87171;">Something went wrong</div>'
+      +'<div style="font-size:13px;color:var(--on-dim);margin-top:6px;">'+err.message+'</div>'
+      +'<button onclick="setView('overview')" style="margin-top:20px;padding:10px 20px;'
+      +'background:var(--primary);color:var(--bg);border:none;border-radius:8px;'
+      +'font-weight:700;cursor:pointer;">↩ Back to Overview</button></div>';
   }
-  setTimeout(animateBars,100);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -660,7 +788,7 @@ function top3Banner(){
         <div class="t3av">${svgOf(a.ext)}</div>
         <div>
           <div class="t3nm">${a.name}${me&&me.ext===a.ext?' (You)':''}</div>
-          <div class="t3st">${fmt(a.net)} RPC&nbsp;${fmt(a.rpc===0?a.net/a.calls:a.rpc)}</div>
+          <div class="t3st">${fmt(a.net)}&nbsp;·&nbsp;RPC&nbsp;${fmt(agRpc(a))}</div>
         </div>
       </div>`).join('')}
     <div class="elite-badge">
@@ -754,7 +882,7 @@ function mgrOverview(){
 
 function renderTableRows(agents,q=''){
   return agents.filter(a=>!q||a.name.toLowerCase().includes(q.toLowerCase())).map(a=>{
-    const rpcVal=a.rpc||+(a.net/a.calls).toFixed(2);
+    const rpcVal=agRpc(a);
     const statusBadge=a.status==='active'?`<span class="badge bg">Active</span>`:
       a.status==='risk'?`<span class="badge ba">Risk</span>`:
       `<span class="badge br">Critical</span>`;
@@ -811,7 +939,7 @@ function mgrAgents(){
           <th>Ref%</th><th>Calls</th><th>RPC</th><th>Close%</th><th>AOV</th><th>Txns</th><th>Target</th><th>Ach%</th><th>Status</th>
         </tr></thead>
         <tbody>${SORTED.map(a=>{
-          const rpcVal=a.rpc||+(a.net/a.calls).toFixed(2);
+          const rpcVal=agRpc(a);
           const statusBadge=a.status==='active'?`<span class="badge bg">Active</span>`:a.status==='risk'?`<span class="badge ba">Risk</span>`:`<span class="badge br">Critical</span>`;
           return `<tr onclick="viewAgent('${a.ext}')">
             <td><div class="ag-cell"><div class="ag-av">${svgOf(a.ext)}</div><div class="ag-nm">${a.name}</div></div></td>
@@ -836,12 +964,12 @@ function mgrAgents(){
 }
 
 function rpcAnalysis(){
-  const max=Math.max(...SORTED.map(a=>a.rpc||+(a.net/a.calls)));
+  const max=Math.max(...SORTED.map(a=>agRpc(a)));
   return `${top3Banner()}
   <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">RPC Analysis — vs $30.00 Target</div>
   <div class="rpc-tbl fu2">
     ${SORTED.map(a=>{
-      const rv=+(a.rpc||+(a.net/a.calls)).toFixed(2);
+      const rv=agRpc(a);
       const over=rv>=30;
       const w=Math.min((rv/Math.max(max,30))*100,100);
       const fg=over?'var(--primary)':'var(--amber)';
@@ -869,16 +997,16 @@ function voidsView(){
     <table class="void-tbl" style="padding:0;">
       <thead><tr><th>Date</th><th>Customer</th><th>Agent</th><th>Plan</th><th>Refund Amount</th><th>Processed</th><th>Source</th></tr></thead>
       <tbody>
-        <tr><td>May 12</td><td>Bradford L Beukelman</td><td><span style="color:var(--error);font-weight:700;">Teji</span></td><td>Lifetime</td><td style="color:var(--error);font-weight:700;">$349.00</td><td>May 14</td><td>Easy Resolve</td></tr>
-        <tr><td>Apr 30</td><td>Rose M Johnston</td><td><span style="color:var(--amber);font-weight:700;">Sumit</span></td><td>5 Years</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14</td><td>Easy Resolve</td></tr>
-        <tr><td>Apr 02</td><td>Kevin Dillon</td><td><span style="color:var(--amber);font-weight:700;">Rohit</span></td><td>3 Years</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13</td><td>Easy Resolve</td></tr>
+        <tr><td>May 12</td><td>Bradford L Beukelman</td><td><span style="color:var(--error);font-weight:700;">Jason</span></td><td>Lifetime</td><td style="color:var(--error);font-weight:700;">$349.00</td><td>May 14</td><td>Easy Resolve</td></tr>
+        <tr><td>Apr 30</td><td>Rose M Johnston</td><td><span style="color:var(--amber);font-weight:700;">Sam</span></td><td>5 Years</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14</td><td>Easy Resolve</td></tr>
+        <tr><td>Apr 02</td><td>Kevin Dillon</td><td><span style="color:var(--amber);font-weight:700;">Rob</span></td><td>3 Years</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13</td><td>Easy Resolve</td></tr>
         <tr><td>—</td><td>Linda Rogovin</td><td style="color:var(--on-dim);font-style:italic;">Unassigned</td><td>—</td><td style="color:var(--on-dim);">$154.90 (sale)</td><td>May 12</td><td>Easy Resolve</td></tr>
       </tbody>
     </table>
   </div>
   <div class="kpi-row fu3" style="margin-top:16px;">
     <div class="kpi"><div class="kpi-lbl">Total Refunds</div><div class="kpi-val" style="color:var(--error);">$653.89</div><div class="kpi-sub">3 team refunds this week</div></div>
-    <div class="kpi"><div class="kpi-lbl">Void Amount</div><div class="kpi-val" style="color:var(--error);">$349.00</div><div class="kpi-sub">Bradford L Beukelman — Teji</div></div>
+    <div class="kpi"><div class="kpi-lbl">Void Amount</div><div class="kpi-val" style="color:var(--error);">$349.00</div><div class="kpi-sub">Bradford L Beukelman — Jason</div></div>
     <div class="kpi"><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:var(--amber);">8.70%</div><div class="kpi-sub">of assigned gross sales</div></div>
     <div class="kpi"><div class="kpi-lbl">Chargebacks</div><div class="kpi-val" style="color:var(--primary);">$0.00</div><div class="kpi-sub">No chargebacks this week</div></div>
   </div>`;
@@ -914,7 +1042,7 @@ function analyticsView(){
 // ═══════════════════════════════════════════════════════════
 function agentView(a,fromMgr=false){
   const top=TOP3.map(k=>AGENTS[k]);
-  const rpcVal=+(a.rpc||+(a.net/a.calls)).toFixed(2);
+  const rpcVal=agRpc(a);
   const rpcPct=rpcVal>=30?((rpcVal-30)/rpcVal*100+100).toFixed(0):((rpcVal/30)*100).toFixed(0);
   const rpcLabel=rpcVal>=30?`+${((rpcVal/30-1)*100).toFixed(0)}%`:`${((rpcVal/30)*100).toFixed(0)}% of target`;
   const maxD=Math.max(...a.daily,1);
@@ -949,7 +1077,7 @@ function agentView(a,fromMgr=false){
   <div class="mrow fu3">
     <div class="mc">
       <div class="mc-pct" style="color:${a.ta>=100?'var(--primary)':'var(--amber)'}">
-        <span class="mso" style="font-size:15px;">credit_card_off</span>+${(a.ta-100).toFixed(0)}%
+        <span class="mso" style="font-size:15px;">credit_card_off</span>${a.ta>=100?'+'+(a.ta-100).toFixed(0):(a.ta-100).toFixed(0)}%
       </div>
       <div class="mc-lbl">Net Sales</div>
       <div class="mc-val" style="color:var(--primary)">${fmt(a.net)}</div>
@@ -1017,8 +1145,8 @@ function agentView(a,fromMgr=false){
 }
 
 function agentRpc(a){
-  const rpcVal=+(a.rpc||+(a.net/a.calls)).toFixed(2);
-  const top=SORTED.map(x=>({name:x.name,rv:+(x.rpc||+(x.net/x.calls)).toFixed(2),isMe:x.ext===a.ext}));
+  const rpcVal=agRpc(a);
+  const top=SORTED.map(x=>({name:x.name,rv:agRpc(x),isMe:x.ext===a.ext}));
   const max=Math.max(...top.map(x=>x.rv),30);
   return `${top3Banner()}
   <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">RPC Analysis — Your Position</div>
@@ -1089,5 +1217,83 @@ function agentAnalytics(a){
 
 // Dashboard ready
 </script>
+<!-- ══ MANAGER PANEL MODAL (shown on tap of Manager Access) ══ -->
+  <div id="mgr-panel"
+       style="display:none;position:fixed;inset:0;z-index:300;
+              background:rgba(7,8,12,.88);backdrop-filter:blur(14px);
+              -webkit-backdrop-filter:blur(14px);
+              align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--surf-c);border:1px solid rgba(60,74,66,.5);
+                border-top:1px solid rgba(78,222,163,.25);
+                border-radius:16px;padding:32px 28px;
+                max-width:360px;width:100%;
+                position:relative;animation:fu .3s ease both;
+                box-shadow:0 0 60px rgba(78,222,163,.08);">
+
+      <!-- Close -->
+      <button onclick="closeMgrPanel()" type="button"
+              style="position:absolute;top:10px;right:12px;background:none;border:none;
+                     cursor:pointer;color:var(--on-dim);
+                     font-family:'Material Symbols Outlined';font-size:22px;
+                     transition:color .2s;line-height:1;">close</button>
+
+      <!-- Manager identity -->
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;
+                    border:2px solid var(--primary);margin:0 auto 10px;
+                    box-shadow:0 0 20px rgba(78,222,163,.2);">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc"
+               alt="Jason" style="width:100%;height:100%;object-fit:cover;"/>
+        </div>
+        <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;">Jason</div>
+        <div style="display:inline-flex;align-items:center;gap:5px;margin-top:4px;
+                    padding:3px 10px;background:rgba(78,222,163,.1);
+                    border:1px solid rgba(78,222,163,.25);border-radius:999px;">
+          <span class="mso" style="font-size:14px;color:var(--primary);">admin_panel_settings</span>
+          <span style="font-size:11px;font-weight:700;color:var(--primary);letter-spacing:.05em;">MANAGER · EXT 1001</span>
+        </div>
+      </div>
+
+      <!-- Access Key field -->
+      <label class="l-lbl" style="display:block;margin-bottom:6px;">Enter your Access Key</label>
+      <div class="l-ig" style="margin-bottom:8px;">
+        <span class="mso">key</span>
+        <input class="inp" id="mgr-pass" placeholder="6-digit access key"
+               type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6"
+               autocomplete="off" autocorrect="off" autocapitalize="off"
+               name="mgr-nofill"
+               oninput="$$('mgr-err').style.display='none';"
+               onkeydown="if(event.key==='Enter')doMgrLogin();"/>
+        <button type="button" onclick="toggleMgrPass()"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
+                       background:none;border:none;cursor:pointer;color:var(--on-dim);
+                       font-family:'Material Symbols Outlined';font-size:18px;padding:4px;"
+                id="mgr-pass-eye">visibility</button>
+      </div>
+
+      <!-- Manager-specific error -->
+      <div id="mgr-err"
+           style="display:none;font-size:12px;color:#f87171;
+                  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);
+                  border-radius:6px;padding:8px 12px;margin-bottom:12px;text-align:center;">
+      </div>
+
+      <!-- Login button -->
+      <button class="btn-p" id="mgr-login-btn" onclick="doMgrLogin()" type="button"
+              style="margin-bottom:10px;">
+        Login as Manager&nbsp;<span class="mso">admin_panel_settings</span>
+      </button>
+      <button type="button" onclick="closeMgrPanel()"
+              style="width:100%;padding:10px;background:none;
+                     border:1px solid rgba(60,74,66,.4);border-radius:8px;
+                     color:var(--on-dim);font-size:12px;font-weight:600;
+                     cursor:pointer;font-family:'Geist',sans-serif;
+                     transition:all .2s;letter-spacing:.04em;"
+              onmouseenter="this.style.borderColor='rgba(60,74,66,.8)'"
+              onmouseleave="this.style.borderColor='rgba(60,74,66,.4)'">
+        Cancel
+      </button>
+    </div>
+  </div>
 </body>
 </html>
