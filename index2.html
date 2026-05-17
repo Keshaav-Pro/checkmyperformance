@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TeamPulse Sales | Performance Cockpit</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0d0e12;--surf:#121317;--surf-lo:#1a1b20;--surf-c:#1f1f24;
+  --surf-hi:#292a2e;--surf-max:#343439;
+  --on:#e3e2e7;--on-dim:#bbcabf;--outline:#86948a;--outv:#3c4a42;
+  --primary:#4edea3;--primary-dk:#10b981;--primary-dkr:#059669;--on-primary:#003824;
+  --secondary:#ffb3ad;--error:#ef4444;--amber:#f59e0b;--info:#adc6ff;
+  --glass:rgba(31,31,36,0.45);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:var(--on);min-height:100dvh;overflow-x:hidden;font-size:14px;}
+.mso{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-family:'Material Symbols Outlined';font-style:normal;font-size:20px;line-height:1;display:inline-block;vertical-align:middle;}
+/* Grid bg */
+.grid-bg{background-color:var(--bg);background-image:linear-gradient(rgba(78,222,163,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(78,222,163,.03) 1px,transparent 1px);background-size:40px 40px;}
+/* Glass */
+.glass{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.08);border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(0,0,0,.2);}
+/* Screens */
+.screen{display:none;}
+.screen.active{display:block;}
+/* Anims */
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.fu{animation:fu .4s ease both;}.fu1{animation:fu .4s .08s ease both;}.fu2{animation:fu .4s .16s ease both;}.fu3{animation:fu .4s .24s ease both;}.fu4{animation:fu .4s .32s ease both;}
+.blink{animation:pulse 2s ease-in-out infinite;}
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
+.bg{background:rgba(78,222,163,.14);color:var(--primary);border:1px solid rgba(78,222,163,.28);}
+.br{background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.28);}
+.ba{background:rgba(245,158,11,.11);color:var(--amber);border:1px solid rgba(245,158,11,.28);}
+.bx{background:rgba(134,148,138,.1);color:var(--outline);border:1px solid rgba(134,148,138,.22);}
+/* Buttons */
+.btn-p{background:linear-gradient(135deg,var(--primary),var(--primary-dk));color:var(--on-primary);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:none;cursor:pointer;border-radius:8px;padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:8px;transition:box-shadow .25s,transform .15s;width:100%;font-family:'Geist',sans-serif;}
+.btn-p:hover{box-shadow:0 0 24px rgba(78,222,163,.3);}
+.btn-p:active{transform:scale(.98);}
+.btn-g{background:transparent;color:var(--on-dim);font-size:12px;font-weight:600;border:1px solid var(--outv);cursor:pointer;border-radius:8px;padding:7px 14px;transition:all .2s;font-family:'Geist',sans-serif;}
+.btn-g:hover{color:var(--primary);border-color:var(--primary);}
+.btn-s{background:var(--surf-lo);color:var(--on);font-size:12px;font-weight:600;border:1px solid rgba(60,74,66,.5);cursor:pointer;border-radius:8px;padding:9px 16px;display:flex;align-items:center;gap:8px;transition:all .2s;font-family:'Geist',sans-serif;}
+.btn-s:hover{background:var(--surf-c);border-color:rgba(78,222,163,.3);}
+/* Inputs */
+.inp{width:100%;background:var(--bg);border:1px solid rgba(60,74,66,.45);border-radius:8px;padding:12px 16px;color:var(--on);font-family:'Geist',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--primary);}
+.inp::placeholder{color:rgba(187,202,191,.38);}
+/* ═══ LOGIN ═══ */
+#sl{display:flex;align-items:center;justify-content:center;min-height:100dvh;padding:24px;}
+#sl.active{display:flex;}
+.l-wrap{width:100%;max-width:440px;z-index:10;}
+.l-logo{font-size:clamp(28px,6vw,48px);font-weight:800;letter-spacing:-.025em;color:var(--primary);text-align:center;margin-bottom:4px;}
+.l-sub{text-align:center;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--on-dim);margin-bottom:40px;}
+.l-card{padding:40px;border-radius:16px;position:relative;overflow:hidden;}
+.l-glow{position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:rgba(78,222,163,.08);border-radius:50%;filter:blur(60px);pointer-events:none;}
+.l-lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dim);margin-bottom:6px;margin-left:2px;}
+.l-ig{position:relative;}
+.l-ig .mso{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--on-dim);font-size:18px;transition:color .2s;pointer-events:none;}
+.l-ig:focus-within .mso{color:var(--primary);}
+.l-ig .inp{padding-left:42px;}
+.l-row{display:grid;grid-template-columns:1fr 2fr;gap:14px;}
+.l-err{color:#f87171;font-size:12px;text-align:center;margin-top:10px;display:none;}
+.l-err.on{display:block;}
+.l-divider{display:flex;align-items:center;gap:12px;margin:26px 0;}
+.l-divider::before,.l-divider::after{content:'';flex:1;height:1px;background:rgba(60,74,66,.3);}
+.l-divider span{font-size:10px;color:rgba(187,202,191,.5);letter-spacing:.1em;text-transform:uppercase;}
+.mgr-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surf-lo);border:1px solid rgba(60,74,66,.4);border-radius:10px;cursor:pointer;transition:all .2s;font-family:'Geist',sans-serif;}
+.mgr-btn:hover{background:var(--surf-c);border-color:rgba(255,179,173,.35);}
+.mgr-av{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid rgba(255,179,173,.3);}
+.l-footer{display:flex;justify-content:space-between;margin-top:26px;padding:0 4px;}
+.l-footer a{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--on-dim);text-decoration:none;transition:color .2s;}
+.l-footer a:hover{color:var(--primary);}
+/* ═══ DASHBOARD ═══ */
+#sd{display:flex;min-height:100dvh;}
+#sd.active{display:flex;}
+/* Sidebar */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--surf);border-right:1px solid rgba(60,74,66,.3);display:flex;flex-direction:column;z-index:50;}
+.sb-brand{padding:24px 20px 18px;border-bottom:1px solid rgba(60,74,66,.2);}
+.sb-name{font-size:15px;font-weight:800;color:var(--primary);letter-spacing:-.01em;}
+.sb-sub{font-size:11px;color:var(--on-dim);letter-spacing:.04em;margin-top:2px;}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto;}
+.nav-i{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:all .2s;color:var(--on-dim);font-size:13px;font-weight:500;margin-bottom:3px;border:none;background:none;width:100%;font-family:'Geist',sans-serif;text-align:left;}
+.nav-i:hover{background:rgba(78,222,163,.06);color:var(--on);}
+.nav-i.act{background:rgba(78,222,163,.12);color:var(--primary);}
+.nav-i .mso{font-size:18px;}
+.sb-bot{padding:14px 10px;border-top:1px solid rgba(60,74,66,.2);}
+/* Main */
+.dmain{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+/* Top bar */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(18,19,23,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(60,74,66,.25);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.tb-logo{font-size:19px;font-weight:800;color:var(--primary);letter-spacing:-.02em;}
+.tb-links{display:flex;gap:22px;}
+.tb-link{font-size:13px;color:var(--on-dim);cursor:pointer;transition:color .2s;font-weight:500;background:none;border:none;font-family:'Geist',sans-serif;}
+.tb-link:hover{color:var(--on);}
+.tb-r{display:flex;align-items:center;gap:10px;}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:8px;padding:7px 12px;color:var(--on-dim);}
+.tb-search input{background:none;border:none;outline:none;color:var(--on);font-family:'Geist',sans-serif;font-size:13px;width:160px;}
+.tb-search input::placeholder{color:var(--on-dim);}
+.ib{width:36px;height:36px;border-radius:8px;background:var(--surf-c);border:1px solid rgba(60,74,66,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--on-dim);}
+.ib:hover{color:var(--on);border-color:rgba(78,222,163,.3);}
+.tb-av{width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--primary);cursor:pointer;}
+/* Mobile header — shown by JS on login, hidden on logout */
+.mob-hdr{display:none;position:sticky;top:0;z-index:40;background:rgba(18,19,23,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(60,74,66,.25);padding:12px 16px;align-items:center;justify-content:space-between;}
+@media(max-width:768px){.mob-hdr.visible{display:flex;}}
+.mob-logo{font-size:17px;font-weight:800;color:var(--primary);}
+/* Content */
+.dcontent{flex:1;padding:24px;max-width:1400px;width:100%;}
+/* ── Top 3 Banner ── */
+.t3bar{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+.t3div{width:1px;height:36px;background:rgba(60,74,66,.5);flex-shrink:0;}
+.t3it{display:flex;align-items:center;gap:10px;flex:1;min-width:170px;}
+.t3rk{font-size:20px;font-weight:800;color:var(--primary);min-width:28px;}
+.t3nm{font-weight:700;font-size:14px;}
+.t3st{font-size:11px;color:var(--on-dim);margin-top:1px;}
+.t3av{width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid rgba(60,74,66,.6);flex-shrink:0;}
+.elite-badge{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(78,222,163,.09);border:1px solid rgba(78,222,163,.22);border-radius:8px;padding:8px 12px;flex-shrink:0;}
+.elite-txt{font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;line-height:1.3;}
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.kpi{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:20px;}
+.kpi-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);margin-bottom:10px;}
+.kpi-val{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:6px;}
+.kpi-sub{font-size:12px;display:flex;align-items:center;gap:5px;color:var(--on-dim);}
+/* Manager grid */
+.mgr-grid{display:grid;grid-template-columns:320px 1fr;gap:18px;}
+/* Risk cards */
+.risk-c{border-radius:12px;padding:14px 16px;border:1px solid;margin-bottom:12px;}
+.risk-c.crit{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.3);}
+.risk-c.warn{background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.25);}
+.risk-hdr{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.risk-agent{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(60,74,66,.18);}
+.risk-agent:last-child{border-bottom:none;padding-bottom:0;}
+.risk-anm{font-weight:700;font-size:15px;}
+.risk-adt{font-size:11px;color:var(--on-dim);margin-top:2px;}
+/* Feed */
+.feed-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:14px 16px;}
+.feed-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);margin-bottom:12px;}
+.feed-it{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;}
+.feed-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:4px;}
+.feed-txt{font-size:12px;line-height:1.5;}
+.feed-time{font-size:10px;color:var(--on-dim);margin-top:2px;}
+/* Table */
+.tbl-card{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;overflow:hidden;}
+.tbl-hdr{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(60,74,66,.3);}
+.tbl-title{font-size:17px;font-weight:700;}
+.tbl-filter{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid rgba(60,74,66,.4);border-radius:8px;padding:7px 12px;color:var(--on-dim);}
+.tbl-filter input{background:none;border:none;outline:none;color:var(--on);font-family:'Geist',sans-serif;font-size:13px;width:130px;}
+.tbl-filter input::placeholder{color:var(--on-dim);}
+.ptbl{width:100%;border-collapse:collapse;}
+.ptbl th{padding:10px 20px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--on-dim);text-align:left;border-bottom:1px solid rgba(60,74,66,.3);cursor:pointer;user-select:none;white-space:nowrap;}
+.ptbl th:hover{color:var(--on);}
+.ptbl td{padding:13px 20px;border-bottom:1px solid rgba(60,74,66,.12);vertical-align:middle;}
+.ptbl tr:last-child td{border-bottom:none;}
+.ptbl tr:hover td{background:rgba(78,222,163,.025);}
+.ptbl tr{cursor:pointer;}
+.ag-cell{display:flex;align-items:center;gap:10px;}
+.ag-av{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;}
+.ag-nm{font-weight:700;font-size:13px;}
+.dn{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;}
+/* ═══ AGENT VIEW ═══ */
+.lb-banner{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;}
+.lb-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);}
+.lb-pos-big{font-size:26px;font-weight:800;color:var(--primary);line-height:1;}
+.lb-me{display:flex;align-items:center;gap:8px;}
+.lb-me-av{width:30px;height:30px;border-radius:50%;overflow:hidden;border:2px solid var(--primary);}
+.lb-me-nm{font-weight:700;font-size:15px;}
+.lb-others{display:flex;gap:14px;color:var(--on-dim);font-size:12px;margin-left:auto;}
+.lb-oth{display:flex;align-items:center;gap:5px;}
+.lb-oth-av{width:20px;height:20px;border-radius:50%;overflow:hidden;flex-shrink:0;}
+/* Welcome */
+.welcome-hdr{font-size:clamp(24px,4vw,38px);font-weight:800;letter-spacing:-.025em;margin-bottom:18px;}
+/* Insight */
+.insight-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.3);border-left:3px solid var(--primary);border-radius:12px;padding:18px 22px;display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+.insight-icon{width:38px;height:38px;background:rgba(78,222,163,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.insight-icon.warn{background:rgba(239,68,68,.1);}
+.insight-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:5px;}
+.insight-title.warn{color:#f87171;}
+.insight-body{font-size:13px;line-height:1.65;color:var(--on-dim);}
+/* Metrics row */
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.mc{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:18px;}
+.mc-pct{font-size:11px;font-weight:700;letter-spacing:.05em;margin-bottom:9px;display:flex;align-items:center;gap:4px;}
+.mc-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);margin-bottom:6px;}
+.mc-val{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;line-height:1;}
+.mc-tgt{font-size:12px;display:flex;align-items:center;justify-content:space-between;color:var(--on-dim);}
+.mc-bar{height:3px;background:rgba(60,74,66,.5);border-radius:2px;margin-top:10px;}
+.mc-bf{height:100%;border-radius:2px;background:var(--primary);transition:width 1.2s ease;}
+.mc-bf.over{background:var(--primary);}
+.mc-bf.crit{background:var(--error);}
+.nxt-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:18px;}
+.nxt-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);margin-bottom:7px;}
+.nxt-title{font-size:18px;font-weight:800;margin-bottom:7px;line-height:1.2;}
+.nxt-desc{font-size:12px;line-height:1.55;color:var(--on-dim);margin-bottom:14px;}
+/* Charts row */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.chart-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:22px;}
+.chart-title{font-size:17px;font-weight:700;margin-bottom:4px;}
+.chart-sub{font-size:13px;color:var(--on-dim);margin-bottom:20px;line-height:1.55;}
+/* Donut */
+.donut-wrap{position:relative;width:200px;height:200px;margin:0 auto 16px;}
+.donut-ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut-pct{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em;}
+.donut-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dim);margin-top:4px;}
+.donut-extras{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.donut-ex{background:var(--surf-hi);border-radius:8px;padding:12px;}
+.donut-ex-l{font-size:10px;color:var(--on-dim);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:4px;}
+.donut-ex-v{font-size:15px;font-weight:700;}
+/* Bar chart */
+.bars-wrap{display:flex;align-items:flex-end;gap:5px;height:110px;margin-bottom:8px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;}
+.bar-track{flex:1;width:100%;display:flex;align-items:flex-end;}
+.bar{width:100%;border-radius:4px 4px 0 0;background:rgba(60,74,66,.5);transition:height 1.2s ease,background .3s;min-height:4px;}
+.bar.hi{background:var(--primary);}
+.bar.med{background:rgba(78,222,163,.45);}
+.bar-lbl{font-size:9px;color:var(--on-dim);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.bar-lbl.hi{color:var(--primary);}
+/* RPC Analysis */
+.rpc-tbl{display:flex;flex-direction:column;gap:10px;}
+.rpc-row{background:var(--surf-c);border:1px solid rgba(60,74,66,.3);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:14px;}
+.rpc-nm{width:72px;font-weight:700;font-size:13px;flex-shrink:0;}
+.rpc-track{flex:1;height:20px;background:var(--surf-hi);border-radius:5px;overflow:hidden;position:relative;}
+.rpc-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:7px;transition:width 1.2s ease;}
+.rpc-fv{font-size:10px;font-weight:700;color:var(--on-primary);white-space:nowrap;}
+.rpc-val{width:65px;text-align:right;font-weight:700;font-size:13px;flex-shrink:0;}
+.rpc-st{width:22px;flex-shrink:0;}
+/* Void table */
+.void-tbl{width:100%;border-collapse:collapse;}
+.void-tbl th,.void-tbl td{padding:12px 16px;text-align:left;border-bottom:1px solid rgba(60,74,66,.18);}
+.void-tbl th{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--on-dim);}
+.void-tbl td{font-size:13px;}
+.void-tbl tr:last-child td{border-bottom:none;}
+/* Mobile nav */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(18,19,23,.95);backdrop-filter:blur(16px);border-top:1px solid rgba(60,74,66,.3);z-index:100;padding:6px 0 env(safe-area-inset-bottom,8px);}
+.mob-nav-items{display:flex;justify-content:space-around;}
+.mob-nav-i{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;cursor:pointer;color:var(--on-dim);font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:none;background:none;font-family:'Geist',sans-serif;transition:color .2s;}
+.mob-nav-i.act{color:var(--primary);}
+.mob-nav-i .mso{font-size:22px;}
+/* Responsive */
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(2,1fr);}.mrow{grid-template-columns:repeat(2,1fr);}.mgr-grid{grid-template-columns:1fr;}}
+@media(max-width:768px){.sidebar,.topbar{display:none;}.mob-nav{display:block;}.dmain{margin-left:0;}.dcontent{padding:14px;padding-bottom:72px;}.t3div{display:none;}.kpi-row{grid-template-columns:1fr 1fr;}.mrow{grid-template-columns:1fr 1fr;}.charts-row{grid-template-columns:1fr;}.elite-badge{display:none;}}
+</style>
+</head>
+<body class="grid-bg">
+
+<!-- ════════════════════════════ LOGIN ════════════════════════════ -->
+<div id="sl" class="screen active grid-bg">
+<div class="l-wrap">
+  <div class="l-logo fu">TeamPulse Sales</div>
+  <div class="l-sub fu1">The Performance Cockpit</div>
+  <div class="l-card glass fu2">
+    <div class="l-glow"></div>
+    <div style="margin-bottom:18px;">
+      <label class="l-lbl">Agent Name</label>
+      <div class="l-ig">
+        <span class="mso">person</span>
+        <input class="inp" id="l-name" placeholder="Enter full name" type="text" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')"/>
+      </div>
+    </div>
+    <div class="l-row" style="margin-bottom:18px;">
+      <div>
+        <label class="l-lbl">Ext</label>
+        <input class="inp" id="l-ext" placeholder="1000" type="text" maxlength="4" inputmode="numeric" oninput="previewLogin(this.value)" style="text-align:center;font-size:16px;letter-spacing:.08em;"/>
+      </div>
+      <div>
+        <label class="l-lbl">Access Key</label>
+        <div class="l-ig">
+          <span class="mso">lock</span>
+          <input class="inp" id="l-pass" placeholder="••••••" type="password" inputmode="numeric" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+      </div>
+    </div>
+    <button class="btn-p" onclick="doLogin()">Sign In <span class="mso">bolt</span></button>
+    <div class="l-err" id="l-err">Invalid credentials — check your extension and access key.</div>
+    <div class="l-divider"><span>Elevated Access</span></div>
+    <button class="mgr-btn" onclick="quickMgr()">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="mgr-av">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc" alt="Teji" style="width:100%;height:100%;object-fit:cover;"/>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-size:12px;font-weight:700;color:var(--on);">Manager Access — Teji (Ext 1001)</div>
+          <div style="font-size:10px;color:var(--on-dim);">Privileged Session · One-click login</div>
+        </div>
+      </div>
+      <span class="mso" style="color:var(--secondary);">arrow_forward</span>
+    </button>
+  </div>
+  <div class="l-footer">
+    <a href="#">Forgot Password?</a>
+    <a href="#" style="display:flex;align-items:center;gap:5px;">System Status <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--primary);" class="blink"></span></a>
+  </div>
+</div>
+<!-- Background decos -->
+<div style="position:fixed;inset:0;pointer-events:none;z-index:0;">
+  <div style="position:absolute;top:10%;left:5%;width:350px;height:350px;background:rgba(78,222,163,.04);border-radius:50%;filter:blur(120px);"></div>
+  <div style="position:absolute;bottom:10%;right:5%;width:350px;height:350px;background:rgba(255,179,173,.04);border-radius:50%;filter:blur(120px);"></div>
+</div>
+</div>
+
+<!-- ════════════════════════════ DASHBOARD ════════════════════════════ -->
+<div id="sd" class="screen">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-name">Sales HQ</div>
+    <div class="sb-sub">Precision Monitoring</div>
+  </div>
+  <div class="sb-nav" id="sb-nav"></div>
+  <div class="sb-bot">
+    <button class="btn-s" style="width:100%;margin-bottom:8px;" onclick="alert('Export feature coming soon.')"><span class="mso">download</span> Export Report</button>
+    <button class="nav-i" onclick="alert('Support: contact@salesfloor.io')"><span class="mso">help</span> Support</button>
+    <button class="nav-i" onclick="doLogout()"><span class="mso">logout</span> Logout</button>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="dmain">
+  <!-- Mobile header -->
+  <div class="mob-hdr">
+    <div class="mob-logo">Performance Cockpit</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span class="mso" style="color:var(--on-dim);">notifications</span>
+      <div id="mob-av" style="width:30px;height:30px;border-radius:50%;overflow:hidden;border:2px solid var(--primary);"></div>
+    </div>
+  </div>
+  <!-- Desktop top bar -->
+  <header class="topbar">
+    <div class="tb-logo">Performance Cockpit</div>
+    <div class="tb-links">
+      <button class="tb-link" onclick="setView('overview')">Global Leaderboard</button>
+      <button class="tb-link" onclick="setView('rpc')">Team Stats</button>
+      <button class="tb-link" onclick="setView('overview')">Live Feed</button>
+    </div>
+    <div class="tb-r">
+      <button class="btn-p" style="width:auto;padding:8px 16px;font-size:11px;" onclick="flashRefresh()">Refresh Data</button>
+      <div class="ib"><span class="mso">notifications</span></div>
+      <div class="ib"><span class="mso">settings</span></div>
+      <div class="tb-av" id="tb-av"></div>
+    </div>
+  </header>
+
+  <!-- Content area -->
+  <div class="dcontent" id="dcontent"></div>
+</div>
+
+<!-- Mobile bottom nav -->
+<div class="mob-nav">
+  <div class="mob-nav-items" id="mob-nav"></div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// AVATAR GENERATOR
+// ═══════════════════════════════════════════════════════════
+let _aid=0;
+function mkAv({bg,sk,hair,ht,gl,cr,ear,shirt,eyes}){
+  const id='tp'+(++_aid);
+  const hm={
+    neat:`<path d="M23 46 Q50 8 77 46 Q77 16 50 14 Q23 16 23 46" fill="${hair}"/><path d="M23 46 Q21 30 27 28 Q24 38 24 46" fill="${hair}"/>`,
+    spiky:`<path d="M23 46 Q29 8 40 20 Q44 5 50 13 Q56 5 60 20 Q71 8 77 46 Q77 14 50 12 Q23 14 23 46" fill="${hair}"/>`,
+    short:`<path d="M23 46 Q50 9 77 46 Q77 16 50 14 Q23 16 23 46" fill="${hair}"/>`,
+    long:`<path d="M23 46 Q50 9 77 46 Q77 16 50 14 Q23 16 23 46" fill="${hair}"/><path d="M23 46 L19 92 Q23 97 27 92 L27 46" fill="${hair}"/><path d="M77 46 L81 92 Q77 97 73 92 L73 46" fill="${hair}"/>`,
+    curly:`<path d="M23 48 Q50 9 77 48 Q77 16 50 14 Q23 16 23 48" fill="${hair}"/><circle cx="21" cy="44" r="7" fill="${hair}"/><circle cx="79" cy="44" r="7" fill="${hair}"/><circle cx="21" cy="58" r="6" fill="${hair}"/><circle cx="79" cy="58" r="6" fill="${hair}"/>`,
+    curls:`<circle cx="32" cy="33" r="9" fill="${hair}"/><circle cx="50" cy="22" r="10" fill="${hair}"/><circle cx="68" cy="33" r="9" fill="${hair}"/><circle cx="27" cy="47" r="7" fill="${hair}"/><circle cx="73" cy="47" r="7" fill="${hair}"/><path d="M23 52 Q50 12 77 52 Q77 18 50 16 Q23 18 23 52" fill="${hair}"/>`,
+    messy:`<path d="M23 46 Q30 6 46 18 Q40 4 50 10 Q60 4 54 18 Q70 6 77 46 Q77 14 50 12 Q23 14 23 46" fill="${hair}"/>`,
+    bun:`<path d="M25 48 Q50 18 75 48 Q75 22 50 20 Q25 22 25 48" fill="${hair}"/><circle cx="50" cy="11" r="11" fill="${hair}"/><circle cx="50" cy="11" r="5" fill="${bg}" opacity=".3"/>`,
+  };
+  const hp=hm[ht]||hm.short;
+  const ec=eyes||'#2C2C2C';
+  const gs=gl?`<rect x="29" y="47" width="17" height="13" rx="6" fill="none" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><rect x="54" y="47" width="17" height="13" rx="6" fill="none" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><line x1="46" y1="53" x2="54" y2="53" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><line x1="21" y1="53" x2="29" y2="53" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><line x1="71" y1="53" x2="79" y2="53" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/>`:'';
+  const cs=cr?`<path d="M50 2 L53 11 L61 9 L57 17 L65 15 L60 23 L50 21 L40 23 L35 15 L43 17 L39 9 L47 11Z" fill="#4edea3"/>`:'';
+  const es=ear?`<circle cx="17" cy="59" r="4" fill="${bg}" stroke="rgba(255,255,255,.3)" stroke-width=".5"/><circle cx="83" cy="59" r="4" fill="${bg}" stroke="rgba(255,255,255,.3)" stroke-width=".5"/>`:'';
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="50" fill="${bg}"/>
+    ${cs}
+    <ellipse cx="50" cy="58" rx="31" ry="35" fill="${sk}"/>
+    ${hp}
+    <path d="M33 46 Q38 44 43 46" stroke="${hair}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M57 46 Q62 44 67 46" stroke="${hair}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="38" cy="53" rx="5.5" ry="6" fill="white"/>
+    <ellipse cx="62" cy="53" rx="5.5" ry="6" fill="white"/>
+    <circle cx="39.5" cy="53" r="3.2" fill="${ec}"/>
+    <circle cx="63.5" cy="53" r="3.2" fill="${ec}"/>
+    <circle cx="40.5" cy="52" r="1" fill="white" opacity=".85"/>
+    <circle cx="64.5" cy="52" r="1" fill="white" opacity=".85"/>
+    ${gs}
+    <path d="M48 58 Q46 63 50 65 Q54 63 52 58" fill="rgba(0,0,0,.07)"/>
+    <path d="M40 69 Q50 78 60 69" stroke="#A0724A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    ${es}
+    <path d="M28 91 Q40 83 44 83 L56 83 Q60 83 72 91 L100 100 L0 100Z" fill="${shirt||'#1a1b20'}"/>
+    <path d="M44 83 Q50 90 56 83" fill="${bg}" opacity=".5"/>
+  </svg>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// AGENT DATA
+// ═══════════════════════════════════════════════════════════
+const AGENTS={
+  '1001':{ext:'1001',pass:'748291',name:'Teji',mg:true,rank:10,
+    av:{bg:'#7D6608',sk:'#F4C28C',hair:'#1a1a1a',ht:'neat',eyes:'#3D2B1F',cr:true,shirt:'#0d0e12'},
+    mgImg:'https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc',
+    gross:499,refund:349,net:150,cb:0,rp:69.94,calls:32,txn:1,cr:3.12,aov:499,tgt:960,ta:15.62,status:'critical',
+    daily:[0,0,0,0,499,0,0],// Mon–Sun
+    insight:{warn:true,title:'Critical: Refund impact this week.',body:"A $349 void (Bradford L Beukelman) erased most of your gross. Your $499 Timothy Rinehart close shows real premium potential — now apply that skill across more calls. Target: 3+ transactions with zero refunds next week."},
+    str:['Premium closing ability ($499 AOV)','High call volume (32 calls)'],
+    weak:['Critical refund rate (69.94%)','1 transaction from 32 calls'],
+    focus:'Implement a 2-minute pre-close qualification checklist. Target Net: $750+'},
+  '1002':{ext:'1002',pass:'362819',name:'Divyank',mg:false,rank:2,
+    av:{bg:'#8B0000',sk:'#FFD699',hair:'#3D2314',ht:'spiky',eyes:'#2C2C2C',shirt:'#1a1b20'},
+    gross:1103.60,refund:0,net:1103.60,cb:0,rp:0,calls:22,txn:5,cr:22.73,aov:220.72,tgt:660,ta:167.21,status:'active',
+    daily:[0,0,199.90,703.80,199.90,0,0],
+    insight:{warn:false,title:'Exceptional week — 67% above RPC target!',body:"Zero refunds, 22.73% close rate, and five clean transactions. Your ability to qualify quickly and close confidently is the team benchmark. Increase call volume next week to multiply these results."},
+    str:['RPC $50.16 — 67% above target','Zero refunds — 100% retention','22.73% close rate'],
+    weak:['Call volume (22) — room to take more'],
+    focus:'Increase to 27+ calls. At your close rate, that is 2 more transactions. Target Net $1,300+'},
+  '1004':{ext:'1004',pass:'594732',name:'Shital',mg:false,rank:8,
+    av:{bg:'#5E35B1',sk:'#F0C080',hair:'#1a1a1a',ht:'long',eyes:'#2C2C2C',ear:true,shirt:'#1a1b20'},
+    gross:509.70,refund:0,net:509.70,cb:0,rp:0,calls:32,txn:3,cr:9.38,aov:169.90,tgt:960,ta:53.09,status:'active',
+    daily:[0,0,0,354.80,154.90,0,0],
+    insight:{warn:false,title:'High volume — low conversion gap.',body:"32 calls and zero refunds — your customer quality is excellent. But 3 closings from 32 opportunities is the key gap. At 15% close rate (achievable with better pitch closing), you'd hit your $30 RPC target. The calls are there. Let's close them."},
+    str:['Zero refunds — excellent quality','32 calls — joint highest volume'],
+    weak:['Close rate 9.38% — below team average','RPC $15.93 — below $30 target'],
+    focus:'Target 1 closing per 6 calls. Practice your closing question. Target Net $700+'},
+  '1005':{ext:'1005',pass:'281947',name:'Aryan',mg:false,rank:6,
+    av:{bg:'#0277BD',sk:'#FDBCB4',hair:'#2C1810',ht:'short',eyes:'#2C2C2C',shirt:'#1a1b20'},
+    gross:608.65,refund:0,net:608.65,cb:0,rp:0,calls:27,txn:3,cr:11.11,aov:202.88,tgt:810,ta:75.14,status:'active',
+    daily:[0,0,164.90,443.75,0,0,0],
+    insight:{warn:false,title:'One close away from hitting target.',body:"Zero refunds, solid $202.88 AOV, good 27-call volume. You need exactly ONE more closing per week to break the $30 RPC barrier. That is a 4th deal at your current value. Identify why calls 4-27 didn't convert and address the top objection."},
+    str:['Zero refunds — 100% retention','Good AOV $202.88','27-call volume'],
+    weak:['Close rate 11.11% — 1 more close needed','RPC $22.54 — $7.46 below target'],
+    focus:'Target 4 transactions next week. Open with vehicle age to anchor the plan. Target Net $750+'},
+  '1006':{ext:'1006',pass:'637284',name:'Rohit',mg:false,rank:7,
+    av:{bg:'#2E7D32',sk:'#C68642',hair:'#1a1a1a',ht:'short',eyes:'#2C2C2C',shirt:'#1a1b20'},
+    gross:729.65,refund:149.99,net:579.66,cb:0,rp:20.56,calls:21,txn:4,cr:19.05,aov:182.41,tgt:630,ta:92.01,status:'risk',
+    daily:[0,329.85,0,199.90,199.90,0,0],
+    insight:{warn:true,title:'$2.40 per call away from target.',body:"92% achievement and your 19.05% close rate is second-best on the team. Without the Kevin Dillon refund ($149.99), your RPC would have been $34.75 — above target. Follow up within 24 hours of every close to reduce cancellation risk."},
+    str:['2nd-best close rate (19.05%)','92% target achievement','4 solid transactions'],
+    weak:['20.56% refund rate — 1 cancellation','RPC $27.60 — $2.40 below target'],
+    focus:'Zero refunds next week. 5 transactions. Same-day follow-up call after every close. Target Net $800+'},
+  '1007':{ext:'1007',pass:'419623',name:'Prady',mg:false,rank:1,
+    av:{bg:'#D84315',sk:'#F5DEB3',hair:'#3D2B1F',ht:'short',eyes:'#3D2B1F',shirt:'#1a1b20'},
+    gross:1147.95,refund:0,net:1147.95,cb:0,rp:0,calls:5,txn:2,cr:40,aov:573.98,tgt:150,ta:765.30,status:'active',
+    daily:[0,0,598.95,549,0,0,0],
+    insight:{warn:false,title:'Absolutely phenomenal week!',body:"Your elite-level selling skill and zero refunds set the team benchmark. Two premium Lifetime closes — Randall Mcdaniel ($598.95) and Tina/Charles Pountney ($549) — with zero refunds. RPC $229.59 is 7.6× the target. Scale your call volume to multiply these results. Target: 15+ calls → projected $3,400+ net."},
+    str:['#1 this week — $1,147.95 net','RPC $229.59 — 7.6× above target','40% close rate — highest on team','Highest AOV $573.98 — zero refunds'],
+    weak:['Only 5 calls — low volume limits impact','Revenue in 2 deals — concentration risk'],
+    focus:'Challenge: 15+ calls next week. At 40% close rate, that is 6 deals at your AOV. Target Net $2,000+'},
+  '1008':{ext:'1008',pass:'853726',name:'Gaurav',mg:false,rank:3,
+    av:{bg:'#6A1B9A',sk:'#DEB887',hair:'#1a1a1a',ht:'curls',eyes:'#2C2C2C',shirt:'#1a1b20'},
+    gross:1009.45,refund:0,net:1009.45,cb:0,rp:0,calls:22,txn:5,cr:22.73,aov:201.89,tgt:660,ta:152.95,status:'active',
+    daily:[0,409.75,0,399.80,199.90,0,0],
+    insight:{warn:false,title:'Crossed the $1K mark — excellent!',body:"RPC $45.88 (53% above target), zero refunds, 22.73% close rate matching the #2 performer. 5 transactions across multiple days shows consistent daily engagement. Push one premium plan next week to push net towards $1,300."},
+    str:['$1,009 net — crossed the $1K mark','RPC $45.88 — 53% above target','Zero refunds — 5 clean transactions'],
+    weak:['AOV $201.89 — room for premium plans','22 calls — slight room to increase'],
+    focus:'Target one Lifetime/5-year plan per week — one premium close lifts net by $300+. Target Net $1,200+'},
+  '1009':{ext:'1009',pass:'192847',name:'Sumit',mg:false,rank:4,
+    av:{bg:'#1565C0',sk:'#F4A460',hair:'#2C1810',ht:'messy',eyes:'#2C2C2C',shirt:'#1a1b20'},
+    gross:774.55,refund:154.90,net:619.65,cb:0,rp:20,calls:45,txn:6,cr:13.33,aov:129.09,tgt:1350,ta:45.90,status:'risk',
+    daily:[0,0,319.85,274.80,179.90,0,0],
+    insight:{warn:true,title:'Most calls, most transactions — wrong plan tier.',body:"45 calls and 6 transactions — your work ethic leads the team. But AOV of $129.09 is the lowest on the team. Moving from 1-year to 3-year plans lifts your average from $129 to $200, pushing your RPC from $13.77 to $21. Combined with zero refunds, you'd nearly hit target."},
+    str:['Most calls (45) — highest hustle','Most transactions (6) — closing volume'],
+    weak:['Lowest AOV $129.09 — under-pitching','RPC $13.77 — well below $30 target','20% refund rate — Rose M Johnston'],
+    focus:'Never close below 2-year. Present 3-year as standard. Target AOV $190+. Zero refunds. Target Net $1,000+'},
+  '1010':{ext:'1010',pass:'576319',name:'Kajal',mg:false,rank:9,
+    av:{bg:'#AD1457',sk:'#D4A574',hair:'#6B4226',ht:'curly',eyes:'#3D2B1F',ear:true,shirt:'#1a1b20'},
+    gross:354.80,refund:0,net:354.80,cb:0,rp:0,calls:21,txn:3,cr:14.29,aov:118.27,tgt:630,ta:56.32,status:'active',
+    daily:[0,154.90,99.95,99.95,0,0,0],
+    insight:{warn:false,title:'Clean record — AOV is the key lever.',body:"Zero refunds and 14.29% close rate shows you can connect with customers effectively. Your $118.27 AOV is the team's lowest. A single pitch upgrade — always presenting 3-year as the opener — lifts your AOV to $180+ and your RPC past $25."},
+    str:['Zero refunds — 100% retention','14.29% close rate — at team average','Consistent customer rapport'],
+    weak:['Lowest AOV $118.27 — basic plan closes','RPC $16.90 — below $30 target'],
+    focus:'Personal rule: never close below 2-year. AOV target $175+. Target Net $500+'},
+  '1011':{ext:'1011',pass:'834561',name:'Dixit',mg:false,rank:5,
+    av:{bg:'#00695C',sk:'#FAEBD7',hair:'#1a1a1a',ht:'neat',eyes:'#2C2C2C',gl:true,shirt:'#1a1b20'},
+    gross:618.90,refund:0,net:618.90,cb:0,rp:0,calls:17,txn:2,cr:11.76,aov:309.45,tgt:510,ta:121.35,status:'active',
+    daily:[0,0,0,119.90,499,0,0],
+    insight:{warn:false,title:'Above target — volume is the growth lever.',body:"RPC $36.41 above target, second-highest AOV ($309.45), zero refunds. Closing a $499 Lifetime (William Jay) shows premium skill. Only 17 calls limits your total. At 28 calls with your close rate, that is 3 deals → ~$900 net."},
+    str:['RPC $36.41 — above $30 target','2nd-highest AOV $309.45 — premium closer','Zero refunds — 121% target achievement'],
+    weak:['Lowest call volume (17) — limits deal flow','11.76% close rate — room for improvement'],
+    focus:'Target 25+ calls. At your close rate and AOV, 25 calls = 3 deals = ~$930. Target Net $900+'},
+};
+
+const SORTED=Object.values(AGENTS).sort((a,b)=>a.rank-b.rank);
+const TOP3=['1007','1002','1008'];
+const TEAM={net:6857.26,gross:7511.15,refunds:653.89,calls:244,txn:35,avgRpc:27.47,conv:13.93,tgtAch:93.68};
+let me=null,curView='overview';
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function svgOf(k){return mkAv(AGENTS[k].av);}
+function $(id){return document.getElementById(id);}
+function fmt(n,dec=2){return '$'+n.toFixed(dec);}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0);}
+function pct(val,max){return Math.min((val/max)*100,100);}
+
+// ═══════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════
+function previewLogin(ext){
+  const ag=AGENTS[ext];
+  $('l-name').value=ag?ag.name+(ag.mg?' — Manager (Full Access)'):'';
+}
+function quickMgr(){
+  $('l-ext').value='1001';
+  $('l-pass').value='748291';
+  previewLogin('1001');
+  setTimeout(doLogin,150);
+}
+function doLogin(){
+  const ext=$('l-ext').value.trim();
+  const pass=$('l-pass').value.trim();
+  const err=$('l-err');
+  if(AGENTS[ext]&&AGENTS[ext].pass===pass){
+    err.classList.remove('on');
+    me=AGENTS[ext];
+    buildDash();
+    show('sd');
+  }else{
+    err.classList.add('on');
+    $('l-pass').value='';
+  }
+}
+function doLogout(){
+  me=null;curView='overview';
+  $('l-ext').value='';$('l-pass').value='';$('l-name').value='';
+  const mh=document.querySelector('.mob-hdr');
+  if(mh)mh.classList.remove('visible');
+  show('sl');
+}
+function flashRefresh(){const btn=document.querySelector('.btn-p');btn.textContent='Refreshed ✓';setTimeout(()=>{btn.innerHTML='Refresh Data';},1800);}
+
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD INIT
+// ═══════════════════════════════════════════════════════════
+function buildDash(){
+  // Top bar avatar
+  const tbav=$('tb-av');
+  tbav.innerHTML=me.mgImg?`<img src="${me.mgImg}" style="width:100%;height:100%;object-fit:cover;" alt="${me.name}"/>`:svgOf(me.ext);
+  const mobav=$('mob-av');
+  if(mobav)mobav.innerHTML=me.mgImg?`<img src="${me.mgImg}" style="width:100%;height:100%;object-fit:cover;" alt="${me.name}"/>`:svgOf(me.ext);
+  // Show mob-hdr on mobile via .visible class
+  const mh=document.querySelector('.mob-hdr');
+  if(mh)mh.classList.add('visible');
+  // Sidebar nav
+  buildSideNav();
+  // Mobile nav
+  buildMobNav();
+  // Content
+  setView('overview');
+}
+
+function getNavItems(){
+  if(me.mg)return[
+    {id:'overview',icon:'dashboard',label:'Overview'},
+    {id:'agents',icon:'people',label:'All Agents'},
+    {id:'rpc',icon:'show_chart',label:'RPC Analysis'},
+    {id:'voids',icon:'block',label:'Voids'},
+    {id:'analytics',icon:'bar_chart',label:'Analytics'},
+  ];
+  return[
+    {id:'overview',icon:'dashboard',label:'Overview'},
+    {id:'performance',icon:'person',label:'My Performance'},
+    {id:'rpc',icon:'show_chart',label:'RPC Analysis'},
+    {id:'voids',icon:'block',label:'Voids'},
+    {id:'analytics',icon:'bar_chart',label:'Analytics'},
+  ];
+}
+
+function buildSideNav(){
+  const nav=$('sb-nav');
+  nav.innerHTML=getNavItems().map(i=>`
+    <button class="nav-i ${i.id===curView?'act':''}" id="nav-${i.id}" onclick="setView('${i.id}')">
+      <span class="mso">${i.icon}</span>${i.label}
+    </button>`).join('');
+}
+function buildMobNav(){
+  const nav=$('mob-nav');
+  const items=getNavItems().slice(0,5);
+  nav.innerHTML=items.map(i=>`
+    <button class="mob-nav-i ${i.id===curView?'act':''}" id="mnav-${i.id}" onclick="setView('${i.id}')">
+      <span class="mso">${i.icon}</span>${i.label}
+    </button>`).join('');
+}
+function setView(v){
+  curView=v;
+  document.querySelectorAll('.nav-i,.mob-nav-i').forEach(el=>{
+    el.classList.toggle('act',el.id===`nav-${v}`||el.id===`mnav-${v}`);
+  });
+  const dc=$('dcontent');
+  if(me.mg){
+    switch(v){
+      case'overview': dc.innerHTML=mgrOverview();break;
+      case'agents': dc.innerHTML=mgrAgents();break;
+      case'rpc': dc.innerHTML=rpcAnalysis();break;
+      case'voids': dc.innerHTML=voidsView();break;
+      default: dc.innerHTML=analyticsView();
+    }
+  }else{
+    switch(v){
+      case'overview':
+      case'performance': dc.innerHTML=agentView(me);break;
+      case'rpc': dc.innerHTML=agentRpc(me);break;
+      case'voids': dc.innerHTML=agentVoids(me);break;
+      default: dc.innerHTML=agentAnalytics(me);
+    }
+  }
+  setTimeout(animateBars,100);
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════════════════
+function donut(pctVal,color='#4edea3',size=200,sw=16){
+  const r=(size/2)-sw-2;
+  const circ=2*Math.PI*r;
+  const fill=Math.min(pctVal/100,1)*circ;
+  const id='d'+Math.random().toString(36).substr(2,5);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(60,74,66,.4)" stroke-width="${sw}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
+      stroke-dasharray="${fill} ${circ}" stroke-dashoffset="0"
+      transform="rotate(-90 ${size/2} ${size/2})" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function barChart(daily,maxVal,labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],todayIdx=4){
+  const m=maxVal||Math.max(...daily,1);
+  return `<div class="bars-wrap">${daily.map((v,i)=>{
+    const h=Math.max((v/m)*100,v>0?8:0);
+    const cls=v>0?(v===Math.max(...daily)?'hi':'med'):'';
+    return `<div class="bar-col">
+      <div class="bar-track"><div class="bar ${cls}" style="height:${h}%;"></div></div>
+      <span class="bar-lbl ${cls?'hi':''}">${labels[i]}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function animateBars(){
+  document.querySelectorAll('.mc-bf').forEach(el=>{
+    el.style.width=el.dataset.w||'0%';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOP 3 BANNER (shared)
+// ═══════════════════════════════════════════════════════════
+function top3Banner(){
+  const top=TOP3.map(k=>AGENTS[k]);
+  return `<div class="t3bar fu">
+    ${top.map((a,i)=>`
+      ${i>0?'<div class="t3div"></div>':''}
+      <div class="t3it">
+        <div class="t3rk">#${i+1}</div>
+        <div class="t3av">${svgOf(a.ext)}</div>
+        <div>
+          <div class="t3nm">${a.name}${me&&me.ext===a.ext?' (You)':''}</div>
+          <div class="t3st">${fmt(a.net)} RPC&nbsp;${fmt(a.rpc===0?a.net/a.calls:a.rpc)}</div>
+        </div>
+      </div>`).join('')}
+    <div class="elite-badge">
+      <span class="mso" style="color:var(--primary);font-size:18px;">trending_up</span>
+      <div class="elite-txt">Elite Tier<br>Active</div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// MANAGER VIEWS
+// ═══════════════════════════════════════════════════════════
+function mgrOverview(){
+  const riskRed=SORTED.filter(a=>a.status==='critical');
+  const riskAmb=SORTED.filter(a=>a.status==='risk');
+  const topFeed=SORTED.slice(0,3);
+  return `
+  ${top3Banner()}
+  <div class="kpi-row fu1">
+    <div class="kpi" style="border-color:rgba(78,222,163,.35)">
+      <div class="kpi-lbl">Total Net Sales</div>
+      <div class="kpi-val" style="color:var(--primary)">${fmt(TEAM.net,2)}</div>
+      <div class="kpi-sub"><span style="color:var(--primary)">▲ 12.4%</span> vs last session</div>
+    </div>
+    <div class="kpi" style="border-color:rgba(245,158,11,.3)">
+      <div class="kpi-lbl">Avg RPC</div>
+      <div class="kpi-val" style="color:var(--amber)">${fmt(TEAM.avgRpc)}</div>
+      <div class="kpi-sub"><span class="mso" style="font-size:14px;color:var(--amber)">warning</span> Below threshold ($30)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Total Calls</div>
+      <div class="kpi-val">${TEAM.calls}</div>
+      <div class="kpi-sub"><span class="mso" style="font-size:14px;color:var(--on-dim)">schedule</span> Steady volume</div>
+    </div>
+    <div class="kpi" style="border-color:rgba(78,222,163,.25)">
+      <div class="kpi-lbl">Team Target</div>
+      <div class="kpi-val">${TEAM.tgtAch}%</div>
+      <div class="mc-bar" style="margin-top:10px"><div class="mc-bf" data-w="${Math.min(TEAM.tgtAch,100)}%" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="mgr-grid fu2">
+    <div>
+      ${riskRed.map(a=>`
+      <div class="risk-c crit">
+        <div class="risk-hdr"><span class="mso" style="font-size:16px;color:var(--error)">error</span><span style="color:var(--error)">Critical Risk</span></div>
+        <div class="risk-agent">
+          <div>
+            <div class="risk-anm">${a.name}</div>
+            <div class="risk-adt">${a.rp.toFixed(2)}% Refund Rate</div>
+          </div>
+          <button class="btn-p" style="width:auto;padding:6px 14px;font-size:10px;" onclick="viewAgent('${a.ext}')">Coach Now</button>
+        </div>
+      </div>`).join('')}
+      ${riskAmb.length>0?`
+      <div class="risk-c warn">
+        <div class="risk-hdr"><span class="mso" style="font-size:16px;color:var(--amber)">warning</span><span style="color:var(--amber)">Refund Risk — Amber</span></div>
+        ${riskAmb.map(a=>`<div class="risk-agent">
+          <div><div class="risk-anm">${a.name}</div><div class="risk-adt">${a.rp.toFixed(1)}% refund rate</div></div>
+          <span class="badge ba">Monitoring</span>
+        </div>`).join('')}
+      </div>`:''}
+      <div class="feed-c">
+        <div class="feed-lbl">Live Revenue Feed</div>
+        ${topFeed.map((a,i)=>`<div class="feed-it">
+          <div class="feed-dot"></div>
+          <div><div class="feed-txt"><strong>${a.name}</strong> closed ${fmt(a.net/a.txn)}</div>
+          <div class="feed-time">${(i+1)*4+(i*3)} min ago</div></div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-hdr">
+        <div class="tbl-title">Agent Performance</div>
+        <div class="tbl-filter"><span class="mso" style="font-size:16px">search</span><input id="tbl-q" placeholder="Filter agents..." oninput="filterTable(this.value)"/></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="ptbl" id="perf-tbl">
+          <thead><tr>
+            <th onclick="sortTable('name')">Agent <span>↕</span></th>
+            <th onclick="sortTable('net')">Net Sales <span>↕</span></th>
+            <th onclick="sortTable('rpc')">RPC <span>↕</span></th>
+            <th onclick="sortTable('cr')">Close Rate <span>↕</span></th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody id="tbl-body">${renderTableRows(SORTED)}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTableRows(agents,q=''){
+  return agents.filter(a=>!q||a.name.toLowerCase().includes(q.toLowerCase())).map(a=>{
+    const rpcVal=a.rpc||+(a.net/a.calls).toFixed(2);
+    const statusBadge=a.status==='active'?`<span class="badge bg">Active</span>`:
+      a.status==='risk'?`<span class="badge ba">Risk</span>`:
+      `<span class="badge br">Critical</span>`;
+    const netColor=a.status==='critical'?'color:var(--error)':a.status==='risk'?'color:var(--amber)':'color:var(--primary)';
+    return `<tr onclick="viewAgent('${a.ext}')">
+      <td><div class="ag-cell"><div class="ag-av">${svgOf(a.ext)}</div><div class="ag-nm">${a.name}</div></div></td>
+      <td><span class="dn" style="${netColor}">${fmt(a.net)}</span></td>
+      <td><span class="dn" style="${rpcVal>=30?'color:var(--primary)':'color:var(--amber)'}">${fmt(rpcVal)}</span></td>
+      <td><span class="dn">${a.cr.toFixed(1)}%</span></td>
+      <td>${statusBadge}</td>
+    </tr>`;
+  }).join('');
+}
+
+let _sortCol='rank',_sortAsc=true;
+function sortTable(col){
+  if(_sortCol===col)_sortAsc=!_sortAsc;else{_sortCol=col;_sortAsc=true;}
+  const sorted=[...SORTED].sort((a,b)=>{
+    let av=a[col]||+(a.net/a.calls);
+    let bv=b[col]||+(b.net/b.calls);
+    if(col==='name'){av=a.name;bv=b.name;}
+    if(av<bv)return _sortAsc?-1:1;
+    if(av>bv)return _sortAsc?1:-1;
+    return 0;
+  });
+  $('tbl-body').innerHTML=renderTableRows(sorted);
+}
+function filterTable(q){$('tbl-body').innerHTML=renderTableRows(SORTED,q);}
+function viewAgent(ext){
+  const ag=AGENTS[ext];
+  curView='agents';
+  buildSideNav();buildMobNav();
+  $('dcontent').innerHTML=`
+    ${top3Banner()}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <button class="btn-s" onclick="setView('agents')"><span class="mso">arrow_back</span> Back to All Agents</button>
+      <div style="font-size:12px;color:var(--on-dim)">Viewing: <strong style="color:var(--on)">${ag.name}'s Dashboard</strong></div>
+    </div>
+    ${agentView(ag,true)}`;
+  setTimeout(animateBars,100);
+}
+
+function mgrAgents(){
+  return `${top3Banner()}
+  <div class="tbl-card fu1">
+    <div class="tbl-hdr">
+      <div class="tbl-title">All Agents — Complete View</div>
+      <div class="tbl-filter"><span class="mso" style="font-size:16px">search</span><input id="tbl-q2" placeholder="Filter agents..." oninput="this.parentElement.parentElement.parentElement.querySelector('tbody').innerHTML=renderTableRows(SORTED,this.value)"/></div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="ptbl">
+        <thead><tr>
+          <th>Agent</th><th>Rank</th><th>Gross</th><th>Refund</th><th>Net</th>
+          <th>Ref%</th><th>Calls</th><th>RPC</th><th>Close%</th><th>AOV</th><th>Txns</th><th>Target</th><th>Ach%</th><th>Status</th>
+        </tr></thead>
+        <tbody>${SORTED.map(a=>{
+          const rpcVal=a.rpc||+(a.net/a.calls).toFixed(2);
+          const statusBadge=a.status==='active'?`<span class="badge bg">Active</span>`:a.status==='risk'?`<span class="badge ba">Risk</span>`:`<span class="badge br">Critical</span>`;
+          return `<tr onclick="viewAgent('${a.ext}')">
+            <td><div class="ag-cell"><div class="ag-av">${svgOf(a.ext)}</div><div class="ag-nm">${a.name}</div></div></td>
+            <td><strong style="color:${a.rank<=3?'var(--primary)':'var(--on)'}">${a.rank===1?'🥇':a.rank===2?'🥈':a.rank===3?'🥉':'#'+a.rank}</strong></td>
+            <td class="dn">${fmt(a.gross)}</td>
+            <td class="dn" style="${a.refund>0?'color:var(--error)':'color:var(--on-dim)'}">${fmt(a.refund)}</td>
+            <td class="dn" style="${a.status==='critical'?'color:var(--error)':a.status==='risk'?'color:var(--amber)':'color:var(--primary)'}">${fmt(a.net)}</td>
+            <td class="dn" style="${a.rp>20?'color:var(--error)':a.rp>0?'color:var(--amber)':'color:var(--on-dim)'}">${a.rp.toFixed(1)}%</td>
+            <td class="dn">${a.calls}</td>
+            <td class="dn" style="${rpcVal>=30?'color:var(--primary)':'color:var(--amber)'}">${fmt(rpcVal)}</td>
+            <td class="dn">${a.cr.toFixed(1)}%</td>
+            <td class="dn">${fmt(a.aov)}</td>
+            <td class="dn">${a.txn}</td>
+            <td class="dn">$${a.tgt}</td>
+            <td class="dn" style="${a.ta>=100?'color:var(--primary)':a.ta>=75?'color:var(--amber)':'color:var(--error)'}">${a.ta.toFixed(1)}%</td>
+            <td>${statusBadge}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function rpcAnalysis(){
+  const max=Math.max(...SORTED.map(a=>a.rpc||+(a.net/a.calls)));
+  return `${top3Banner()}
+  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">RPC Analysis — vs $30.00 Target</div>
+  <div class="rpc-tbl fu2">
+    ${SORTED.map(a=>{
+      const rv=+(a.rpc||+(a.net/a.calls)).toFixed(2);
+      const over=rv>=30;
+      const w=Math.min((rv/Math.max(max,30))*100,100);
+      const fg=over?'var(--primary)':'var(--amber)';
+      return `<div class="rpc-row">
+        <div class="rpc-nm">${a.name}</div>
+        <div class="rpc-track">
+          <div class="rpc-fill" style="width:${w}%;background:${fg}">
+            <span class="rpc-fv" style="color:var(--bg)">${fmt(rv)}</span>
+          </div>
+          ${over?'':'<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--amber);font-weight:700;">$'+(30-rv).toFixed(2)+' to target</div>'}
+        </div>
+        <div class="rpc-val" style="color:${fg}">${fmt(rv)}</div>
+        <div class="rpc-st"><span style="color:${over?'var(--primary)':'var(--error)'};">${over?'🟢':'🔴'}</span></div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div style="font-size:11px;color:var(--on-dim);margin-top:10px;">Scale: $0 – ${fmt(Math.max(max,30))} per call. Target line: $30.00. 🟢 = Above target | 🔴 = Below target</div>`;
+}
+
+function voidsView(){
+  return `${top3Banner()}
+  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Void Sales — May 11–15, 2026</div>
+  <div class="tbl-card fu2">
+    <div class="tbl-hdr"><div class="tbl-title">Void & Refund Register</div></div>
+    <table class="void-tbl" style="padding:0;">
+      <thead><tr><th>Date</th><th>Customer</th><th>Agent</th><th>Plan</th><th>Refund Amount</th><th>Processed</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>May 12</td><td>Bradford L Beukelman</td><td><span style="color:var(--error);font-weight:700;">Teji</span></td><td>Lifetime</td><td style="color:var(--error);font-weight:700;">$349.00</td><td>May 14</td><td>Easy Resolve</td></tr>
+        <tr><td>Apr 30</td><td>Rose M Johnston</td><td><span style="color:var(--amber);font-weight:700;">Sumit</span></td><td>5 Years</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14</td><td>Easy Resolve</td></tr>
+        <tr><td>Apr 02</td><td>Kevin Dillon</td><td><span style="color:var(--amber);font-weight:700;">Rohit</span></td><td>3 Years</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13</td><td>Easy Resolve</td></tr>
+        <tr><td>—</td><td>Linda Rogovin</td><td style="color:var(--on-dim);font-style:italic;">Unassigned</td><td>—</td><td style="color:var(--on-dim);">$154.90 (sale)</td><td>May 12</td><td>Easy Resolve</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kpi-row fu3" style="margin-top:16px;">
+    <div class="kpi"><div class="kpi-lbl">Total Refunds</div><div class="kpi-val" style="color:var(--error);">$653.89</div><div class="kpi-sub">3 team refunds this week</div></div>
+    <div class="kpi"><div class="kpi-lbl">Void Amount</div><div class="kpi-val" style="color:var(--error);">$349.00</div><div class="kpi-sub">Bradford L Beukelman — Teji</div></div>
+    <div class="kpi"><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:var(--amber);">8.70%</div><div class="kpi-sub">of assigned gross sales</div></div>
+    <div class="kpi"><div class="kpi-lbl">Chargebacks</div><div class="kpi-val" style="color:var(--primary);">$0.00</div><div class="kpi-sub">No chargebacks this week</div></div>
+  </div>`;
+}
+
+function analyticsView(){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const teamDaily=SORTED.reduce((acc,a)=>{a.daily.forEach((v,i)=>acc[i]+=v);return acc;},[0,0,0,0,0,0,0]);
+  const maxD=Math.max(...teamDaily,1);
+  return `${top3Banner()}
+  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Analytics — Team Revenue Velocity</div>
+  <div class="chart-c fu2" style="margin-bottom:18px;">
+    <div class="chart-title">Team Daily Revenue — May 11–15</div>
+    <div class="chart-sub">Combined net sales per day across all agents.</div>
+    ${barChart(teamDaily,maxD,days,4)}
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;" class="fu3">
+    ${SORTED.map(a=>{
+      const mxD=Math.max(...a.daily,1);
+      return `<div class="kpi" onclick="viewAgent('${a.ext}')" style="cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:24px;height:24px;border-radius:50%;overflow:hidden;">${svgOf(a.ext)}</div>
+          <div style="font-size:12px;font-weight:700;">${a.name}</div>
+        </div>
+        ${barChart(a.daily,mxD,['M','T','W','T','F','S','S'],4)}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// AGENT VIEWS
+// ═══════════════════════════════════════════════════════════
+function agentView(a,fromMgr=false){
+  const top=TOP3.map(k=>AGENTS[k]);
+  const rpcVal=+(a.rpc||+(a.net/a.calls)).toFixed(2);
+  const rpcPct=rpcVal>=30?((rpcVal-30)/rpcVal*100+100).toFixed(0):((rpcVal/30)*100).toFixed(0);
+  const rpcLabel=rpcVal>=30?`+${((rpcVal/30-1)*100).toFixed(0)}%`:`${((rpcVal/30)*100).toFixed(0)}% of target`;
+  const maxD=Math.max(...a.daily,1);
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const rank2=SORTED.find(x=>x.rank===2);
+  const rank3=SORTED.find(x=>x.rank===3);
+  return `
+  <div class="lb-banner fu">
+    <div>
+      <div class="lb-tag">Top Performer · Current Leaderboard Position</div>
+    </div>
+    <div class="lb-me">
+      <div class="lb-pos-big">${a.rank}.</div>
+      <div class="lb-me-av">${svgOf(a.ext)}</div>
+      <div class="lb-me-nm">${a.name}${fromMgr?'':' (You)'}</div>
+    </div>
+    <div class="lb-others">
+      <div class="lb-oth"><div class="lb-oth-av">${svgOf(rank2.ext)}</div> 2.&nbsp;${rank2.name}</div>
+      <div class="lb-oth"><div class="lb-oth-av">${svgOf(rank3.ext)}</div> 3.&nbsp;${rank3.name}</div>
+    </div>
+  </div>
+  <div class="welcome-hdr fu1">Welcome back, ${a.name}</div>
+  <div class="insight-c fu2">
+    <div class="insight-icon ${a.insight.warn?'warn':''}">
+      <span class="mso" style="color:${a.insight.warn?'var(--error)':'var(--primary)'}">${a.insight.warn?'warning':'auto_awesome'}</span>
+    </div>
+    <div>
+      <div class="insight-title ${a.insight.warn?'warn':''}">${a.insight.title}</div>
+      <div class="insight-body">${a.insight.body}</div>
+    </div>
+  </div>
+  <div class="mrow fu3">
+    <div class="mc">
+      <div class="mc-pct" style="color:${a.ta>=100?'var(--primary)':'var(--amber)'}">
+        <span class="mso" style="font-size:15px;">credit_card_off</span>+${(a.ta-100).toFixed(0)}%
+      </div>
+      <div class="mc-lbl">Net Sales</div>
+      <div class="mc-val" style="color:var(--primary)">${fmt(a.net)}</div>
+      <div class="mc-tgt"><span>Target: $${a.tgt.toLocaleString()}</span><span style="color:var(--primary)">${a.ta>=100?'Success':'On Track'}</span></div>
+      <div class="mc-bar"><div class="mc-bf ${a.ta>=100?'over':a.ta<30?'crit':''}" data-w="${Math.min(a.ta,100)}%" style="width:0%"></div></div>
+    </div>
+    <div class="mc">
+      <div class="mc-pct" style="color:${rpcVal>=30?'var(--primary)':'var(--amber)'}">
+        <span class="mso" style="font-size:15px;">trending_up</span>${rpcLabel}
+      </div>
+      <div class="mc-lbl">RPC</div>
+      <div class="mc-val">${rpcVal.toFixed(2)}</div>
+      <div class="mc-tgt"><span>Target: 30.00</span><span style="color:${rpcVal>=30?'var(--primary)':'var(--amber)'}">${rpcVal>=30?'Elite':'Improve'}</span></div>
+      <div class="mc-bar"><div class="mc-bf ${rpcVal>=30?'over':'crit'}" data-w="${Math.min((rpcVal/50)*100,100)}%" style="width:0%"></div></div>
+    </div>
+    <div class="mc">
+      <div class="mc-pct" style="color:${a.cr>=18.5?'var(--primary)':'var(--on-dim)'}">
+        <span class="mso" style="font-size:15px;">check_circle</span>${a.cr>=18.5?'Top 1%':'Avg'}
+      </div>
+      <div class="mc-lbl">Close Rate</div>
+      <div class="mc-val">${a.cr.toFixed(1)}%</div>
+      <div class="mc-tgt"><span>Team Avg: 13.93%</span><span style="color:${a.cr>13.93?'var(--primary)':'var(--amber)'}">${a.cr>13.93?'Crushing':'Improve'}</span></div>
+      <div class="mc-bar"><div class="mc-bf" data-w="${Math.min((a.cr/40)*100,100)}%" style="width:0%"></div></div>
+    </div>
+    <div class="nxt-c">
+      <div class="nxt-lbl">Next Target</div>
+      <div class="nxt-title">Scale call<br>volume</div>
+      <div class="nxt-desc">${a.focus.split('.')[0]}.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;">
+        <div class="mc-bar" style="flex:1;margin-right:10px"><div class="mc-bf" data-w="${Math.min((a.calls/30)*100,100)}%" style="width:0%"></div></div>
+        <span style="color:var(--on-dim)">${a.calls}/30</span>
+      </div>
+    </div>
+  </div>
+  <div class="charts-row fu4">
+    <div class="chart-c">
+      <div class="chart-title">Target Achievement</div>
+      <div class="chart-sub">${a.ta>=100?'You have exceeded your base weekly goal. Your current velocity suggests strong month-end performance.':'Keep pushing — every call is a step closer to your weekly target. Focus on high-value plan pitches.'}</div>
+      <div class="donut-wrap">${donut(Math.min(a.ta,100),a.ta>=100?'#4edea3':a.ta<30?'#ef4444':'#f59e0b')}
+        <div class="donut-ctr">
+          <div class="donut-pct" style="color:${a.ta>=100?'var(--primary)':a.ta<30?'var(--error)':'var(--amber)'}">${a.ta.toFixed(1)}%</div>
+          <div class="donut-lbl">of target</div>
+        </div>
+      </div>
+      <div class="donut-extras">
+        <div class="donut-ex"><div class="donut-ex-l">Projected Bonus</div><div class="donut-ex-v" style="color:var(--primary)">${a.ta>=100?fmt(a.net*0.1):'$0.00'}</div></div>
+        <div class="donut-ex"><div class="donut-ex-l">Tier Status</div><div class="donut-ex-v" style="color:${a.ta>=200?'var(--primary)':a.ta>=100?'#adc6ff':a.ta>=75?'var(--amber)':'var(--on-dim)'}">${a.ta>=765?'Diamond Elite':a.ta>=200?'Gold Plus':a.ta>=100?'Gold':a.ta>=75?'Silver':'Standard'}</div></div>
+      </div>
+    </div>
+    <div class="chart-c">
+      <div class="chart-title">Performance Velocity</div>
+      <div class="chart-sub">Daily revenue output — May 11–15, 2026.</div>
+      ${barChart(a.daily,maxD,days,4)}
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--on-dim);margin-bottom:6px">Performance Breakdown</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          ${a.str.map(s=>`<span style="background:rgba(78,222,163,.1);color:var(--primary);border:1px solid rgba(78,222,163,.2);padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;">✓ ${s}</span>`).join('')}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
+          ${a.weak.map(w=>`<span style="background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;">→ ${w}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function agentRpc(a){
+  const rpcVal=+(a.rpc||+(a.net/a.calls)).toFixed(2);
+  const top=SORTED.map(x=>({name:x.name,rv:+(x.rpc||+(x.net/x.calls)).toFixed(2),isMe:x.ext===a.ext}));
+  const max=Math.max(...top.map(x=>x.rv),30);
+  return `${top3Banner()}
+  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">RPC Analysis — Your Position</div>
+  <div class="rpc-tbl fu2">
+    ${top.sort((a,b)=>b.rv-a.rv).map(x=>{
+      const over=x.rv>=30;
+      const w=Math.min((x.rv/max)*100,100);
+      const fg=over?'var(--primary)':'var(--amber)';
+      const hlt=x.isMe?'border-color:rgba(78,222,163,.4);box-shadow:0 0 0 1px rgba(78,222,163,.2);':'';
+      return `<div class="rpc-row" style="${hlt}">
+        <div class="rpc-nm" style="${x.isMe?'color:var(--primary);':''}">${x.name}${x.isMe?' ◀':''}</div>
+        <div class="rpc-track">
+          <div class="rpc-fill" style="width:${w}%;background:${fg}">
+            <span class="rpc-fv" style="color:var(--bg)">${fmt(x.rv)}</span>
+          </div>
+        </div>
+        <div class="rpc-val" style="color:${fg}">${fmt(x.rv)}</div>
+        <div class="rpc-st">${over?'🟢':'🔴'}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function agentVoids(a){
+  const hasVoid=a.refund>0;
+  return `${top3Banner()}
+  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Voids & Refunds — ${a.name}</div>
+  ${hasVoid?`
+  <div class="tbl-card fu2">
+    <div class="tbl-hdr"><div class="tbl-title">Refund Register</div></div>
+    <table class="void-tbl">
+      <thead><tr><th>Customer</th><th>Amount</th><th>Processed</th><th>Status</th></tr></thead>
+      <tbody>
+        ${a.ext==='1001'?`<tr><td>Bradford L Beukelman</td><td style="color:var(--error);font-weight:700;">$349.00</td><td>May 14, 2026</td><td><span class="badge br">Void Processed</span></td></tr>`:''}
+        ${a.ext==='1009'?`<tr><td>Rose M Johnston</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14, 2026</td><td><span class="badge ba">Refunded</span></td></tr>`:''}
+        ${a.ext==='1006'?`<tr><td>Kevin Dillon</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13, 2026</td><td><span class="badge ba">Refunded</span></td></tr>`:''}
+      </tbody>
+    </table>
+  </div>
+  <div class="kpi-row fu3" style="margin-top:14px;">
+    <div class="kpi"><div class="kpi-lbl">Refund Total</div><div class="kpi-val" style="color:var(--error)">${fmt(a.refund)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:var(--amber)">${a.rp.toFixed(2)}%</div><div class="kpi-sub">of gross sales</div></div>
+    <div class="kpi"><div class="kpi-lbl">Net Impact</div><div class="kpi-val" style="color:var(--error)">−${fmt(a.refund)}</div></div>
+  </div>`:`
+  <div style="background:rgba(78,222,163,.07);border:1px solid rgba(78,222,163,.2);border-radius:12px;padding:40px;text-align:center;" class="fu2">
+    <span class="mso" style="font-size:48px;color:var(--primary)">verified</span>
+    <div style="font-size:20px;font-weight:700;color:var(--primary);margin-top:12px;">Clean Record</div>
+    <div style="font-size:14px;color:var(--on-dim);margin-top:6px;">Zero refunds this week. Excellent retention!</div>
+  </div>`}`;
+}
+
+function agentAnalytics(a){
+  const maxD=Math.max(...a.daily,1);
+  return `${top3Banner()}
+  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Analytics — ${a.name}</div>
+  <div class="chart-c fu2" style="margin-bottom:16px;">
+    <div class="chart-title">Daily Revenue Velocity — May 11–15</div>
+    <div class="chart-sub">Your day-by-day gross sales performance for the reporting week.</div>
+    ${barChart(a.daily,maxD,['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],4)}
+  </div>
+  <div class="kpi-row fu3">
+    <div class="kpi"><div class="kpi-lbl">Gross Sales</div><div class="kpi-val">${fmt(a.gross)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Refunds</div><div class="kpi-val" style="color:${a.refund>0?'var(--error)':'var(--primary)'}">${fmt(a.refund)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Net Sales</div><div class="kpi-val" style="color:var(--primary)">${fmt(a.net)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Avg Order</div><div class="kpi-val">${fmt(a.aov)}</div><div class="kpi-sub">${a.txn} transactions</div></div>
+  </div>`;
+}
+
+// Dashboard ready
+</script>
+</body>
+</html>
