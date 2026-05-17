@@ -2,1315 +2,1721 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>TeamPulse Sales | Performance Cockpit</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#0d0e12;--surf:#121317;--surf-lo:#1a1b20;--surf-c:#1f1f24;
-  --surf-hi:#292a2e;--surf-max:#343439;
-  --on:#e3e2e7;--on-dim:#bbcabf;--outline:#86948a;--outv:#3c4a42;
-  --primary:#4edea3;--primary-dk:#10b981;--primary-dkr:#059669;--on-primary:#003824;
-  --secondary:#ffb3ad;--error:#ef4444;--amber:#f59e0b;--info:#adc6ff;
-  --glass:rgba(31,31,36,0.45);
+  --bg:#0d0e12;--s1:#121317;--s2:#1a1b20;--s3:#1f1f24;--s4:#292a2e;--s5:#343439;
+  --on:#e3e2e7;--dim:#bbcabf;--line:#3c4a42;--out:#86948a;
+  --g:#4edea3;--gd:#10b981;--gdk:#003824;
+  --red:#ef4444;--amber:#f59e0b;--pink:#ffb3ad;
+  --glass:rgba(20,21,26,0.85);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:var(--on);min-height:100dvh;overflow-x:hidden;font-size:14px;}
-.mso{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-family:'Material Symbols Outlined';font-style:normal;font-size:20px;line-height:1;display:inline-block;vertical-align:middle;}
-/* Grid bg */
-.grid-bg{background-color:var(--bg);background-image:linear-gradient(rgba(78,222,163,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(78,222,163,.03) 1px,transparent 1px);background-size:40px 40px;}
-/* Glass */
-.glass{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.08);border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(0,0,0,.2);}
-/* Screens */
-.screen{display:none;}
-.screen.active{display:block;}
-/* Anims */
-@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fi{from{opacity:0}to{opacity:1}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
-.fu{animation:fu .4s ease both;}.fu1{animation:fu .4s .08s ease both;}.fu2{animation:fu .4s .16s ease both;}.fu3{animation:fu .4s .24s ease both;}.fu4{animation:fu .4s .32s ease both;}
-.blink{animation:pulse 2s ease-in-out infinite;}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
-/* Manager panel — always outside all screens, controlled by JS */
-#mgr-panel{display:none;}
-#mgr-panel.open{display:flex!important;}
-/* Badges */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
-.bg{background:rgba(78,222,163,.14);color:var(--primary);border:1px solid rgba(78,222,163,.28);}
-.br{background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.28);}
-.ba{background:rgba(245,158,11,.11);color:var(--amber);border:1px solid rgba(245,158,11,.28);}
-.bx{background:rgba(134,148,138,.1);color:var(--outline);border:1px solid rgba(134,148,138,.22);}
-/* Buttons */
-.btn-p{background:linear-gradient(135deg,var(--primary),var(--primary-dk));color:var(--on-primary);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:none;cursor:pointer;border-radius:8px;padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:8px;transition:box-shadow .25s,transform .15s;width:100%;font-family:'Geist',sans-serif;}
-.btn-p:hover{box-shadow:0 0 24px rgba(78,222,163,.3);}
-.btn-p:active{transform:scale(.98);}
-.btn-g{background:transparent;color:var(--on-dim);font-size:12px;font-weight:600;border:1px solid var(--outv);cursor:pointer;border-radius:8px;padding:7px 14px;transition:all .2s;font-family:'Geist',sans-serif;}
-.btn-g:hover{color:var(--primary);border-color:var(--primary);}
-.btn-s{background:var(--surf-lo);color:var(--on);font-size:12px;font-weight:600;border:1px solid rgba(60,74,66,.5);cursor:pointer;border-radius:8px;padding:9px 16px;display:flex;align-items:center;gap:8px;transition:all .2s;font-family:'Geist',sans-serif;}
-.btn-s:hover{background:var(--surf-c);border-color:rgba(78,222,163,.3);}
-/* Inputs */
-.inp{width:100%;background:var(--bg);border:1px solid rgba(60,74,66,.45);border-radius:8px;padding:12px 16px;color:var(--on);font-family:'Geist',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
-.inp:focus{border-color:var(--primary);}
-.inp::placeholder{color:rgba(187,202,191,.38);}
-/* ═══ LOGIN ═══ */
-#sl{align-items:center;justify-content:center;min-height:100dvh;padding:24px;}
-#sl.active{display:flex;}
-.l-wrap{width:100%;max-width:440px;z-index:10;}
-.l-logo{font-size:clamp(28px,6vw,48px);font-weight:800;letter-spacing:-.025em;color:var(--primary);text-align:center;margin-bottom:4px;}
-.l-sub{text-align:center;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--on-dim);margin-bottom:40px;}
-.l-card{padding:40px;border-radius:16px;position:relative;overflow:hidden;}
-.l-glow{position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:rgba(78,222,163,.08);border-radius:50%;filter:blur(60px);pointer-events:none;}
-.l-lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dim);margin-bottom:6px;margin-left:2px;}
-.l-ig{position:relative;} .l-ig .inp{padding-right:42px;}
-.l-ig .mso{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--on-dim);font-size:18px;transition:color .2s;pointer-events:none;}
-.l-ig:focus-within .mso{color:var(--primary);}
-.l-ig .inp{padding-left:42px;}
-.l-row{display:grid;grid-template-columns:1fr 2fr;gap:14px;}
-.l-err{color:#f87171;font-size:12px;text-align:center;margin-top:10px;display:none;}
-.l-err.on{display:block;}
-.l-divider{display:flex;align-items:center;gap:12px;margin:26px 0;}
-.l-divider::before,.l-divider::after{content:'';flex:1;height:1px;background:rgba(60,74,66,.3);}
-.l-divider span{font-size:10px;color:rgba(187,202,191,.5);letter-spacing:.1em;text-transform:uppercase;}
-.mgr-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surf-lo);border:1px solid rgba(60,74,66,.4);border-radius:10px;cursor:pointer;transition:all .2s;font-family:'Geist',sans-serif;}
-.mgr-btn:hover{background:var(--surf-c);border-color:rgba(255,179,173,.35);}
-.mgr-av{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid rgba(255,179,173,.3);}
-.l-footer{display:flex;justify-content:space-between;margin-top:26px;padding:0 4px;}
-.l-footer a{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--on-dim);text-decoration:none;transition:color .2s;}
-.l-footer a:hover{color:var(--primary);}
-/* ═══ DASHBOARD ═══ */
-#sd{min-height:100dvh;}
-#sd.active{display:flex;flex-direction:column;}
+html,body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:var(--on);min-height:100dvh;font-size:14px;line-height:1.5;}
+
+/* ── GRID BG ── */
+body{background-color:var(--bg);background-image:linear-gradient(rgba(78,222,163,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(78,222,163,.025) 1px,transparent 1px);background-size:40px 40px;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100dvh;}
+.screen.active{display:flex;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:all .2s;border-radius:8px;}
+.btn-primary{background:linear-gradient(135deg,var(--g),var(--gd));color:var(--gdk);padding:14px 20px;font-size:12px;width:100%;}
+.btn-primary:hover{box-shadow:0 0 24px rgba(78,222,163,.35);transform:translateY(-1px);}
+.btn-primary:active{transform:scale(.98);}
+.btn-secondary{background:transparent;color:var(--dim);border:1px solid var(--line);padding:10px 16px;font-size:11px;width:100%;}
+.btn-secondary:hover{border-color:var(--out);color:var(--on);}
+.btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--line);padding:7px 14px;font-size:11px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-ghost:hover{color:var(--g);border-color:var(--g);}
+
+/* ── INPUTS ── */
+.inp{width:100%;background:var(--bg);border:1px solid rgba(60,74,66,.5);border-radius:8px;padding:12px 16px;color:var(--on);font-family:inherit;font-size:14px;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--g);}
+.inp::placeholder{color:rgba(187,202,191,.35);}
+.inp[readonly]{color:var(--g);font-weight:600;cursor:default;}
+.inp-wrap{position:relative;}
+.inp-wrap .inp{padding-right:44px;}
+.eye-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--out);font-size:18px;padding:4px;line-height:1;transition:color .2s;}
+.eye-btn:hover{color:var(--g);}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
+.badge-g{background:rgba(78,222,163,.14);color:var(--g);border:1px solid rgba(78,222,163,.28);}
+.badge-r{background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.28);}
+.badge-a{background:rgba(245,158,11,.11);color:var(--amber);border:1px solid rgba(245,158,11,.28);}
+.badge-x{background:rgba(134,148,138,.1);color:var(--out);}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{align-items:center;justify-content:center;padding:20px;}
+.login-outer{width:100%;max-width:440px;}
+.login-logo{font-size:clamp(26px,6vw,46px);font-weight:800;letter-spacing:-.025em;color:var(--g);text-align:center;margin-bottom:4px;}
+.login-sub{text-align:center;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:36px;}
+.login-card{background:var(--glass);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:36px 32px;position:relative;overflow:hidden;}
+.login-card::before{content:'';position:absolute;top:-60px;right:-60px;width:160px;height:160px;background:rgba(78,222,163,.07);border-radius:50%;filter:blur(40px);pointer-events:none;}
+.field-lbl{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;}
+.field-row{display:grid;grid-template-columns:1fr 2fr;gap:14px;}
+.err-msg{font-size:12px;color:#f87171;margin-top:8px;padding:8px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;display:none;}
+.err-msg.show{display:block;}
+.divider{display:flex;align-items:center;gap:10px;margin:20px 0;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(187,202,191,.4);}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(60,74,66,.3);}
+.mgr-access-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--s2);border:1px solid rgba(60,74,66,.5);border-radius:10px;cursor:pointer;transition:all .2s;font-family:inherit;color:var(--on);}
+.mgr-access-btn:hover{background:var(--s3);border-color:rgba(78,222,163,.3);}
+.mgr-av{width:34px;height:34px;border-radius:50%;overflow:hidden;border:1px solid rgba(78,222,163,.3);flex-shrink:0;}
+.mgr-av img{width:100%;height:100%;object-fit:cover;}
+.login-footer{display:flex;justify-content:space-between;margin-top:20px;padding:0 2px;}
+.login-footer a{font-size:11px;color:var(--dim);text-decoration:none;transition:color .2s;cursor:pointer;}
+.login-footer a:hover{color:var(--g);}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--g);margin-left:4px;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── MANAGER MODAL ── */
+#mgr-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(7,8,12,.9);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px;}
+#mgr-modal.open{display:flex;}
+.modal-card{background:var(--s3);border:1px solid rgba(60,74,66,.6);border-top-color:rgba(78,222,163,.25);border-radius:16px;padding:32px 28px;max-width:360px;width:100%;position:relative;}
+.modal-close-x{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--dim);font-size:22px;line-height:1;transition:color .2s;padding:4px;}
+.modal-close-x:hover{color:var(--on);}
+.modal-avatar{width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid var(--g);margin:0 auto 10px;box-shadow:0 0 20px rgba(78,222,163,.2);}
+.modal-avatar img{width:100%;height:100%;object-fit:cover;}
+.mgr-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(78,222,163,.1);border:1px solid rgba(78,222,163,.25);border-radius:999px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--g);letter-spacing:.05em;text-transform:uppercase;}
+.modal-err{font-size:12px;color:#f87171;padding:8px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;margin-bottom:12px;display:none;}
+.modal-err.show{display:block;}
+
+/* ── DASHBOARD ── */
+#dash-screen{flex-direction:column;}
+.dash-layout{display:flex;flex:1;min-height:0;}
+
 /* Sidebar */
-.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--surf);border-right:1px solid rgba(60,74,66,.3);display:flex;flex-direction:column;z-index:50;}
-.sb-brand{padding:24px 20px 18px;border-bottom:1px solid rgba(60,74,66,.2);}
-.sb-name{font-size:15px;font-weight:800;color:var(--primary);letter-spacing:-.01em;}
-.sb-sub{font-size:11px;color:var(--on-dim);letter-spacing:.04em;margin-top:2px;}
-.sb-nav{flex:1;padding:14px 10px;overflow-y:auto;}
-.nav-i{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:all .2s;color:var(--on-dim);font-size:13px;font-weight:500;margin-bottom:3px;border:none;background:none;width:100%;font-family:'Geist',sans-serif;text-align:left;}
-.nav-i:hover{background:rgba(78,222,163,.06);color:var(--on);}
-.nav-i.act{background:rgba(78,222,163,.12);color:var(--primary);}
-.nav-i .mso{font-size:18px;}
-.sb-bot{padding:14px 10px;border-top:1px solid rgba(60,74,66,.2);}
-/* Main */
-.dmain{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
-/* Top bar */
-.topbar{position:sticky;top:0;z-index:40;background:rgba(18,19,23,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(60,74,66,.25);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
-.tb-logo{font-size:19px;font-weight:800;color:var(--primary);letter-spacing:-.02em;}
-.tb-links{display:flex;gap:22px;}
-.tb-link{font-size:13px;color:var(--on-dim);cursor:pointer;transition:color .2s;font-weight:500;background:none;border:none;font-family:'Geist',sans-serif;}
-.tb-link:hover{color:var(--on);}
-.tb-r{display:flex;align-items:center;gap:10px;}
-.tb-search{display:flex;align-items:center;gap:8px;background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:8px;padding:7px 12px;color:var(--on-dim);}
-.tb-search input{background:none;border:none;outline:none;color:var(--on);font-family:'Geist',sans-serif;font-size:13px;width:160px;}
-.tb-search input::placeholder{color:var(--on-dim);}
-.ib{width:36px;height:36px;border-radius:8px;background:var(--surf-c);border:1px solid rgba(60,74,66,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--on-dim);}
-.ib:hover{color:var(--on);border-color:rgba(78,222,163,.3);}
-.tb-av{width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--primary);cursor:pointer;}
-/* Mobile header — shown by JS on login, hidden on logout */
-.mob-hdr{display:none;position:sticky;top:0;z-index:40;background:rgba(18,19,23,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(60,74,66,.25);padding:12px 16px;align-items:center;justify-content:space-between;}
-@media(max-width:768px){.mob-hdr.visible{display:flex;}}
-.mob-logo{font-size:17px;font-weight:800;color:var(--primary);}
+.sidebar{width:256px;background:var(--s1);border-right:1px solid rgba(60,74,66,.3);display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:sticky;top:0;}
+.sb-brand{padding:22px 18px 16px;border-bottom:1px solid rgba(60,74,66,.2);}
+.sb-brand-name{font-size:14px;font-weight:800;color:var(--g);}
+.sb-brand-sub{font-size:11px;color:var(--dim);margin-top:2px;}
+#sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto;}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;width:100%;background:none;border:none;cursor:pointer;color:var(--dim);font-family:inherit;font-size:13px;font-weight:500;text-align:left;transition:all .2s;margin-bottom:3px;}
+.nav-btn:hover{background:rgba(78,222,163,.06);color:var(--on);}
+.nav-btn.active{background:rgba(78,222,163,.12);color:var(--g);}
+.nav-icon{font-size:16px;flex-shrink:0;}
+.sb-footer{padding:14px 10px;border-top:1px solid rgba(60,74,66,.2);}
+
+/* Main area */
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+#top-bar{background:rgba(12,13,18,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(60,74,66,.25);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:40;}
+.tb-logo{font-size:18px;font-weight:800;color:var(--g);letter-spacing:-.02em;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-user{font-size:13px;font-weight:600;}
+.tb-av{width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid var(--g);}
+.tb-av img,.tb-av div{width:100%;height:100%;object-fit:cover;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;}
+
+/* Top 3 banner */
+#top3-bar{background:var(--s3);border-bottom:1px solid rgba(60,74,66,.3);padding:10px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.t3-lbl{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
+.t3-items{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.t3-item{display:flex;align-items:center;gap:7px;font-size:12px;}
+.t3-pos{font-size:16px;font-weight:800;color:var(--g);}
+.t3-av{width:24px;height:24px;border-radius:50%;overflow:hidden;flex-shrink:0;}
+.t3-name{font-weight:700;}
+.t3-stats{color:var(--dim);font-size:10px;}
+.t3-sep{color:rgba(60,74,66,.8);font-size:18px;}
+
 /* Content */
-.dcontent{flex:1;padding:24px;max-width:1400px;width:100%;}
-/* ── Top 3 Banner ── */
-.t3bar{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
-.t3div{width:1px;height:36px;background:rgba(60,74,66,.5);flex-shrink:0;}
-.t3it{display:flex;align-items:center;gap:10px;flex:1;min-width:170px;}
-.t3rk{font-size:20px;font-weight:800;color:var(--primary);min-width:28px;}
-.t3nm{font-weight:700;font-size:14px;}
-.t3st{font-size:11px;color:var(--on-dim);margin-top:1px;}
-.t3av{width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid rgba(60,74,66,.6);flex-shrink:0;}
-.elite-badge{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(78,222,163,.09);border:1px solid rgba(78,222,163,.22);border-radius:8px;padding:8px 12px;flex-shrink:0;}
-.elite-txt{font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;line-height:1.3;}
-/* KPI row */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-.kpi{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:20px;}
-.kpi-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);margin-bottom:10px;}
-.kpi-val{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:6px;}
-.kpi-sub{font-size:12px;display:flex;align-items:center;gap:5px;color:var(--on-dim);}
-/* Manager grid */
-.mgr-grid{display:grid;grid-template-columns:320px 1fr;gap:18px;}
-/* Risk cards */
-.risk-c{border-radius:12px;padding:14px 16px;border:1px solid;margin-bottom:12px;}
-.risk-c.crit{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.3);}
-.risk-c.warn{background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.25);}
-.risk-hdr{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
-.risk-agent{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(60,74,66,.18);}
-.risk-agent:last-child{border-bottom:none;padding-bottom:0;}
-.risk-anm{font-weight:700;font-size:15px;}
-.risk-adt{font-size:11px;color:var(--on-dim);margin-top:2px;}
-/* Feed */
-.feed-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:14px 16px;}
-.feed-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);margin-bottom:12px;}
-.feed-it{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;}
-.feed-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:4px;}
-.feed-txt{font-size:12px;line-height:1.5;}
-.feed-time{font-size:10px;color:var(--on-dim);margin-top:2px;}
+#main-content{flex:1;padding:20px;overflow-y:auto;}
+
+/* Mobile header */
+#mob-header{display:none;background:rgba(12,13,18,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(60,74,66,.25);padding:12px 16px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.mob-logo{font-size:17px;font-weight:800;color:var(--g);}
+
+/* Mobile bottom nav */
+#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(12,13,18,.95);backdrop-filter:blur(16px);border-top:1px solid rgba(60,74,66,.3);z-index:40;padding:6px 0 env(safe-area-inset-bottom,6px);}
+.mob-nav-inner{display:flex;justify-content:space-around;}
+.mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;background:none;border:none;cursor:pointer;color:var(--dim);font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:inherit;transition:color .2s;}
+.mob-nav-btn.active{color:var(--g);}
+.mob-icon{font-size:20px;}
+
+/* ── CONTENT COMPONENTS ── */
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:var(--s3);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:18px;}
+.kpi-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.kpi-val{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:4px;}
+.kpi-sub{font-size:11px;color:var(--dim);}
+
+/* Section title */
+.sec-title{font-size:17px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(60,74,66,.25);}
+
 /* Table */
-.tbl-card{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;overflow:hidden;}
-.tbl-hdr{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(60,74,66,.3);}
-.tbl-title{font-size:17px;font-weight:700;}
-.tbl-filter{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid rgba(60,74,66,.4);border-radius:8px;padding:7px 12px;color:var(--on-dim);}
-.tbl-filter input{background:none;border:none;outline:none;color:var(--on);font-family:'Geist',sans-serif;font-size:13px;width:130px;}
-.tbl-filter input::placeholder{color:var(--on-dim);}
-.ptbl{width:100%;border-collapse:collapse;}
-.ptbl th{padding:10px 20px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--on-dim);text-align:left;border-bottom:1px solid rgba(60,74,66,.3);cursor:pointer;user-select:none;white-space:nowrap;}
-.ptbl th:hover{color:var(--on);}
-.ptbl td{padding:13px 20px;border-bottom:1px solid rgba(60,74,66,.12);vertical-align:middle;}
-.ptbl tr:last-child td{border-bottom:none;}
-.ptbl tr:hover td{background:rgba(78,222,163,.025);}
-.ptbl tr{cursor:pointer;}
-.ag-cell{display:flex;align-items:center;gap:10px;}
-.ag-av{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;}
-.ag-nm{font-weight:700;font-size:13px;}
-.dn{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;}
-/* ═══ AGENT VIEW ═══ */
-.lb-banner{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;}
-.lb-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);}
-.lb-pos-big{font-size:26px;font-weight:800;color:var(--primary);line-height:1;}
-.lb-me{display:flex;align-items:center;gap:8px;}
-.lb-me-av{width:30px;height:30px;border-radius:50%;overflow:hidden;border:2px solid var(--primary);}
-.lb-me-nm{font-weight:700;font-size:15px;}
-.lb-others{display:flex;gap:14px;color:var(--on-dim);font-size:12px;margin-left:auto;}
-.lb-oth{display:flex;align-items:center;gap:5px;}
-.lb-oth-av{width:20px;height:20px;border-radius:50%;overflow:hidden;flex-shrink:0;}
-/* Welcome */
-.welcome-hdr{font-size:clamp(24px,4vw,38px);font-weight:800;letter-spacing:-.025em;margin-bottom:18px;}
-/* Insight */
-.insight-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.3);border-left:3px solid var(--primary);border-radius:12px;padding:18px 22px;display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
-.insight-icon{width:38px;height:38px;background:rgba(78,222,163,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.insight-icon.warn{background:rgba(239,68,68,.1);}
-.insight-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:5px;}
-.insight-title.warn{color:#f87171;}
-.insight-body{font-size:13px;line-height:1.65;color:var(--on-dim);}
-/* Metrics row */
-.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
-.mc{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:18px;}
-.mc-pct{font-size:11px;font-weight:700;letter-spacing:.05em;margin-bottom:9px;display:flex;align-items:center;gap:4px;}
-.mc-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dim);margin-bottom:6px;}
-.mc-val{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;line-height:1;}
-.mc-tgt{font-size:12px;display:flex;align-items:center;justify-content:space-between;color:var(--on-dim);}
-.mc-bar{height:3px;background:rgba(60,74,66,.5);border-radius:2px;margin-top:10px;}
-.mc-bf{height:100%;border-radius:2px;background:var(--primary);transition:width 1.2s ease;}
-.mc-bf.over{background:var(--primary);}
-.mc-bf.crit{background:var(--error);}
-.nxt-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:18px;}
-.nxt-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);margin-bottom:7px;}
-.nxt-title{font-size:18px;font-weight:800;margin-bottom:7px;line-height:1.2;}
-.nxt-desc{font-size:12px;line-height:1.55;color:var(--on-dim);margin-bottom:14px;}
-/* Charts row */
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-.chart-c{background:var(--surf-c);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:22px;}
-.chart-title{font-size:17px;font-weight:700;margin-bottom:4px;}
-.chart-sub{font-size:13px;color:var(--on-dim);margin-bottom:20px;line-height:1.55;}
-/* Donut */
-.donut-wrap{position:relative;width:200px;height:200px;margin:0 auto 16px;}
+.tbl-card{background:var(--s3);border:1px solid rgba(60,74,66,.4);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.tbl-hdr{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(60,74,66,.3);}
+.tbl-title{font-size:15px;font-weight:700;}
+.tbl-search{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid rgba(60,74,66,.4);border-radius:7px;padding:6px 11px;color:var(--dim);}
+.tbl-search input{background:none;border:none;outline:none;color:var(--on);font-family:inherit;font-size:12px;width:120px;}
+.tbl-search input::placeholder{color:var(--dim);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--s4);color:var(--dim);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;text-align:left;border-bottom:1px solid rgba(60,74,66,.3);white-space:nowrap;}
+th.sortable{cursor:pointer;}
+th.sortable:hover{color:var(--on);}
+td{padding:12px 16px;border-bottom:1px solid rgba(60,74,66,.12);}
+.agent-row{cursor:pointer;}
+.agent-row:hover td{background:rgba(78,222,163,.025);}
+.tbl-last td{border-bottom:none;}
+.ag-cell{display:flex;align-items:center;gap:9px;}
+
+/* Progress bar */
+.pbar-track{height:4px;background:rgba(60,74,66,.5);border-radius:2px;overflow:hidden;margin-top:8px;}
+.pbar-fill{height:100%;border-radius:2px;background:var(--g);transition:width 1s ease;}
+.pbar-fill.over{background:var(--g);}
+.pbar-fill.crit{background:var(--red);}
+
+/* Donut chart */
+.donut-wrap{position:relative;width:180px;height:180px;margin:0 auto 14px;}
 .donut-ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.donut-pct{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em;}
-.donut-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dim);margin-top:4px;}
-.donut-extras{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.donut-ex{background:var(--surf-hi);border-radius:8px;padding:12px;}
-.donut-ex-l{font-size:10px;color:var(--on-dim);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:4px;}
-.donut-ex-v{font-size:15px;font-weight:700;}
+.donut-pct{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1;}
+.donut-lbl{font-size:10px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-top:3px;}
+
 /* Bar chart */
-.bars-wrap{display:flex;align-items:flex-end;gap:5px;height:110px;margin-bottom:8px;}
-.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;}
+.bars{display:flex;align-items:flex-end;gap:5px;height:100px;margin-bottom:6px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;}
 .bar-track{flex:1;width:100%;display:flex;align-items:flex-end;}
-.bar{width:100%;border-radius:4px 4px 0 0;background:rgba(60,74,66,.5);transition:height 1.2s ease,background .3s;min-height:4px;}
-.bar.hi{background:var(--primary);}
-.bar.med{background:rgba(78,222,163,.45);}
-.bar-lbl{font-size:9px;color:var(--on-dim);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
-.bar-lbl.hi{color:var(--primary);}
-/* RPC Analysis */
-.rpc-tbl{display:flex;flex-direction:column;gap:10px;}
-.rpc-row{background:var(--surf-c);border:1px solid rgba(60,74,66,.3);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:14px;}
-.rpc-nm{width:72px;font-weight:700;font-size:13px;flex-shrink:0;}
-.rpc-track{flex:1;height:20px;background:var(--surf-hi);border-radius:5px;overflow:hidden;position:relative;}
-.rpc-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:7px;transition:width 1.2s ease;}
-.rpc-fv{font-size:10px;font-weight:700;color:var(--on-primary);white-space:nowrap;}
-.rpc-val{width:65px;text-align:right;font-weight:700;font-size:13px;flex-shrink:0;}
-.rpc-st{width:22px;flex-shrink:0;}
+.bar{width:100%;border-radius:3px 3px 0 0;background:rgba(60,74,66,.5);min-height:4px;transition:height .8s ease;}
+.bar.hi{background:var(--g);}
+.bar.md{background:rgba(78,222,163,.4);}
+.bar-lbl{font-size:9px;color:var(--dim);font-weight:600;text-transform:uppercase;}
+.bar-lbl.hi{color:var(--g);}
+
+/* RPC bar */
+.rpc-row{background:var(--s3);border:1px solid rgba(60,74,66,.3);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.rpc-name{width:65px;font-weight:700;font-size:12px;flex-shrink:0;}
+.rpc-track{flex:1;height:20px;background:var(--s4);border-radius:5px;overflow:hidden;position:relative;}
+.rpc-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:7px;transition:width .8s ease;}
+.rpc-fv{font-size:10px;font-weight:700;color:var(--gdk);white-space:nowrap;}
+.rpc-val{width:60px;text-align:right;font-weight:700;font-size:12px;flex-shrink:0;}
+
+/* Risk alert */
+.risk{border-radius:10px;padding:14px 16px;margin-bottom:10px;border:1px solid;}
+.risk-crit{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.3);}
+.risk-warn{background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.25);}
+.risk-hdr{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.risk-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(60,74,66,.15);}
+.risk-row:last-child{border-bottom:none;padding-bottom:0;}
+.risk-agent-name{font-weight:700;font-size:15px;}
+
+/* Insight card */
+.insight{background:var(--s3);border:1px solid rgba(60,74,66,.3);border-left:3px solid var(--g);border-radius:12px;padding:16px 20px;margin-bottom:18px;display:flex;gap:13px;align-items:flex-start;}
+.insight.warn{border-left-color:var(--red);}
+.insight-icon{width:36px;height:36px;border-radius:9px;background:rgba(78,222,163,.12);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.insight.warn .insight-icon{background:rgba(239,68,68,.1);}
+.insight-title{font-size:14px;font-weight:700;color:var(--g);margin-bottom:4px;}
+.insight.warn .insight-title{color:#f87171;}
+.insight-body{font-size:13px;color:var(--dim);line-height:1.65;}
+
+/* Leaderboard banner */
+.lb-banner{background:var(--s3);border:1px solid rgba(60,74,66,.4);border-radius:10px;padding:11px 16px;display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.lb-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.lb-pos{font-size:24px;font-weight:800;color:var(--g);line-height:1;}
+.lb-others{display:flex;gap:12px;margin-left:auto;color:var(--dim);font-size:11px;}
+
+/* Tags */
+.tags{display:flex;flex-wrap:wrap;gap:7px;}
+.tag-g{background:rgba(78,222,163,.1);color:var(--g);border:1px solid rgba(78,222,163,.2);padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;}
+.tag-r{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;}
+
+/* Focus box */
+.focus-box{background:linear-gradient(135deg,rgba(78,222,163,.08),rgba(143,12,40,.05));border:1px solid rgba(78,222,163,.22);border-radius:10px;padding:16px 20px;}
+.focus-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:7px;}
+
+/* Charts row */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.chart-card{background:var(--s3);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:20px;}
+.chart-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+.chart-sub{font-size:12px;color:var(--dim);margin-bottom:16px;line-height:1.55;}
+
+/* Feed */
+.feed{background:var(--s3);border:1px solid rgba(60,74,66,.4);border-radius:12px;padding:14px 16px;}
+.feed-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;}
+.feed-item{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start;}
+.feed-dot{width:8px;height:8px;border-radius:50%;background:var(--g);flex-shrink:0;margin-top:4px;}
+.feed-txt{font-size:12px;}
+.feed-time{font-size:10px;color:var(--dim);margin-top:2px;}
+
 /* Void table */
 .void-tbl{width:100%;border-collapse:collapse;}
-.void-tbl th,.void-tbl td{padding:12px 16px;text-align:left;border-bottom:1px solid rgba(60,74,66,.18);}
-.void-tbl th{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--on-dim);}
-.void-tbl td{font-size:13px;}
+.void-tbl th,.void-tbl td{padding:11px 14px;text-align:left;border-bottom:1px solid rgba(60,74,66,.15);}
+.void-tbl th{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);}
 .void-tbl tr:last-child td{border-bottom:none;}
-/* Mobile nav */
-.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(18,19,23,.95);backdrop-filter:blur(16px);border-top:1px solid rgba(60,74,66,.3);z-index:100;padding:6px 0 env(safe-area-inset-bottom,8px);}
-.mob-nav-items{display:flex;justify-content:space-around;}
-.mob-nav-i{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;cursor:pointer;color:var(--on-dim);font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:none;background:none;font-family:'Geist',sans-serif;transition:color .2s;}
-.mob-nav-i.act{color:var(--primary);}
-.mob-nav-i .mso{font-size:22px;}
+
+/* Back button */
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--s3);border:1px solid rgba(60,74,66,.4);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--dim);cursor:pointer;transition:all .2s;font-family:inherit;margin-bottom:14px;}
+.back-btn:hover{color:var(--on);border-color:var(--out);}
+
 /* Responsive */
-@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(2,1fr);}.mrow{grid-template-columns:repeat(2,1fr);}.mgr-grid{grid-template-columns:1fr;}}
-@media(max-width:768px){.sidebar,.topbar{display:none;}.mob-nav{display:block;}.dmain{margin-left:0;}.dcontent{padding:14px;padding-bottom:72px;}.t3div{display:none;}.kpi-row{grid-template-columns:1fr 1fr;}.mrow{grid-template-columns:1fr 1fr;}.charts-row{grid-template-columns:1fr;}.elite-badge{display:none;}}
+@media(max-width:900px){.charts-row{grid-template-columns:1fr;}.kpi-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  #top-bar{display:none;}
+  #mob-header{display:flex;}
+  #mob-nav{display:block;}
+  #main-content{padding:14px;padding-bottom:70px;}
+  #top3-bar{padding:8px 14px;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .charts-row{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+  .login-card{padding:24px 18px;}
+  .t3-sep{display:none;}
+}
+
+/* Forgot Password modal (reuses .modal-card, .modal-err etc.) */
+#forgot-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(7,8,12,.9);
+  backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px;}
+#forgot-modal.open{display:flex;}
 </style>
 </head>
-<body class="grid-bg">
+<body>
 
-<!-- ════════════════════════════ LOGIN ════════════════════════════ -->
-<div id="sl" class="screen active grid-bg">
-<div class="l-wrap">
-  <div class="l-logo fu">TeamPulse Sales</div>
-  <div class="l-sub fu1">The Performance Cockpit</div>
-  <div class="l-card glass fu2">
-    <div class="l-glow"></div>
-
-    <!-- Agent Name preview (read-only, auto-fills from extension) -->
-    <div style="margin-bottom:16px;">
-      <label class="l-lbl">Agent Name</label>
-      <div class="l-ig">
-        <span class="mso">person</span>
-        <input class="inp" id="l-name" placeholder="← Type your Extension to auto-fill" type="text"
-               autocomplete="off" readonly tabindex="-1"
-               style="color:var(--primary);font-weight:600;cursor:default;letter-spacing:.02em;"/>
+<!-- ════ LOGIN SCREEN ════ -->
+<div id="login-screen" class="screen active">
+  <div class="login-outer">
+    <h1 class="login-logo">TeamPulse Sales</h1>
+    <p class="login-sub">The Performance Cockpit</p>
+    <div class="login-card">
+      <div style="margin-bottom:14px;">
+        <label class="field-lbl">Agent Name</label>
+        <input class="inp" id="agent-name" type="text" placeholder="← Enter Extension to auto-fill" readonly/>
       </div>
-    </div>
-
-    <!-- Extension + Access Key row -->
-    <div class="l-row" style="margin-bottom:6px;">
-      <div>
-        <label class="l-lbl">Extension</label>
-        <input class="inp" id="l-ext" placeholder="e.g. 1002" type="text" maxlength="4"
-               inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off"
-               oninput="previewLogin(this.value);clearErr();"
-               onpaste="setTimeout(function(){previewLogin(document.getElementById('l-ext').value);},10);"
-               onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus();"
-               style="text-align:center;font-size:18px;letter-spacing:.15em;font-weight:800;"/>
-      </div>
-      <div>
-        <label class="l-lbl">Access Key</label>
-        <div class="l-ig">
-          <span class="mso">lock</span>
-          <input class="inp" id="l-pass" placeholder="6-digit code" type="password"
-                 inputmode="numeric" pattern="[0-9]*" maxlength="6"
+      <div class="field-row" style="margin-bottom:6px;">
+        <div>
+          <label class="field-lbl">Extension</label>
+          <input class="inp" id="ext-input" type="text" maxlength="4" inputmode="numeric"
                  autocomplete="off" autocorrect="off" autocapitalize="off"
-                 spellcheck="false" name="access-key-nofill"
-                 oninput="clearErr();"
-                 onkeydown="if(event.key==='Enter')doLogin();"/>
-          <button type="button" onclick="togglePass()"
-                  style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
-                         background:none;border:none;cursor:pointer;color:var(--on-dim);
-                         font-family:'Material Symbols Outlined';font-size:18px;padding:4px;"
-                  id="pass-eye">visibility</button>
+                 style="text-align:center;font-size:18px;font-weight:800;letter-spacing:.1em;"/>
         </div>
-      </div>
-    </div>
-
-    <!-- Specific error message (shows which field is wrong) -->
-    <div id="l-err" class="l-err" style="min-height:20px;margin-bottom:12px;"></div>
-
-    <button class="btn-p" id="signin-btn" onclick="doLogin()" style="margin-bottom:0;">
-      Sign In&nbsp;<span class="mso">bolt</span>
-    </button>
-
-    <!-- Divider -->
-    <div class="l-divider" style="margin:20px 0;"><span>Manager Elevated Access</span></div>
-
-    <!-- Manager Access Button -->
-    <button class="mgr-btn" onclick="openMgrPanel()" type="button">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="mgr-av">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc"
-               alt="Jason" style="width:100%;height:100%;object-fit:cover;"/>
-        </div>
-        <div style="text-align:left;">
-          <div style="font-size:13px;font-weight:700;color:var(--on);">Manager Access — Jason</div>
-          <div style="font-size:10px;color:var(--on-dim);margin-top:1px;">
-            Tap to enter your Access Key &nbsp;→&nbsp; Full dashboard
+        <div>
+          <label class="field-lbl">Access Key</label>
+          <div class="inp-wrap">
+            <input class="inp" id="pass-input" type="password" maxlength="6"
+                   inputmode="numeric" autocomplete="new-password"
+                   autocorrect="off" placeholder="6-digit code"/>
+            <button class="eye-btn" id="toggle-pass">👁</button>
           </div>
         </div>
       </div>
-      <span class="mso" style="color:var(--primary);font-size:22px;">lock_open</span>
+      <div class="err-msg" id="login-err"></div>
+      <button class="btn btn-primary" id="signin-btn" style="margin-top:14px;">Sign In ⚡</button>
+      <div class="divider">Manager Elevated Access</div>
+      <button class="mgr-access-btn" id="mgr-access-btn">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="mgr-av"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc" alt="Jason"/></div>
+          <div style="text-align:left;">
+            <div style="font-size:13px;font-weight:700;">Manager Access — Jason</div>
+            <div style="font-size:10px;color:var(--dim);margin-top:1px;">Tap to enter Access Key → Full dashboard</div>
+          </div>
+        </div>
+        <span style="color:var(--g);font-size:18px;">🔓</span>
+      </button>
+    </div>
+    <div class="login-footer">
+      <a id="forgot-pwd-link" style="cursor:pointer;">Forgot Password?</a>
+      <a>System Status<span class="status-dot"></span></a>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MANAGER MODAL ════ -->
+<div id="mgr-modal">
+  <div class="modal-card">
+    <button class="modal-close-x" id="modal-close">✕</button>
+    <div style="text-align:center;margin-bottom:22px;">
+      <div class="modal-avatar"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc" alt="Jason"/></div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:6px;">Jason</div>
+      <span class="mgr-badge">Manager · Ext 1001 · Full Access</span>
+    </div>
+    <label class="field-lbl">Enter your Access Key</label>
+    <div class="inp-wrap" style="margin-bottom:8px;">
+      <input class="inp" id="mgr-pass-input" type="password" maxlength="6"
+             inputmode="numeric" autocomplete="new-password" placeholder="6-digit access key"/>
+      <button class="eye-btn" id="toggle-mgr-pass">👁</button>
+    </div>
+    <div class="modal-err" id="mgr-err"></div>
+    <button class="btn btn-primary" id="mgr-login-btn" style="margin-bottom:10px;">Login as Manager 🏆</button>
+    <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+  </div>
+</div>
+
+
+<!-- ════ FORGOT PASSWORD MODAL ════ -->
+<div id="forgot-modal">
+  <div class="modal-card" style="max-width:400px;">
+    <button class="modal-close-x" id="forgot-close">✕</button>
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="font-size:36px;margin-bottom:10px;">🔑</div>
+      <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;">Access Key Recovery</div>
+      <div style="font-size:12px;color:var(--dim);margin-top:5px;">Enter your name or extension — we'll identify you automatically and send a recovery request via WhatsApp.</div>
+    </div>
+
+    <!-- Extension input -->
+    <div style="margin-bottom:12px;">
+      <label class="field-lbl">Extension Number</label>
+      <input class="inp" id="fp-ext" type="text" maxlength="4" inputmode="numeric"
+             autocomplete="off" placeholder="e.g. 1002"
+             style="text-align:center;font-size:18px;font-weight:800;letter-spacing:.1em;"/>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider" style="margin:10px 0;">or</div>
+
+    <!-- Name input -->
+    <div style="margin-bottom:14px;">
+      <label class="field-lbl">Agent Name</label>
+      <input class="inp" id="fp-name" type="text" autocomplete="off"
+             placeholder="e.g. Bob, Grace, James…"/>
+    </div>
+
+    <!-- Identified agent preview card (hidden until matched) -->
+    <div id="fp-preview" style="display:none;background:rgba(78,222,163,.07);border:1px solid rgba(78,222,163,.25);
+         border-radius:10px;padding:13px 16px;margin-bottom:14px;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:8px;">✅ Agent Identified</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div id="fp-av" style="flex-shrink:0;"></div>
+        <div>
+          <div id="fp-agent-name" style="font-size:15px;font-weight:800;"></div>
+          <div id="fp-agent-ext"  style="font-size:12px;color:var(--dim);margin-top:1px;"></div>
+        </div>
+      </div>
+      <!-- Message preview -->
+      <div style="margin-top:12px;background:var(--s4);border-radius:8px;padding:12px;font-size:11px;color:var(--dim);line-height:1.65;" id="fp-msg-preview"></div>
+    </div>
+
+    <!-- Error -->
+    <div class="modal-err" id="fp-err"></div>
+
+    <!-- Send button -->
+    <button class="btn btn-primary" id="fp-send-btn" style="margin-bottom:10px;">
+      📲 Send Recovery Request via WhatsApp
     </button>
-  </div>
+    <button class="btn btn-secondary" id="fp-cancel-btn">Cancel</button>
 
-
-  <div class="l-footer">
-    <a href="#">Forgot Password?</a>
-    <a href="#" style="display:flex;align-items:center;gap:5px;">System Status <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--primary);" class="blink"></span></a>
+    <!-- Disclaimer -->
+    <div style="font-size:10px;color:var(--out);text-align:center;margin-top:12px;line-height:1.5;">
+      This will open WhatsApp with a pre-filled message to the<br/>
+      <strong style="color:var(--dim);">Team Manager (+91 95015 11889)</strong>.
+      Tap Send inside WhatsApp to complete.
+    </div>
   </div>
 </div>
-<!-- Background decos -->
-<div style="position:fixed;inset:0;pointer-events:none;z-index:0;">
-  <div style="position:absolute;top:10%;left:5%;width:350px;height:350px;background:rgba(78,222,163,.04);border-radius:50%;filter:blur(120px);"></div>
-  <div style="position:absolute;bottom:10%;right:5%;width:350px;height:350px;background:rgba(255,179,173,.04);border-radius:50%;filter:blur(120px);"></div>
-</div>
-</div>
 
-<!-- ════════════════════════════ DASHBOARD ════════════════════════════ -->
-<div id="sd" class="screen">
-
-<!-- Sidebar -->
-<nav class="sidebar">
-  <div class="sb-brand">
-    <div class="sb-name">Sales HQ</div>
-    <div class="sb-sub">Precision Monitoring</div>
-  </div>
-  <div class="sb-nav" id="sb-nav"></div>
-  <div class="sb-bot">
-    <button class="btn-s" style="width:100%;margin-bottom:8px;" onclick="alert('Export feature coming soon.')"><span class="mso">download</span> Export Report</button>
-    <button class="nav-i" onclick="alert('Support: contact@salesfloor.io')"><span class="mso">help</span> Support</button>
-    <button class="nav-i" onclick="doLogout()"><span class="mso">logout</span> Logout</button>
-  </div>
-</nav>
-
-<!-- Main -->
-<div class="dmain">
+<!-- ════ DASHBOARD SCREEN ════ -->
+<div id="dash-screen" class="screen">
   <!-- Mobile header -->
-  <div class="mob-hdr">
+  <div id="mob-header">
     <div class="mob-logo">Performance Cockpit</div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <span class="mso" style="color:var(--on-dim);">notifications</span>
-      <div id="mob-av" style="width:30px;height:30px;border-radius:50%;overflow:hidden;border:2px solid var(--primary);"></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="mob-av" style="width:30px;height:30px;border-radius:50%;overflow:hidden;border:2px solid var(--g);"></div>
     </div>
   </div>
-  <!-- Desktop top bar -->
-  <header class="topbar">
-    <div class="tb-logo">Performance Cockpit</div>
-    <div class="tb-links">
-      <button class="tb-link" onclick="setView('overview')">Global Leaderboard</button>
-      <button class="tb-link" onclick="setView('rpc')">Team Stats</button>
-      <button class="tb-link" onclick="setView('overview')">Live Feed</button>
+  <!-- Layout -->
+  <div class="dash-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <div class="sb-brand-name">Sales HQ</div>
+        <div class="sb-brand-sub">Precision Monitoring</div>
+      </div>
+      <nav id="sidebar-nav"></nav>
+      <div class="sb-footer">
+        <button class="nav-btn" id="logout-btn" style="color:var(--dim);">
+          <span class="nav-icon">↩</span> Logout
+        </button>
+      </div>
+    </aside>
+    <!-- Main area -->
+    <div class="main-area">
+      <header id="top-bar">
+        <div class="tb-logo">Performance Cockpit</div>
+        <div class="tb-right">
+          <div id="tb-user-name" class="tb-user"></div>
+          <div class="tb-av" id="tb-av"></div>
+          <button class="btn-ghost" id="top-logout-btn">Logout</button>
+        </div>
+      </header>
+      <!-- Top 3 banner -->
+      <div id="top3-bar"></div>
+      <!-- Content -->
+      <div id="main-content"></div>
     </div>
-    <div class="tb-r">
-      <button class="btn-p" style="width:auto;padding:8px 16px;font-size:11px;" onclick="flashRefresh()">Refresh Data</button>
-      <div class="ib"><span class="mso">notifications</span></div>
-      <div class="ib"><span class="mso">settings</span></div>
-      <div class="tb-av" id="tb-av"></div>
-    </div>
-  </header>
-
-  <!-- Content area -->
-  <div class="dcontent" id="dcontent"></div>
-</div>
-
-<!-- Mobile bottom nav -->
-<div class="mob-nav">
-  <div class="mob-nav-items" id="mob-nav"></div>
-</div>
+  </div>
+  <!-- Mobile bottom nav -->
+  <nav id="mob-nav">
+    <div class="mob-nav-inner" id="mob-nav-inner"></div>
+  </nav>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// AVATAR GENERATOR
+// DATA
 // ═══════════════════════════════════════════════════════════
-let _aid=0;
-function mkAv({bg,sk,hair,ht,gl,cr,ear,shirt,eyes}){
-  const id='tp'+(++_aid);
-  const hm={
-    neat:`<path d="M23 46 Q50 8 77 46 Q77 16 50 14 Q23 16 23 46" fill="${hair}"/><path d="M23 46 Q21 30 27 28 Q24 38 24 46" fill="${hair}"/>`,
-    spiky:`<path d="M23 46 Q29 8 40 20 Q44 5 50 13 Q56 5 60 20 Q71 8 77 46 Q77 14 50 12 Q23 14 23 46" fill="${hair}"/>`,
-    short:`<path d="M23 46 Q50 9 77 46 Q77 16 50 14 Q23 16 23 46" fill="${hair}"/>`,
-    long:`<path d="M23 46 Q50 9 77 46 Q77 16 50 14 Q23 16 23 46" fill="${hair}"/><path d="M23 46 L19 92 Q23 97 27 92 L27 46" fill="${hair}"/><path d="M77 46 L81 92 Q77 97 73 92 L73 46" fill="${hair}"/>`,
-    curly:`<path d="M23 48 Q50 9 77 48 Q77 16 50 14 Q23 16 23 48" fill="${hair}"/><circle cx="21" cy="44" r="7" fill="${hair}"/><circle cx="79" cy="44" r="7" fill="${hair}"/><circle cx="21" cy="58" r="6" fill="${hair}"/><circle cx="79" cy="58" r="6" fill="${hair}"/>`,
-    curls:`<circle cx="32" cy="33" r="9" fill="${hair}"/><circle cx="50" cy="22" r="10" fill="${hair}"/><circle cx="68" cy="33" r="9" fill="${hair}"/><circle cx="27" cy="47" r="7" fill="${hair}"/><circle cx="73" cy="47" r="7" fill="${hair}"/><path d="M23 52 Q50 12 77 52 Q77 18 50 16 Q23 18 23 52" fill="${hair}"/>`,
-    messy:`<path d="M23 46 Q30 6 46 18 Q40 4 50 10 Q60 4 54 18 Q70 6 77 46 Q77 14 50 12 Q23 14 23 46" fill="${hair}"/>`,
-    bun:`<path d="M25 48 Q50 18 75 48 Q75 22 50 20 Q25 22 25 48" fill="${hair}"/><circle cx="50" cy="11" r="11" fill="${hair}"/><circle cx="50" cy="11" r="5" fill="${bg}" opacity=".3"/>`,
-  };
-  const hp=hm[ht]||hm.short;
-  const ec=eyes||'#2C2C2C';
-  const gs=gl?`<rect x="29" y="47" width="17" height="13" rx="6" fill="none" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><rect x="54" y="47" width="17" height="13" rx="6" fill="none" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><line x1="46" y1="53" x2="54" y2="53" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><line x1="21" y1="53" x2="29" y2="53" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/><line x1="71" y1="53" x2="79" y2="53" stroke="rgba(78,222,163,.7)" stroke-width="1.8"/>`:'';
-  const cs=cr?`<path d="M50 2 L53 11 L61 9 L57 17 L65 15 L60 23 L50 21 L40 23 L35 15 L43 17 L39 9 L47 11Z" fill="#4edea3"/>`:'';
-  const es=ear?`<circle cx="17" cy="59" r="4" fill="${bg}" stroke="rgba(255,255,255,.3)" stroke-width=".5"/><circle cx="83" cy="59" r="4" fill="${bg}" stroke="rgba(255,255,255,.3)" stroke-width=".5"/>`:'';
-  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="50" fill="${bg}"/>
-    ${cs}
-    <ellipse cx="50" cy="58" rx="31" ry="35" fill="${sk}"/>
-    ${hp}
-    <path d="M33 46 Q38 44 43 46" stroke="${hair}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M57 46 Q62 44 67 46" stroke="${hair}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <ellipse cx="38" cy="53" rx="5.5" ry="6" fill="white"/>
-    <ellipse cx="62" cy="53" rx="5.5" ry="6" fill="white"/>
-    <circle cx="39.5" cy="53" r="3.2" fill="${ec}"/>
-    <circle cx="63.5" cy="53" r="3.2" fill="${ec}"/>
-    <circle cx="40.5" cy="52" r="1" fill="white" opacity=".85"/>
-    <circle cx="64.5" cy="52" r="1" fill="white" opacity=".85"/>
-    ${gs}
-    <path d="M48 58 Q46 63 50 65 Q54 63 52 58" fill="rgba(0,0,0,.07)"/>
-    <path d="M40 69 Q50 78 60 69" stroke="#A0724A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    ${es}
-    <path d="M28 91 Q40 83 44 83 L56 83 Q60 83 72 91 L100 100 L0 100Z" fill="${shirt||'#1a1b20'}"/>
-    <path d="M44 83 Q50 90 56 83" fill="${bg}" opacity=".5"/>
-  </svg>`;
+var AGENTS = {
+  '1001':{ext:'1001',pass:'748291',name:'Jason',mg:true,rank:10,col:'#7D6608',
+    gross:499,refund:349,net:150,rp:69.94,calls:32,txn:1,cr:3.12,aov:499,tgt:960,ta:15.62,status:'critical',
+    daily:[0,0,0,0,499,0,0],
+    insight:{warn:true,title:'Critical: Refund impact this week.',
+      body:'A $349 void (Bradford L Beukelman) erased most of your gross. Your $499 Timothy Rinehart close shows real premium potential. Target: 3+ transactions with zero refunds next week.'},
+    str:['Premium closing ability ($499 AOV)','High call volume (32 calls)'],
+    weak:['Critical refund rate (69.94%)','1 transaction from 32 calls'],
+    focus:'Implement a 2-minute pre-close qualification checklist. Zero refunds. Target Net: $750+'},
+  '1002':{ext:'1002',pass:'362819',name:'Bob',mg:false,rank:2,col:'#8B0000',
+    gross:1103.60,refund:0,net:1103.60,rp:0,calls:22,txn:5,cr:22.73,aov:220.72,tgt:660,ta:167.21,status:'active',
+    daily:[0,0,199.90,703.80,199.90,0,0],
+    insight:{warn:false,title:'Exceptional week — 67% above RPC target!',
+      body:'Zero refunds, 22.73% close rate, and five clean transactions. Your ability to qualify quickly and close confidently is the team benchmark. Increase call volume next week.'},
+    str:['RPC $50.16 — 67% above target','Zero refunds — 100% retention','22.73% close rate'],
+    weak:['Call volume (22) — room to grow'],
+    focus:'Take 5+ more calls. At your close rate that is 1-2 more deals. Target Net $1,300+'},
+  '1004':{ext:'1004',pass:'594732',name:'Grace',mg:false,rank:8,col:'#5E35B1',
+    gross:509.70,refund:0,net:509.70,rp:0,calls:32,txn:3,cr:9.38,aov:169.90,tgt:960,ta:53.09,status:'active',
+    daily:[0,0,0,354.80,154.90,0,0],
+    insight:{warn:false,title:'High volume — low conversion gap.',
+      body:'32 calls and zero refunds — excellent quality. But 3 closings from 32 opportunities is the key gap. At 15% close rate you would hit your RPC target. The calls are there — now close them.'},
+    str:['Zero refunds — excellent quality','32 calls — joint highest volume'],
+    weak:['Close rate 9.38% — below average','RPC $15.93 — below $30 target'],
+    focus:'Target 1 close per 6 calls. Practice your closing question. Target Net $700+'},
+  '1005':{ext:'1005',pass:'281947',name:'Mike',mg:false,rank:6,col:'#0277BD',
+    gross:608.65,refund:0,net:608.65,rp:0,calls:27,txn:3,cr:11.11,aov:202.88,tgt:810,ta:75.14,status:'active',
+    daily:[0,0,164.90,443.75,0,0,0],
+    insight:{warn:false,title:'One close away from hitting target.',
+      body:'Zero refunds, solid $202.88 AOV, good 27-call volume. ONE more closing per week breaks the $30 RPC barrier. Identify your top objection and address it.'},
+    str:['Zero refunds — 100% retention','Good AOV $202.88','27-call volume'],
+    weak:['Close rate 11.11% — 1 more close needed','RPC $22.54 — $7.46 below target'],
+    focus:'Target 4 transactions. Open with vehicle age to anchor the plan. Target Net $750+'},
+  '1006':{ext:'1006',pass:'637284',name:'Rob',mg:false,rank:7,col:'#2E7D32',
+    gross:729.65,refund:149.99,net:579.66,rp:20.56,calls:21,txn:4,cr:19.05,aov:182.41,tgt:630,ta:92.01,status:'risk',
+    daily:[0,329.85,0,199.90,199.90,0,0],
+    insight:{warn:true,title:'$2.40 per call away from target.',
+      body:'92% achievement — great! Without the Kevin Dillon refund ($149.99), your RPC would have been $34.75. Your 19.05% close rate is second-best on the team. Follow up within 24 hours of every close.'},
+    str:['2nd-best close rate (19.05%)','92% target achievement','4 solid transactions'],
+    weak:['20.56% refund rate — 1 cancellation','RPC $27.60 — $2.40 below target'],
+    focus:'Zero refunds next week. 5 transactions. Same-day follow-up on every close. Target Net $800+'},
+  '1007':{ext:'1007',pass:'419623',name:'James',mg:false,rank:1,col:'#D84315',
+    gross:1147.95,refund:0,net:1147.95,rp:0,calls:5,txn:2,cr:40,aov:573.98,tgt:150,ta:765.30,status:'active',
+    daily:[0,0,598.95,549,0,0,0],
+    insight:{warn:false,title:'Absolutely phenomenal week!',
+      body:'Two premium Lifetime closes — Randall Mcdaniel ($598.95) and Tina/Charles Pountney ($549). RPC $229.59 is 7.6x the target. Zero refunds. Scale your call volume to multiply these results.'},
+    str:['#1 this week — $1,147.95 net','RPC $229.59 — 7.6x above target','40% close rate — highest on team','Zero refunds'],
+    weak:['Only 5 calls — low volume limits impact'],
+    focus:'Target 15+ calls next week. At 40% close rate that is 6 deals. Target Net $2,000+'},
+  '1008':{ext:'1008',pass:'853726',name:'Peter',mg:false,rank:3,col:'#6A1B9A',
+    gross:1009.45,refund:0,net:1009.45,rp:0,calls:22,txn:5,cr:22.73,aov:201.89,tgt:660,ta:152.95,status:'active',
+    daily:[0,409.75,0,399.80,199.90,0,0],
+    insight:{warn:false,title:'Crossed the $1K mark — excellent!',
+      body:'RPC $45.88 (53% above target), zero refunds, 22.73% close rate. 5 transactions across multiple days shows consistent daily engagement. Push one premium plan to get to $1,300.'},
+    str:['$1,009 net — crossed $1K mark','RPC $45.88 — 53% above target','Zero refunds — 5 clean transactions'],
+    weak:['AOV $201.89 — room for premium plans'],
+    focus:'Target one Lifetime/5-year plan — one premium close lifts net by $300+. Target Net $1,200+'},
+  '1009':{ext:'1009',pass:'192847',name:'Sam',mg:false,rank:4,col:'#1565C0',
+    gross:774.55,refund:154.90,net:619.65,rp:20,calls:45,txn:6,cr:13.33,aov:129.09,tgt:1350,ta:45.90,status:'risk',
+    daily:[0,0,319.85,274.80,179.90,0,0],
+    insight:{warn:true,title:'Most calls, most transactions — wrong plan tier.',
+      body:'45 calls and 6 transactions — work ethic leads the team. But AOV of $129.09 is lowest. Moving from 1-year to 3-year plans lifts your average to $200, pushing RPC from $13.77 to $21.'},
+    str:['Most calls (45) — highest hustle','Most transactions (6) — volume leader'],
+    weak:['Lowest AOV $129.09 — under-pitching','RPC $13.77 — well below $30 target','20% refund rate'],
+    focus:'Never close below 2-year. Present 3-year as standard. AOV target $190+. Zero refunds. Target Net $1,000+'},
+  '1010':{ext:'1010',pass:'576319',name:'Tracy',mg:false,rank:9,col:'#AD1457',
+    gross:354.80,refund:0,net:354.80,rp:0,calls:21,txn:3,cr:14.29,aov:118.27,tgt:630,ta:56.32,status:'active',
+    daily:[0,154.90,99.95,99.95,0,0,0],
+    insight:{warn:false,title:'Clean record — AOV is the key lever.',
+      body:'Zero refunds and 14.29% close rate. Your $118.27 AOV is the team lowest. A pitch upgrade — always presenting 3-year as opener — lifts your AOV to $180+ and RPC past $25.'},
+    str:['Zero refunds — 100% retention','14.29% close rate — at team average'],
+    weak:['Lowest AOV $118.27 — basic plan closes','RPC $16.90 — below target'],
+    focus:'Never close below 2-year. AOV target $175+. Target Net $500+'},
+  '1011':{ext:'1011',pass:'834561',name:'Ben',mg:false,rank:5,col:'#00695C',
+    gross:618.90,refund:0,net:618.90,rp:0,calls:17,txn:2,cr:11.76,aov:309.45,tgt:510,ta:121.35,status:'active',
+    daily:[0,0,0,119.90,499,0,0],
+    insight:{warn:false,title:'Above target — volume is the growth lever.',
+      body:'RPC $36.41 above target, second-highest AOV ($309.45), zero refunds. Only 17 calls limits total. At 28 calls with your close rate, that is 3 deals — ~$900 net.'},
+    str:['RPC $36.41 — above $30 target','2nd-highest AOV $309.45','Zero refunds — 121% target achievement'],
+    weak:['Lowest call volume (17) — limits deal flow'],
+    focus:'Push to 25+ calls. 25 calls x your rate = 3 deals = ~$930. Target Net $900+'}
+};
+
+var SORTED = Object.values(AGENTS).sort(function(a,b){return a.rank-b.rank;});
+var TOP3 = ['1007','1002','1008'];
+var TEAM = {net:6857.26,gross:7511.15,refunds:653.89,calls:244,txn:35,avgRpc:27.47,conv:13.93,tgtAch:93.68};
+
+
+// ═══════════════════════════════════════════════════════════
+// BITMOJI SVG SYSTEM
+// Procedurally generated expressive avatar faces per agent.
+// mood: ecstatic | confident | happy | grinding | focused |
+//       progressing | concerned | hopeful | low | stressed
+// ═══════════════════════════════════════════════════════════
+var BITMOJI_CFG = {
+  '1007':{bg:'#BF360C',skin:'#D4A76A',hair:'#1A0E08',hs:'crown',    mood:'ecstatic',   cheek:true},
+  '1002':{bg:'#6D0000',skin:'#5D4037',hair:'#1A0E08',hs:'spiky',    mood:'confident',  shades:true},
+  '1008':{bg:'#4A148C',skin:'#C68642',hair:'#1A0E08',hs:'curly',    mood:'happy',      cheek:true},
+  '1009':{bg:'#0D47A1',skin:'#F4A460',hair:'#3D2314',hs:'messy',    mood:'grinding',   sweat:true},
+  '1011':{bg:'#004D40',skin:'#FAEBD7',hair:'#3D2B1F',hs:'neat',     mood:'focused',    glasses:true},
+  '1005':{bg:'#01579B',skin:'#FDBCB4',hair:'#5D3A1A',hs:'short',    mood:'progressing'},
+  '1006':{bg:'#1B5E20',skin:'#C68642',hair:'#1A0E08',hs:'short',    mood:'concerned'},
+  '1004':{bg:'#311B92',skin:'#F0C080',hair:'#1A0E08',hs:'long',     mood:'hopeful',    earring:true},
+  '1010':{bg:'#880E4F',skin:'#D4A574',hair:'#1A0E08',hs:'curly',    mood:'low',        earring:true},
+  '1001':{bg:'#4E3A00',skin:'#C68642',hair:'#1A0E08',hs:'neat',     mood:'stressed'},
+};
+
+function makeBitmoji(ext, px){
+  px = px || 40;
+  var c = BITMOJI_CFG[ext];
+  if(!c) return null;
+  var sk=c.skin, hc=c.hair, bg=c.bg, m=c.mood;
+  var o = [];  // svg parts accumulator
+
+  // ── Background ──────────────────────────────────────────
+  o.push('<circle cx="22" cy="22" r="22" fill="'+bg+'"/>');
+
+  // ── Neck ────────────────────────────────────────────────
+  o.push('<rect x="19" y="36" width="6" height="6" fill="'+sk+'" rx="1"/>');
+
+  // ── Ears ────────────────────────────────────────────────
+  o.push('<ellipse cx="10" cy="26" rx="2.5" ry="3" fill="'+sk+'"/>');
+  o.push('<ellipse cx="34" cy="26" rx="2.5" ry="3" fill="'+sk+'"/>');
+
+  // ── Hair (behind face) ──────────────────────────────────
+  switch(c.hs){
+    case 'crown':
+      o.push('<ellipse cx="22" cy="15" rx="13" ry="8" fill="'+hc+'"/>');
+      o.push('<polygon points="13,16 16,8 19.5,13 22,6 24.5,13 28,8 31,16" fill="#FFD700" stroke="#F9A825" stroke-width="0.6"/>');
+      o.push('<circle cx="22" cy="6.5" r="2" fill="#FF6F00"/>');
+      o.push('<circle cx="15.2" cy="8.8" r="1.4" fill="#FF6F00"/>');
+      o.push('<circle cx="28.8" cy="8.8" r="1.4" fill="#FF6F00"/>');
+      break;
+    case 'spiky':
+      o.push('<path d="M10 21 Q11 7 17 16 Q19 4 22 13 Q25 4 27 16 Q33 7 34 21 Q29 14 22 20 Q15 14 10 21Z" fill="'+hc+'"/>');
+      break;
+    case 'curly':
+      o.push('<ellipse cx="12" cy="18" rx="7" ry="7" fill="'+hc+'"/>');
+      o.push('<ellipse cx="22" cy="13" rx="8" ry="7" fill="'+hc+'"/>');
+      o.push('<ellipse cx="32" cy="18" rx="7" ry="7" fill="'+hc+'"/>');
+      break;
+    case 'messy':
+      o.push('<path d="M10 20 Q12 5 18 15 Q20 3 22 12 Q24 5 26 15 Q32 6 34 20 L33 17 Q28 9 22 17 Q16 9 11 17Z" fill="'+hc+'"/>');
+      break;
+    case 'long':
+      o.push('<ellipse cx="22" cy="14" rx="13" ry="8" fill="'+hc+'"/>');
+      o.push('<path d="M9 20 Q7 30 9 42 Q12 35 11 26" fill="'+hc+'"/>');
+      o.push('<path d="M35 20 Q37 30 35 42 Q32 35 33 26" fill="'+hc+'"/>');
+      break;
+    case 'neat':
+    case 'short':
+    default:
+      o.push('<ellipse cx="22" cy="15" rx="12" ry="7" fill="'+hc+'"/>');
+      o.push('<rect x="10" y="15" width="3.5" height="9" rx="1.5" fill="'+hc+'"/>');
+      o.push('<rect x="30.5" y="15" width="3.5" height="9" rx="1.5" fill="'+hc+'"/>');
+  }
+
+  // ── Face ────────────────────────────────────────────────
+  o.push('<ellipse cx="22" cy="27" rx="12.5" ry="14" fill="'+sk+'"/>');
+
+  // ── Eyebrows ────────────────────────────────────────────
+  var bw = '1.8';
+  switch(m){
+    case 'ecstatic':
+      o.push('<path d="M11.5 17 Q17 13 21.5 16" stroke="'+hc+'" stroke-width="'+bw+'" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 16 Q27 13 32.5 17" stroke="'+hc+'" stroke-width="'+bw+'" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'confident':
+      o.push('<path d="M12 20 Q17 17.5 21.5 19" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 18 Q27 16 32 19" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'happy':
+      o.push('<path d="M12 19.5 Q17 17 21.5 18.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 18.5 Q27 17 32 19.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'grinding':
+      o.push('<path d="M12 20 Q17 21.5 21.5 20" stroke="'+hc+'" stroke-width="'+bw+'" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 20 Q27 21.5 32 20" stroke="'+hc+'" stroke-width="'+bw+'" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'focused':
+    case 'progressing':
+      o.push('<path d="M12 19.5 Q17 18 21.5 19" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 19 Q27 18 32 19.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'concerned':
+      o.push('<path d="M12 21 Q17 19 21.5 20.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 20.5 Q27 19 32 21" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'hopeful':
+      o.push('<path d="M12 20.5 Q17 17.5 21.5 19.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 19.5 Q27 17.5 32 20.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'low':
+      o.push('<path d="M12 19.5 Q17 21 21.5 21.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 21.5 Q27 21 32 19.5" stroke="'+hc+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'stressed':
+      o.push('<path d="M12 19.5 Q17 22 21.5 20.5" stroke="'+hc+'" stroke-width="2" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M22.5 20.5 Q27 22 32 19.5" stroke="'+hc+'" stroke-width="2" fill="none" stroke-linecap="round"/>');
+      // Stress wrinkle between brows
+      o.push('<line x1="21" y1="20" x2="23" y2="22" stroke="'+hc+'" stroke-width="0.8" opacity="0.5"/>');
+      break;
+  }
+
+  // ── Eyes ────────────────────────────────────────────────
+  if(!c.shades){
+    var eyeY=24, eyeRX=3, eyeRY=3;
+    if(m==='grinding'||m==='stressed') {eyeRX=3;eyeRY=2.2;}
+    if(m==='low') {eyeRX=3;eyeRY=2;}
+    // Whites
+    o.push('<ellipse cx="17" cy="'+eyeY+'" rx="'+eyeRX+'" ry="'+eyeRY+'" fill="white"/>');
+    o.push('<ellipse cx="27" cy="'+eyeY+'" rx="'+eyeRX+'" ry="'+eyeRY+'" fill="white"/>');
+    // Pupils / irises
+    var pR=1.8;
+    var pY = (m==='low') ? eyeY+0.6 : eyeY;
+    o.push('<circle cx="17" cy="'+pY+'" r="'+pR+'" fill="#1A0E08"/>');
+    o.push('<circle cx="27" cy="'+pY+'" r="'+pR+'" fill="#1A0E08"/>');
+    // Highlight
+    var hY = (m==='ecstatic') ? 22.5 : 23;
+    o.push('<circle cx="18.2" cy="'+hY+'" r="0.8" fill="white"/>');
+    o.push('<circle cx="28.2" cy="'+hY+'" r="0.8" fill="white"/>');
+    // Mood-specific eye overlays
+    if(m==='ecstatic'){
+      // Sparkle stars around eyes
+      o.push('<line x1="17" y1="19" x2="17" y2="17.4" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>');
+      o.push('<line x1="13.2" y1="20.5" x2="12" y2="19.3" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>');
+      o.push('<line x1="20.8" y1="20.5" x2="22" y2="19.3" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>');
+      o.push('<line x1="27" y1="19" x2="27" y2="17.4" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>');
+      o.push('<line x1="23.2" y1="20.5" x2="22" y2="19.3" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>');
+      o.push('<line x1="30.8" y1="20.5" x2="32" y2="19.3" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>');
+    }
+    if(m==='confident'){
+      // Half-lid overlay
+      o.push('<rect x="14" y="22" width="6" height="1.8" rx="0.6" fill="'+sk+'" opacity="0.85"/>');
+      o.push('<rect x="24" y="22" width="6" height="1.8" rx="0.6" fill="'+sk+'" opacity="0.85"/>');
+    }
+    if(m==='low'){
+      // Heavy drooping lids
+      o.push('<path d="M14 23 Q17 24.5 20 23" stroke="'+sk+'" stroke-width="2.5" fill="none"/>');
+      o.push('<path d="M24 23 Q27 24.5 30 23" stroke="'+sk+'" stroke-width="2.5" fill="none"/>');
+    }
+    if(m==='stressed'){
+      // Under-eye bags
+      o.push('<path d="M14 26.5 Q17 27.8 20 26.5" stroke="#b07750" stroke-width="0.8" fill="none" opacity="0.4"/>');
+      o.push('<path d="M24 26.5 Q27 27.8 30 26.5" stroke="#b07750" stroke-width="0.8" fill="none" opacity="0.4"/>');
+    }
+  } else {
+    // Sunglasses (confident Bob)
+    o.push('<rect x="11.5" y="21.5" width="9" height="6" rx="3" fill="#0D0D0D" opacity="0.9"/>');
+    o.push('<rect x="23.5" y="21.5" width="9" height="6" rx="3" fill="#0D0D0D" opacity="0.9"/>');
+    o.push('<line x1="20.5" y1="24.5" x2="23.5" y2="24.5" stroke="#0D0D0D" stroke-width="1.5"/>');
+    o.push('<line x1="11.5" y1="23" x2="9.5" y2="22" stroke="#0D0D0D" stroke-width="1.5"/>');
+    o.push('<line x1="32.5" y1="23" x2="34.5" y2="22" stroke="#0D0D0D" stroke-width="1.5"/>');
+    // Lens sheen
+    o.push('<ellipse cx="15.5" cy="23.5" rx="2" ry="1.5" fill="rgba(255,255,255,0.12)"/>');
+    o.push('<ellipse cx="27.5" cy="23.5" rx="2" ry="1.5" fill="rgba(255,255,255,0.12)"/>');
+  }
+
+  // Glasses overlay (Ben - focused intellectual)
+  if(c.glasses){
+    o.push('<rect x="12" y="21.5" width="7.5" height="5.5" rx="2.2" fill="none" stroke="'+hc+'" stroke-width="1.3"/>');
+    o.push('<rect x="24.5" y="21.5" width="7.5" height="5.5" rx="2.2" fill="none" stroke="'+hc+'" stroke-width="1.3"/>');
+    o.push('<line x1="19.5" y1="24.2" x2="24.5" y2="24.2" stroke="'+hc+'" stroke-width="1.3"/>');
+    o.push('<line x1="12" y1="23" x2="9.5" y2="22" stroke="'+hc+'" stroke-width="1.1"/>');
+    o.push('<line x1="32" y1="23" x2="34.5" y2="22" stroke="'+hc+'" stroke-width="1.1"/>');
+  }
+
+  // ── Cheeks (blush) ──────────────────────────────────────
+  if(c.cheek){
+    o.push('<ellipse cx="12" cy="28.5" rx="3.5" ry="2.5" fill="#FF8A65" opacity="0.35"/>');
+    o.push('<ellipse cx="32" cy="28.5" rx="3.5" ry="2.5" fill="#FF8A65" opacity="0.35"/>');
+  }
+  if(m==='concerned'||m==='hopeful'){
+    o.push('<ellipse cx="12" cy="28" rx="2.5" ry="2" fill="#FF8A65" opacity="0.2"/>');
+    o.push('<ellipse cx="32" cy="28" rx="2.5" ry="2" fill="#FF8A65" opacity="0.2"/>');
+  }
+
+  // ── Nose (subtle) ──────────────────────────────────────
+  o.push('<ellipse cx="20.5" cy="28.5" rx="1" ry="0.6" fill="'+hc+'" opacity="0.2"/>');
+  o.push('<ellipse cx="23.5" cy="28.5" rx="1" ry="0.6" fill="'+hc+'" opacity="0.2"/>');
+
+  // ── Mouth ───────────────────────────────────────────────
+  switch(m){
+    case 'ecstatic':
+      o.push('<path d="M12.5 31.5 Q22 42 31.5 31.5" fill="#B71C1C"/>');
+      o.push('<rect x="14" y="31.5" width="16" height="5" rx="1.5" fill="white"/>');
+      o.push('<line x1="22" y1="31.5" x2="22" y2="36.5" stroke="#E0E0E0" stroke-width="0.7"/>');
+      o.push('<line x1="18" y1="31.5" x2="18" y2="36.5" stroke="#E0E0E0" stroke-width="0.5"/>');
+      o.push('<line x1="26" y1="31.5" x2="26" y2="36.5" stroke="#E0E0E0" stroke-width="0.5"/>');
+      // Tongue peek
+      o.push('<path d="M18 36.5 Q22 39.5 26 36.5" fill="#EF9A9A" opacity="0.9"/>');
+      break;
+    case 'confident':
+      o.push('<path d="M16 31 Q20 36 27.5 30" stroke="#1A0E08" stroke-width="2" fill="none" stroke-linecap="round"/>');
+      o.push('<path d="M27.5 30 Q28.5 29.5 29 31" stroke="#1A0E08" stroke-width="2" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'happy':
+      o.push('<path d="M13.5 31 Q22 40 30.5 31" fill="#C62828"/>');
+      o.push('<rect x="15" y="31" width="14" height="4.5" rx="1" fill="white"/>');
+      o.push('<line x1="22" y1="31" x2="22" y2="35.5" stroke="#E0E0E0" stroke-width="0.6"/>');
+      break;
+    case 'grinding':
+      o.push('<line x1="15" y1="32.5" x2="29" y2="32.5" stroke="#1A0E08" stroke-width="2.2" stroke-linecap="round"/>');
+      // Teeth clench mark
+      o.push('<line x1="18" y1="32.5" x2="18" y2="34" stroke="#1A0E08" stroke-width="0.8" opacity="0.4"/>');
+      o.push('<line x1="22" y1="32.5" x2="22" y2="34" stroke="#1A0E08" stroke-width="0.8" opacity="0.4"/>');
+      o.push('<line x1="26" y1="32.5" x2="26" y2="34" stroke="#1A0E08" stroke-width="0.8" opacity="0.4"/>');
+      break;
+    case 'focused':
+      o.push('<path d="M16 31.5 Q22 35.5 28 31.5" stroke="#1A0E08" stroke-width="1.6" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'progressing':
+      o.push('<path d="M15.5 32 Q22 36.5 28.5 32" stroke="#1A0E08" stroke-width="1.8" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'concerned':
+      o.push('<path d="M15.5 33 Q19 30.5 22 32 Q25 33.5 28.5 31" stroke="#1A0E08" stroke-width="1.6" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'hopeful':
+      o.push('<path d="M16 32 Q22 36 28 32" stroke="#1A0E08" stroke-width="1.6" fill="none" stroke-linecap="round"/>');
+      // Small hopeful gap
+      o.push('<ellipse cx="22" cy="33" rx="3" ry="1.5" fill="#C62828" opacity="0.4"/>');
+      break;
+    case 'low':
+      o.push('<path d="M16 34 Q22 30 28 34" stroke="#1A0E08" stroke-width="1.8" fill="none" stroke-linecap="round"/>');
+      break;
+    case 'stressed':
+      o.push('<path d="M15 32.5 Q22 31 29 32.5" stroke="#1A0E08" stroke-width="1.6" fill="none" stroke-linecap="round"/>');
+      // Corner stress
+      o.push('<line x1="15" y1="32.5" x2="14" y2="33.8" stroke="#1A0E08" stroke-width="1" stroke-linecap="round" opacity="0.5"/>');
+      o.push('<line x1="29" y1="32.5" x2="30" y2="33.8" stroke="#1A0E08" stroke-width="1" stroke-linecap="round" opacity="0.5"/>');
+      break;
+  }
+
+  // ── Accessories ─────────────────────────────────────────
+  if(c.sweat){
+    // Sweat drop (grinding hustle)
+    o.push('<path d="M33 22 Q34.5 18.5 33 16 Q31.5 18.5 33 22Z" fill="#64B5F6" opacity="0.85"/>');
+    o.push('<circle cx="33" cy="22.5" r="1.3" fill="#64B5F6" opacity="0.85"/>');
+  }
+  if(c.earring){
+    o.push('<circle cx="9.5" cy="29.5" r="1.8" fill="#FFD700" stroke="#F9A825" stroke-width="0.5"/>');
+  }
+
+  return '<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" width="'+px+'" height="'+px+'">' + o.join('') + '</svg>';
+}
+
+function avatar(agent, size){
+  size = size || 36;
+  if(agent.ext === '1001'){
+    return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;overflow:hidden;flex-shrink:0;">' +
+      '<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc"' +
+      ' style="width:100%;height:100%;object-fit:cover;" alt="Jason"/></div>';
+  }
+  var bm = makeBitmoji(agent.ext, size);
+  if(bm) return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;overflow:hidden;flex-shrink:0;">'+bm+'</div>';
+  var fs=Math.round(size*0.38);
+  return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+agent.col+';display:flex;align-items:center;justify-content:center;font-weight:800;font-size:'+fs+'px;color:#fff;flex-shrink:0;">'+agent.name[0]+'</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
-// AGENT DATA
+// STATE
 // ═══════════════════════════════════════════════════════════
-const AGENTS={
-  '1001':{ext:'1001',pass:'748291',name:'Jason',mg:true,rank:10,
-    av:{bg:'#7D6608',sk:'#F4C28C',hair:'#1a1a1a',ht:'neat',eyes:'#3D2B1F',cr:true,shirt:'#0d0e12'},
-    mgImg:'https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc',
-    gross:499,refund:349,net:150,cb:0,rp:69.94,calls:32,txn:1,cr:3.12,aov:499,tgt:960,ta:15.62,status:'critical',
-    daily:[0,0,0,0,499,0,0],// Mon–Sun
-    insight:{warn:true,title:'Critical: Refund impact this week.',body:"A $349 void (Bradford L Beukelman) erased most of your gross. Your $499 Timothy Rinehart close shows real premium potential — now apply that skill across more calls. Target: 3+ transactions with zero refunds next week."},
-    str:['Premium closing ability ($499 AOV)','High call volume (32 calls)'],
-    weak:['Critical refund rate (69.94%)','1 transaction from 32 calls'],
-    focus:'Implement a 2-minute pre-close qualification checklist. Target Net: $750+'},
-  '1002':{ext:'1002',pass:'362819',name:'Bob',mg:false,rank:2,
-    av:{bg:'#8B0000',sk:'#FFD699',hair:'#3D2314',ht:'spiky',eyes:'#2C2C2C',shirt:'#1a1b20'},
-    gross:1103.60,refund:0,net:1103.60,cb:0,rp:0,calls:22,txn:5,cr:22.73,aov:220.72,tgt:660,ta:167.21,status:'active',
-    daily:[0,0,199.90,703.80,199.90,0,0],
-    insight:{warn:false,title:'Exceptional week — 67% above RPC target!',body:"Zero refunds, 22.73% close rate, and five clean transactions. Your ability to qualify quickly and close confidently is the team benchmark. Increase call volume next week to multiply these results."},
-    str:['RPC $50.16 — 67% above target','Zero refunds — 100% retention','22.73% close rate'],
-    weak:['Call volume (22) — room to take more'],
-    focus:'Increase to 27+ calls. At your close rate, that is 2 more transactions. Target Net $1,300+'},
-  '1004':{ext:'1004',pass:'594732',name:'Grace',mg:false,rank:8,
-    av:{bg:'#5E35B1',sk:'#F0C080',hair:'#1a1a1a',ht:'long',eyes:'#2C2C2C',ear:true,shirt:'#1a1b20'},
-    gross:509.70,refund:0,net:509.70,cb:0,rp:0,calls:32,txn:3,cr:9.38,aov:169.90,tgt:960,ta:53.09,status:'active',
-    daily:[0,0,0,354.80,154.90,0,0],
-    insight:{warn:false,title:'High volume — low conversion gap.',body:"32 calls and zero refunds — your customer quality is excellent. But 3 closings from 32 opportunities is the key gap. At 15% close rate (achievable with better pitch closing), you'd hit your $30 RPC target. The calls are there. Let's close them."},
-    str:['Zero refunds — excellent quality','32 calls — joint highest volume'],
-    weak:['Close rate 9.38% — below team average','RPC $15.93 — below $30 target'],
-    focus:'Target 1 closing per 6 calls. Practice your closing question. Target Net $700+'},
-  '1005':{ext:'1005',pass:'281947',name:'Mike',mg:false,rank:6,
-    av:{bg:'#0277BD',sk:'#FDBCB4',hair:'#2C1810',ht:'short',eyes:'#2C2C2C',shirt:'#1a1b20'},
-    gross:608.65,refund:0,net:608.65,cb:0,rp:0,calls:27,txn:3,cr:11.11,aov:202.88,tgt:810,ta:75.14,status:'active',
-    daily:[0,0,164.90,443.75,0,0,0],
-    insight:{warn:false,title:'One close away from hitting target.',body:"Zero refunds, solid $202.88 AOV, good 27-call volume. You need exactly ONE more closing per week to break the $30 RPC barrier. That is a 4th deal at your current value. Identify why calls 4-27 didn't convert and address the top objection."},
-    str:['Zero refunds — 100% retention','Good AOV $202.88','27-call volume'],
-    weak:['Close rate 11.11% — 1 more close needed','RPC $22.54 — $7.46 below target'],
-    focus:'Target 4 transactions next week. Open with vehicle age to anchor the plan. Target Net $750+'},
-  '1006':{ext:'1006',pass:'637284',name:'Rob',mg:false,rank:7,
-    av:{bg:'#2E7D32',sk:'#C68642',hair:'#1a1a1a',ht:'short',eyes:'#2C2C2C',shirt:'#1a1b20'},
-    gross:729.65,refund:149.99,net:579.66,cb:0,rp:20.56,calls:21,txn:4,cr:19.05,aov:182.41,tgt:630,ta:92.01,status:'risk',
-    daily:[0,329.85,0,199.90,199.90,0,0],
-    insight:{warn:true,title:'$2.40 per call away from target.',body:"92% achievement and your 19.05% close rate is second-best on the team. Without the Kevin Dillon refund ($149.99), your RPC would have been $34.75 — above target. Follow up within 24 hours of every close to reduce cancellation risk."},
-    str:['2nd-best close rate (19.05%)','92% target achievement','4 solid transactions'],
-    weak:['20.56% refund rate — 1 cancellation','RPC $27.60 — $2.40 below target'],
-    focus:'Zero refunds next week. 5 transactions. Same-day follow-up call after every close. Target Net $800+'},
-  '1007':{ext:'1007',pass:'419623',name:'James',mg:false,rank:1,
-    av:{bg:'#D84315',sk:'#F5DEB3',hair:'#3D2B1F',ht:'short',eyes:'#3D2B1F',shirt:'#1a1b20'},
-    gross:1147.95,refund:0,net:1147.95,cb:0,rp:0,calls:5,txn:2,cr:40,aov:573.98,tgt:150,ta:765.30,status:'active',
-    daily:[0,0,598.95,549,0,0,0],
-    insight:{warn:false,title:'Absolutely phenomenal week!',body:"Your elite-level selling skill and zero refunds set the team benchmark. Two premium Lifetime closes — Randall Mcdaniel ($598.95) and Tina/Charles Pountney ($549) — with zero refunds. RPC $229.59 is 7.6× the target. Scale your call volume to multiply these results. Target: 15+ calls → projected $3,400+ net."},
-    str:['#1 this week — $1,147.95 net','RPC $229.59 — 7.6× above target','40% close rate — highest on team','Highest AOV $573.98 — zero refunds'],
-    weak:['Only 5 calls — low volume limits impact','Revenue in 2 deals — concentration risk'],
-    focus:'Challenge: 15+ calls next week. At 40% close rate, that is 6 deals at your AOV. Target Net $2,000+'},
-  '1008':{ext:'1008',pass:'853726',name:'Peter',mg:false,rank:3,
-    av:{bg:'#6A1B9A',sk:'#DEB887',hair:'#1a1a1a',ht:'curls',eyes:'#2C2C2C',shirt:'#1a1b20'},
-    gross:1009.45,refund:0,net:1009.45,cb:0,rp:0,calls:22,txn:5,cr:22.73,aov:201.89,tgt:660,ta:152.95,status:'active',
-    daily:[0,409.75,0,399.80,199.90,0,0],
-    insight:{warn:false,title:'Crossed the $1K mark — excellent!',body:"RPC $45.88 (53% above target), zero refunds, 22.73% close rate matching the #2 performer. 5 transactions across multiple days shows consistent daily engagement. Push one premium plan next week to push net towards $1,300."},
-    str:['$1,009 net — crossed the $1K mark','RPC $45.88 — 53% above target','Zero refunds — 5 clean transactions'],
-    weak:['AOV $201.89 — room for premium plans','22 calls — slight room to increase'],
-    focus:'Target one Lifetime/5-year plan per week — one premium close lifts net by $300+. Target Net $1,200+'},
-  '1009':{ext:'1009',pass:'192847',name:'Sam',mg:false,rank:4,
-    av:{bg:'#1565C0',sk:'#F4A460',hair:'#2C1810',ht:'messy',eyes:'#2C2C2C',shirt:'#1a1b20'},
-    gross:774.55,refund:154.90,net:619.65,cb:0,rp:20,calls:45,txn:6,cr:13.33,aov:129.09,tgt:1350,ta:45.90,status:'risk',
-    daily:[0,0,319.85,274.80,179.90,0,0],
-    insight:{warn:true,title:'Most calls, most transactions — wrong plan tier.',body:"45 calls and 6 transactions — your work ethic leads the team. But AOV of $129.09 is the lowest on the team. Moving from 1-year to 3-year plans lifts your average from $129 to $200, pushing your RPC from $13.77 to $21. Combined with zero refunds, you'd nearly hit target."},
-    str:['Most calls (45) — highest hustle','Most transactions (6) — closing volume'],
-    weak:['Lowest AOV $129.09 — under-pitching','RPC $13.77 — well below $30 target','20% refund rate — Rose M Johnston'],
-    focus:'Never close below 2-year. Present 3-year as standard. Target AOV $190+. Zero refunds. Target Net $1,000+'},
-  '1010':{ext:'1010',pass:'576319',name:'Tracy',mg:false,rank:9,
-    av:{bg:'#AD1457',sk:'#D4A574',hair:'#6B4226',ht:'curly',eyes:'#3D2B1F',ear:true,shirt:'#1a1b20'},
-    gross:354.80,refund:0,net:354.80,cb:0,rp:0,calls:21,txn:3,cr:14.29,aov:118.27,tgt:630,ta:56.32,status:'active',
-    daily:[0,154.90,99.95,99.95,0,0,0],
-    insight:{warn:false,title:'Clean record — AOV is the key lever.',body:"Zero refunds and 14.29% close rate shows you can connect with customers effectively. Your $118.27 AOV is the team's lowest. A single pitch upgrade — always presenting 3-year as the opener — lifts your AOV to $180+ and your RPC past $25."},
-    str:['Zero refunds — 100% retention','14.29% close rate — at team average','Consistent customer rapport'],
-    weak:['Lowest AOV $118.27 — basic plan closes','RPC $16.90 — below $30 target'],
-    focus:'Personal rule: never close below 2-year. AOV target $175+. Target Net $500+'},
-  '1011':{ext:'1011',pass:'834561',name:'Ben',mg:false,rank:5,
-    av:{bg:'#00695C',sk:'#FAEBD7',hair:'#1a1a1a',ht:'neat',eyes:'#2C2C2C',gl:true,shirt:'#1a1b20'},
-    gross:618.90,refund:0,net:618.90,cb:0,rp:0,calls:17,txn:2,cr:11.76,aov:309.45,tgt:510,ta:121.35,status:'active',
-    daily:[0,0,0,119.90,499,0,0],
-    insight:{warn:false,title:'Above target — volume is the growth lever.',body:"RPC $36.41 above target, second-highest AOV ($309.45), zero refunds. Closing a $499 Lifetime (William Jay) shows premium skill. Only 17 calls limits your total. At 28 calls with your close rate, that is 3 deals → ~$900 net."},
-    str:['RPC $36.41 — above $30 target','2nd-highest AOV $309.45 — premium closer','Zero refunds — 121% target achievement'],
-    weak:['Lowest call volume (17) — limits deal flow','11.76% close rate — room for improvement'],
-    focus:'Target 25+ calls. At your close rate and AOV, 25 calls = 3 deals = ~$930. Target Net $900+'},
+var me = null;
+var curView = 'overview';
+var agentDetailExt = null;
+
+
+// ═══════════════════════════════════════════════════════════
+// COACHING NOTES — data-driven, agent-specific improvement plans
+// ═══════════════════════════════════════════════════════════
+var COACHING = {
+  '1007':{
+    grade:'A+', gradeColor:'var(--g)',
+    headline:'Elite Performer — Now Scale It',
+    summary:'You are operating at 765% of target with a $229.59 RPC that is 7.6x the team average. The mechanics of your selling are near-perfect. The only constraint on your total output is call volume.',
+    actions:[
+      {icon:'📞', text:'Volume is everything. 5 calls this week is championship skill trapped in a bottle. At your 40% close rate and $574 AOV, 15 calls = 6 deals = ~$3,400 net. Request a larger call queue immediately.'},
+      {icon:'⚠️', text:'Concentration risk: 100% of your revenue came from just 2 deals. If one had cancelled, you would have dropped to rank 3. Add 3+ mid-tier deals (3-year plans) to build a safety net around your Lifetime closes.'},
+      {icon:'🎯', text:'Pitch sequence replication: document the exact flow you used for the Randall Mcdaniel ($599) and Pountney ($549) closes and share it with the team. What objections came up, and how did you handle them?'},
+      {icon:'🧠', text:'Next goal — $2,000+ net week: achievable if you combine 15 calls with your current close rate. You already have the skill; now apply volume discipline.'},
+    ]
+  },
+  '1002':{
+    grade:'A', gradeColor:'var(--g)',
+    headline:'Consistent Performer — Add Volume to Multiply',
+    summary:'$1,103 net, 22.73% close rate, zero refunds, and RPC $50 — you are 67% above target and the most reliable performer on the team. The math is simple: more calls = proportionally more money.',
+    actions:[
+      {icon:'📞', text:'22 calls is below your potential. If you take 30 calls at your current close rate (22.73%), that is 7 transactions. At $220 AOV, that is $1,540 net — a $436 increase for the same effort per call.'},
+      {icon:'🛡️', text:'Your zero-refund record is a serious competitive advantage. This means your qualification process is excellent. Document your opening 90-second script so management can model it for the team.'},
+      {icon:'💰', text:'AOV of $220 is solid, but you are leaving money available. Try introducing Lifetime plans as your opening offer on all calls — even one upgrade per week adds $250-300 to your net.'},
+      {icon:'🎯', text:'Target for next week: 28+ calls. At your close rate, the math is clean. No changes needed to your pitch — just more reps.'},
+    ]
+  },
+  '1008':{
+    grade:'A-', gradeColor:'var(--g)',
+    headline:'$1K Club Member — Go Premium',
+    summary:'RPC $45.88 (53% above target), zero refunds, consistent closes across Monday, Thursday, and Friday. You have proven you can close multiple days in a row — that is a rare reliability that needs to be amplified.',
+    actions:[
+      {icon:'💎', text:'Your AOV of $201.89 is good, but one Lifetime plan per week changes everything. A single $499 Lifetime close lifts your weekly net from $1,009 to ~$1,300. Present it as your default option first.'},
+      {icon:'📅', text:'You had zero revenue on Tuesday and Wednesday. A mid-week slump is a pattern risk. Set a personal rule: at minimum, one close attempt on every day you are on the phones.'},
+      {icon:'📞', text:'22 calls is your current ceiling — similar to Bob. Request more call volume. 28 calls at your current close rate yields 6-7 transactions, pushing you toward $1,400+ net.'},
+      {icon:'🏆', text:'You are 1 good week away from overtaking Bob for #2. The gap is $94. One premium plan closes it.'},
+    ]
+  },
+  '1009':{
+    grade:'B-', gradeColor:'var(--amber)',
+    headline:'Hustle Is There — Wrong Plan Tier',
+    summary:'You lead the team in calls (45) and transactions (6). Your work ethic is not the problem — your plan positioning is. At $129 AOV, you are closing on 1-year plans while your competitors close on 3-year and Lifetime.',
+    actions:[
+      {icon:'🚫', text:'Personal rule, starting now: never close below a 2-year plan. A 2-year at ~$199 versus a 1-year at $129 is the same objection-handling effort, $70 more per deal. Multiply that by 6 deals = $420 extra per week.'},
+      {icon:'📈', text:'If you maintain 6 transactions but lift AOV from $129 to $199, your net jumps from $619 to $954 — without making a single extra call. That alone would put you above your $1,350 target.'},
+      {icon:'🛡️', text:'The Rose M Johnston refund ($154.90, 20% of gross) is a pattern to watch. Ensure customers understand what they are signing up for during the pitch — a 2-minute compliance check before closing reduces cancellations.'},
+      {icon:'⚡', text:'You have more calls than anyone. Convert that hustle into higher-value deals. At 45 calls, 15% close rate, and $199 AOV: $1,345 net. You are 2 plan upgrades away from target.'},
+    ]
+  },
+  '1011':{
+    grade:'B+', gradeColor:'var(--g)',
+    headline:'Above Target — Volume Is the Only Gap',
+    summary:'RPC $36.41 (above $30 target), 2nd-highest AOV ($309.45), zero refunds, 121% target achievement. You are doing everything right per call. The total output is limited by a very small call volume.',
+    actions:[
+      {icon:'📞', text:'17 calls is the lowest on the team. You closed 2 deals from 17 calls — that is 11.76%. At 25 calls with the same close rate, that is 3 deals. At $309 AOV, that is $928 net — vs $618 this week. The math is straightforward.'},
+      {icon:'💰', text:'Your William Jay close ($499 Lifetime) shows you are not afraid of premium plans. Make Lifetime your standard offer. You already close confidently at high values — use that skill on more calls.'},
+      {icon:'📅', text:'You had zero activity Monday–Wednesday this week. Even 3-4 calls on quieter days creates pipeline. Every day with 0 calls is net $0 that you cannot recover.'},
+      {icon:'🎯', text:'Next week goal: 25 calls. You do not need to change your pitch, your close rate, or your AOV. Just pick up the phone more often.'},
+    ]
+  },
+  '1005':{
+    grade:'B', gradeColor:'var(--amber)',
+    headline:'One Close Away From Target — Find It',
+    summary:'$608 net, 75% target achievement, zero refunds, solid $202 AOV. You are mechanically sound. The difference between your week and a great week is literally one additional transaction.',
+    actions:[
+      {icon:'🎯', text:'You had 27 calls and 3 closes. A 4th close at your AOV ($202) would have taken your RPC from $22.54 to $29.58 — almost exactly $30 target. Find out which call was closest to a close and work backward from there.'},
+      {icon:'🔍', text:'Your Thursday performance ($443.75 in one day) shows you can batch closings. What was different about Thursday? Replicate that mindset and environment on more days.'},
+      {icon:'📞', text:'Ask for 3 more calls per day. At your close rate, every 9 additional calls statistically produces 1 more transaction. That is worth $200 of net revenue per week.'},
+      {icon:'🛡️', text:'Zero refunds is a strong foundation. Your customers are satisfied with your closes — you are qualifying well. Stay consistent with that and focus purely on volume.'},
+    ]
+  },
+  '1006':{
+    grade:'B+', gradeColor:'var(--g)',
+    headline:'$2.40 Per Call From Target — Stay Focused',
+    summary:'92% target achievement, 19.05% close rate (2nd best on team), 4 transactions. You would have exceeded target without the Kevin Dillon refund. You are close — now protect every close you make.',
+    actions:[
+      {icon:'🛡️', text:'Kevin Dillon ($149.99 refund, Apr 02 → processed May 13) is the difference between 92% and 116% target. Implement a same-day or next-morning follow-up call after every close. A 2-minute "welcome aboard" call dramatically reduces cancellation risk.'},
+      {icon:'📞', text:'21 calls with a 19.05% close rate produced 4 transactions. Request 25+ calls. The math: 25 x 19.05% = 4.76 transactions = ~$5 additional RPC, taking you well above target.'},
+      {icon:'💰', text:'Your AOV of $182.41 is slightly below the team mid-range. Look at shifting one 3-year plan to a 5-year. That single upgrade on one deal per week adds $80-100 to your AOV.'},
+      {icon:'🏆', text:'Your close rate is elite. You are already doing the hard part. This week was an outlier with the refund. Stay the course.'},
+    ]
+  },
+  '1004':{
+    grade:'C+', gradeColor:'var(--amber)',
+    headline:'High Volume, Right Habits — Wrong Conversion Rate',
+    summary:'32 calls (joint team high), zero refunds, but a 9.38% close rate means you are engaging customers who qualify, but something in the pitch sequence is breaking before the close.',
+    actions:[
+      {icon:'🎯', text:'At your call volume, lifting from 9.38% to 14% close rate (still below team average) would give you 4-5 transactions instead of 3, pushing your net to $700+ and RPC above $21. Identify your exact breakdown point: is it the plan presentation, the price, or the commitment step?'},
+      {icon:'📝', text:'Script your closing question and practice it. Something as simple as changing "Would you like to go ahead?" to "Which plan works best for you — the 3-year or the 5-year?" (assumptive close) can lift close rate by 3-5%.'},
+      {icon:'💰', text:'Your AOV of $169.90 suggests most closes are on 1 and 2-year plans. Even staying at 3 transactions per week but moving one to a 3-year ($249+) would add $79+ to your net.'},
+      {icon:'💪', text:'Zero refunds is a genuine strength — your customers stay. Focus all energy this week on closing 1 additional call. Just 1. That single change takes you from 53% to ~71% target achievement.'},
+    ]
+  },
+  '1010':{
+    grade:'C+', gradeColor:'var(--amber)',
+    headline:'Solid Rapport — AOV Needs an Upgrade',
+    summary:'Zero refunds, 14.29% close rate (at team average), 21 calls. You can connect with customers. The gap is not your ability to close — it is what you are closing on. $118.27 AOV is the team minimum.',
+    actions:[
+      {icon:'🚫', text:'Personal rule: never present a 1-year plan as the primary option. Open with 3-year as the standard. Use 2-year as the "downgrade" option if they resist. Just this change moves your AOV from $118 to ~$180, adding $189 to your weekly net.'},
+      {icon:'📊', text:'If you maintain 3 closings per week at $180 AOV, your RPC goes from $16.90 to $25.71. Add one more call next week to 24, and statistically you close 3-4. That puts you at $540-720 net versus $354 this week.'},
+      {icon:'💬', text:'Practice value anchoring. Before presenting the plan, anchor on the cost of NOT having coverage: "If something happened this year without a plan, you could be looking at $3,000-5,000 out of pocket." Then the 3-year plan at $249 sounds like a bargain.'},
+      {icon:'📅', text:'You had no revenue on Thursday and Friday. A consistent daily routine — even 5-6 calls per day — distributes your pipeline and prevents zeroing out entire days.'},
+    ]
+  },
+  '1001':{
+    grade:'D', gradeColor:'var(--red)',
+    headline:'Manager Note — Critical Week Needs Honest Review',
+    summary:'As a player-manager, your personal performance this week was significantly impacted by a $349 void (Bradford L Beukelman). Net $150 from 32 calls is a result that needs addressing — both the refund cause and the closing execution.',
+    actions:[
+      {icon:'⚠️', text:'The Bradford L Beukelman void ($349, Lifetime plan, May 12 sale → May 14 processed) wiped 70% of your gross. Conduct a call review of that interaction. What signals indicated cancellation risk, and how will you qualify differently?'},
+      {icon:'🎯', text:'1 transaction from 32 calls (3.12% close rate) is significantly below your capability. As manager, your team watches your performance too. A coaching week where you model the standard you set for others is important for credibility.'},
+      {icon:'📞', text:'You have the call volume (32 calls). The conversion is the gap. Reconnect with what made you successful as a seller — apply the same structured closing approach you coach your team on.'},
+      {icon:'🏆', text:'Next week, set a personal target of 4 transactions with zero refunds. Your $499 Timothy Rinehart close proves the premium skill is there. Channel that on multiple calls.'},
+    ]
+  },
 };
 
-const SORTED=Object.values(AGENTS).sort((a,b)=>a.rank-b.rank);
-const TOP3=['1007','1002','1008'];
-const TEAM={net:6857.26,gross:7511.15,refunds:653.89,calls:244,txn:35,avgRpc:27.47,conv:13.93,tgtAch:93.68};
-let me=null,curView='overview';
+var TEAM_NOTES = {
+  headline:'Manager's Team Performance Brief — Week of May 11–15',
+  score:'93.68%',
+  kpis:[
+    {label:'Biggest Gap', val:'RPC $27.47 vs $30 target', note:'$2.53 per call — fixable with 3 key agents'},
+    {label:'Biggest Win', val:'James: RPC $229.59', note:'7.6x target — showcase this to full team'},
+    {label:'Retention Risk', val:'Rob & Sam refunds', note:'Follow-up call protocol needed'},
+    {label:'AOV Opportunity', val:'Sam & Tracy under $130', note:'Plan tier coaching required'},
+  ],
+  priorities:[
+    {icon:'🎯', title:'Immediate — AOV Upgrade for Sam & Tracy',
+     text:'Both agents are closing primarily on 1-year plans. A single coaching call on 3-year plan presentation could add $400+ combined net revenue next week without any additional call volume. This is the highest-ROI intervention available.'},
+    {icon:'📞', title:'Short-term — Volume Scale for James & Ben',
+     text:'James (5 calls) and Ben (17 calls) have the highest per-call value on the team ($229 and $36 RPC respectively). They are capped by call volume, not skill. Allocating them a larger call queue would directly and immediately impact team net revenue.'},
+    {icon:'🛡️', title:'Retention — Implement Post-Close Follow-Up Protocol',
+     text:'3 refunds this week totalling $653.89. Rob, Sam, and Jason all experienced cancellations. A mandatory 24-hour "welcome call" after every close costs nothing and significantly reduces cancellation rates. Institute this as team standard.'},
+    {icon:'🏆', title:'Culture — James's Close as Team Case Study',
+     text:'James closed two Lifetime plans in 5 calls at 40%. Book a 15-minute team briefing where James walks through his objection handling and closing sequence. One agent replicating this adds $500+ per week to team net.'},
+    {icon:'📊', title:'Mid-term — Close Rate Coaching for Grace',
+     text:'Grace has the second-highest call volume (32) but a 9.38% close rate. She is doing the work — the conversion pitch needs refinement. A 1:1 role-play session focused on the assumptive close would have significant impact.'},
+  ]
+};
 
 // ═══════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════
-function svgOf(k){return mkAv(AGENTS[k].av);}
-function $(id){return document.getElementById(id);}
-function $$(id){return document.getElementById(id);}  // alias for inline handlers
-function fmt(n,dec=2){return '$'+n.toFixed(dec);}
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0);}
-function pct(val,max){return Math.min((val/max)*100,100);}
-// Safe RPC computation — a.rpc field doesn't exist in AGENTS, always compute from net/calls
-function agRpc(a){return a.calls>0?parseFloat((a.net/a.calls).toFixed(2)):0;}
+function $(id){ return document.getElementById(id); }
+function fmt(n){ return '$' + Number(n).toFixed(2); }
+function agRpc(a){ return a.calls > 0 ? parseFloat((a.net/a.calls).toFixed(2)) : 0; }
 
-// ═══════════════════════════════════════════════════════════
-// LOGIN
-// ═══════════════════════════════════════════════════════════
-// ─── Login helpers ────────────────────────────────────────────
-function previewLogin(ext){
-  var ag=AGENTS[ext.replace(/\s/g,'')];
-  var nm=$('l-name');
-  if(nm) nm.value=ag?ag.name+(ag.mg?' · Manager':''):'';
-}
-function clearErr(){
-  var e=$('l-err'); if(e){e.textContent='';e.classList.remove('on');}
-}
-function showErr(msg){
-  var e=$('l-err'); if(!e)return;
-  e.textContent=msg; e.classList.add('on');
-  // Shake the card
-  var card=document.querySelector('.l-card');
-  if(card){card.style.animation='shake .35s ease';
-    setTimeout(function(){card.style.animation='';},350);}
-}
-function togglePass(){
-  var f=$('l-pass'),e=$('pass-eye');
-  if(!f)return;
-  f.type=(f.type==='password')?'text':'password';
-  if(e)e.textContent=(f.type==='password')?'visibility':'visibility_off';
-}
-function toggleMgrPass(){
-  var f=$('mgr-pass'),e=$('mgr-pass-eye');
-  if(!f)return;
-  f.type=(f.type==='password')?'text':'password';
-  if(e)e.textContent=(f.type==='password')?'visibility':'visibility_off';
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  $(id).classList.add('active');
+  window.scrollTo(0,0);
 }
 
-// ─── Regular agent login ───────────────────────────────────────
-function doLogin(){
-  var ext=($('l-ext').value||'').replace(/\s/g,'');
-  var pass=($('l-pass').value||'').replace(/\s/g,'');
-  var btn=$('signin-btn');
+// avatar() — defined above in bitmoji system
 
-  // Field-specific error messages
-  if(!ext && !pass){ showErr('Please enter your Extension number and Access Key.'); return; }
-  if(!ext){ showErr('Extension is missing — please enter your extension number (e.g. 1002).'); return; }
-  if(!pass){ showErr('Access Key is missing — please enter your 6-digit access key.'); return; }
-  if(!AGENTS[ext]){ showErr('Extension “'+ext+'” not found. Double-check your extension number.'); return; }
-  if(AGENTS[ext].pass!==pass){
-    showErr('Wrong Access Key for Extension '+ext+'. Please try again.');
-    $('l-pass').value=''; $('l-pass').focus(); return;
+function donut(pct, color, size){
+  size = size || 180; color = color || '#4edea3';
+  var sw = 16, r = (size/2) - sw - 2;
+  var circ = 2 * Math.PI * r;
+  var fill = Math.min(pct/100, 1) * circ;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">' +
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="rgba(60,74,66,.4)" stroke-width="'+sw+'"/>' +
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+sw+'"' +
+    ' stroke-dasharray="'+fill+' '+circ+'" stroke-dashoffset="0"' +
+    ' transform="rotate(-90 '+(size/2)+' '+(size/2)+')" stroke-linecap="round"/></svg>';
+}
+
+function bars(daily, labels){
+  labels = labels || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var max = Math.max.apply(null, daily.concat([1]));
+  var html = '<div class="bars">';
+  for(var i=0;i<daily.length;i++){
+    var v = daily[i];
+    var h = v > 0 ? Math.max((v/max)*100, 8) : 0;
+    var isMax = v === Math.max.apply(null, daily) && v > 0;
+    var cls = isMax ? 'hi' : (v > 0 ? 'md' : '');
+    html += '<div class="bar-col">' +
+      '<div class="bar-track"><div class="bar '+cls+'" style="height:'+h+'%;"></div></div>' +
+      '<span class="bar-lbl'+(isMax?' hi':'')+'">'+labels[i]+'</span></div>';
   }
+  return html + '</div>';
+}
 
-  // Success — set me immediately, then show loading state
-  me=AGENTS[ext];
-  if(btn){btn.textContent='Signing in…';btn.disabled=true;}
+// ═══════════════════════════════════════════════════════════
+// LOGIN LOGIC
+// ═══════════════════════════════════════════════════════════
+function onExtInput(){
+  var ext = ($('ext-input').value || '').replace(/\s/g, '');
+  var ag = AGENTS[ext];
+  $('agent-name').value = ag ? ag.name + (ag.mg ? ' · Manager' : '') : '';
+  $('agent-name').style.color = ag ? 'var(--g)' : 'var(--dim)';
+  hideLoginErr();
+}
+
+function showLoginErr(msg){
+  var e = $('login-err'); e.textContent = msg; e.classList.add('show');
+}
+function hideLoginErr(){
+  $('login-err').classList.remove('show');
+}
+
+function onLogin(){
+  var ext  = ($('ext-input').value  || '').replace(/\s/g, '');
+  var pass = ($('pass-input').value || '').replace(/\s/g, '');
+  var btn  = $('signin-btn');
+  if(!ext && !pass){ showLoginErr('Please enter your Extension and Access Key.'); return; }
+  if(!ext)          { showLoginErr('Please enter your Extension number.'); return; }
+  if(!pass)         { showLoginErr('Please enter your Access Key.'); return; }
+  if(!AGENTS[ext])  { showLoginErr('Extension "'+ext+'" not found. Please check your extension.'); return; }
+  if(AGENTS[ext].pass !== pass){ showLoginErr('Wrong Access Key for Extension '+ext+'.'); $('pass-input').value=''; $('pass-input').focus(); return; }
+  me = AGENTS[ext];
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
   setTimeout(function(){
-    if(btn){btn.innerHTML='Sign In <span class="mso">bolt</span>';btn.disabled=false;}
-    buildDash(); show('sd');
-  },250);
+    btn.textContent = 'Sign In ⚡'; btn.disabled = false;
+    launchDashboard();
+  }, 300);
 }
 
-// ─── Manager panel ─────────────────────────────────────────────
-function openMgrPanel(){
-  var p=$('mgr-panel');
-  if(!p)return;
-  p.classList.add('open');    // class-toggle is more reliable than inline style
-  p.style.display='flex';     // belt AND suspenders
-  var mp=$('mgr-pass');
-  if(mp){mp.value=''; setTimeout(function(){mp.focus();},200);}
-  var me2=$('mgr-err');
-  if(me2){me2.style.display='none';me2.textContent='';}
+function onTogglePass(){
+  var f = $('pass-input'), b = $('toggle-pass');
+  f.type = f.type === 'password' ? 'text' : 'password';
+  b.textContent = f.type === 'password' ? '👁' : '🙈';
 }
-function closeMgrPanel(){
-  var p=$('mgr-panel');
-  if(p){p.classList.remove('open'); p.style.display='none';}
-  var mp=$('mgr-pass'); if(mp) mp.value='';
-  var me2=$('mgr-err'); if(me2){me2.style.display='none';me2.textContent='';}
+
+// ═══════════════════════════════════════════════════════════
+// MANAGER MODAL
+// ═══════════════════════════════════════════════════════════
+function openMgrModal(){
+  var modal = $('mgr-modal');
+  modal.classList.add('open');
+  $('mgr-pass-input').value = '';
+  hideMgrErr();
+  setTimeout(function(){ $('mgr-pass-input').focus(); }, 200);
 }
-function doMgrLogin(){
-  var pass=($('mgr-pass').value||'').replace(/\s/g,'');
-  var err=$('mgr-err'), btn=$('mgr-login-btn');
-  if(!pass){
-    err.textContent='Please enter your Access Key.';
-    err.style.display='block'; return;
-  }
-  if(AGENTS['1001'].pass!==pass){
-    err.textContent='Wrong Access Key for Manager session. Please try again.';
-    err.style.display='block';
-    $('mgr-pass').value=''; $('mgr-pass').focus(); return;
-  }
-  me=AGENTS['1001'];        // set IMMEDIATELY before setTimeout
-  if(btn){btn.textContent='Signing in…';btn.disabled=true;}
+function closeMgrModal(){
+  $('mgr-modal').classList.remove('open');
+  $('mgr-pass-input').value = ''; hideMgrErr();
+}
+function showMgrErr(msg){ var e=$('mgr-err'); e.textContent=msg; e.classList.add('show'); }
+function hideMgrErr(){ $('mgr-err').classList.remove('show'); }
+function onToggleMgrPass(){
+  var f=$('mgr-pass-input'), b=$('toggle-mgr-pass');
+  f.type = f.type==='password' ? 'text' : 'password';
+  b.textContent = f.type==='password' ? '👁' : '🙈';
+}
+function onMgrLogin(){
+  var pass = ($('mgr-pass-input').value||'').replace(/\s/g,'');
+  var btn  = $('mgr-login-btn');
+  if(!pass){ showMgrErr('Please enter your Access Key.'); return; }
+  if(AGENTS['1001'].pass !== pass){ showMgrErr('Wrong Access Key. Please try again.'); $('mgr-pass-input').value=''; $('mgr-pass-input').focus(); return; }
+  me = AGENTS['1001'];
+  btn.textContent = 'Signing in…'; btn.disabled = true;
   setTimeout(function(){
-    if(btn){btn.innerHTML='Login as Manager <span class="mso">admin_panel_settings</span>';btn.disabled=false;}
-    closeMgrPanel();
-    buildDash(); show('sd');
-  },250);
+    btn.textContent='Login as Manager 🏆'; btn.disabled=false;
+    closeMgrModal();
+    launchDashboard();
+  }, 300);
 }
 
-// ─── Logout ────────────────────────────────────────────────────
-function doLogout(){
-  me=null; curView='overview';
-  var ef=$('l-ext'),pf=$('l-pass'),nf=$('l-name');
-  if(ef)ef.value=''; if(pf)pf.value=''; if(nf)nf.value='';
-  clearErr(); closeMgrPanel();
-  var mh=document.querySelector('.mob-hdr');
-  if(mh) mh.classList.remove('visible');
-  show('sl');
-}
-function flashRefresh(){const btn=document.querySelector('.btn-p');btn.textContent='Refreshed ✓';setTimeout(()=>{btn.innerHTML='Refresh Data';},1800);}
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD LAUNCH
+// ═══════════════════════════════════════════════════════════
+function launchDashboard(){
+  // Header avatar
+  $('tb-av').innerHTML  = avatar(me, 34);
+  $('mob-av').innerHTML = avatar(me, 28);
+  $('tb-user-name').textContent = me.name + (me.mg ? ' · Manager' : '');
 
-// ═══════════════════════════════════════════════════════════
-// DASHBOARD INIT
-// ═══════════════════════════════════════════════════════════
-function buildDash(){
-  // Top bar avatar
-  const tbav=$('tb-av');
-  tbav.innerHTML=me.mgImg?`<img src="${me.mgImg}" style="width:100%;height:100%;object-fit:cover;" alt="${me.name}"/>`:svgOf(me.ext);
-  const mobav=$('mob-av');
-  if(mobav)mobav.innerHTML=me.mgImg?`<img src="${me.mgImg}" style="width:100%;height:100%;object-fit:cover;" alt="${me.name}"/>`:svgOf(me.ext);
-  // Show mob-hdr on mobile via .visible class
-  const mh=document.querySelector('.mob-hdr');
-  if(mh)mh.classList.add('visible');
-  // Sidebar nav
-  buildSideNav();
-  // Mobile nav
-  buildMobNav();
-  // Content
+  // Top 3 banner
+  buildTop3Banner();
+
+  // Build nav
+  buildNav();
+
+  // Show dashboard
+  showScreen('dash-screen');
   setView('overview');
 }
 
+function onLogout(){
+  me = null; curView = 'overview'; agentDetailExt = null;
+  $('ext-input').value = ''; $('pass-input').value = ''; $('agent-name').value = '';
+  hideLoginErr(); closeMgrModal();
+  showScreen('login-screen');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOP 3 BANNER
+// ═══════════════════════════════════════════════════════════
+function buildTop3Banner(){
+  var html = '<span class="t3-lbl">🏅 Top 3 This Week</span><div class="t3-items">';
+  TOP3.forEach(function(ext, i){
+    var a = AGENTS[ext];
+    var medals = ['🥇','🥈','🥉'];
+    if(i>0) html += '<span class="t3-sep">|</span>';
+    html += '<div class="t3-item">' +
+      '<span class="t3-pos">'+medals[i]+'</span>' +
+      '<div class="t3-av">'+avatar(a, 22)+'</div>' +
+      '<div><div class="t3-name">'+a.name+(me&&me.ext===ext?' (You)':'')+'</div>' +
+      '<div class="t3-stats">'+fmt(a.net)+' · RPC '+fmt(agRpc(a))+'</div></div>' +
+      '</div>';
+  });
+  html += '</div>';
+  $('top3-bar').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════
 function getNavItems(){
-  if(me.mg)return[
-    {id:'overview',icon:'dashboard',label:'Overview'},
-    {id:'agents',icon:'people',label:'All Agents'},
-    {id:'rpc',icon:'show_chart',label:'RPC Analysis'},
-    {id:'voids',icon:'block',label:'Voids'},
-    {id:'analytics',icon:'bar_chart',label:'Analytics'},
+  if(me.mg) return [
+    {v:'overview',  icon:'📊', label:'Overview'},
+    {v:'agents',    icon:'👥', label:'All Agents'},
+    {v:'rpc',       icon:'📈', label:'RPC Analysis'},
+    {v:'voids',     icon:'❌', label:'Voids'},
+    {v:'analytics', icon:'📉', label:'Analytics'},
   ];
-  return[
-    {id:'overview',icon:'dashboard',label:'Overview'},
-    {id:'performance',icon:'person',label:'My Performance'},
-    {id:'rpc',icon:'show_chart',label:'RPC Analysis'},
-    {id:'voids',icon:'block',label:'Voids'},
-    {id:'analytics',icon:'bar_chart',label:'Analytics'},
+  return [
+    {v:'overview',  icon:'📊', label:'My Performance'},
+    {v:'rpc',       icon:'📈', label:'RPC Analysis'},
+    {v:'voids',     icon:'❌', label:'Voids'},
+    {v:'analytics', icon:'📉', label:'Analytics'},
   ];
 }
 
-function buildSideNav(){
-  const nav=$('sb-nav');
-  nav.innerHTML=getNavItems().map(i=>`
-    <button class="nav-i ${i.id===curView?'act':''}" id="nav-${i.id}" onclick="setView('${i.id}')">
-      <span class="mso">${i.icon}</span>${i.label}
-    </button>`).join('');
-}
-function buildMobNav(){
-  const nav=$('mob-nav');
-  const items=getNavItems().slice(0,5);
-  nav.innerHTML=items.map(i=>`
-    <button class="mob-nav-i ${i.id===curView?'act':''}" id="mnav-${i.id}" onclick="setView('${i.id}')">
-      <span class="mso">${i.icon}</span>${i.label}
-    </button>`).join('');
-}
-function setView(v){
-  curView=v;
-  document.querySelectorAll('.nav-i,.mob-nav-i').forEach(el=>{
-    el.classList.toggle('act',el.id===('nav-'+v)||el.id===('mnav-'+v));
+function buildNav(){
+  var items = getNavItems();
+  var sideHtml = '', mobHtml = '';
+  items.forEach(function(item){
+    var act = item.v === curView ? ' active' : '';
+    sideHtml += '<button class="nav-btn'+act+'" data-view="'+item.v+'">' +
+      '<span class="nav-icon">'+item.icon+'</span>'+item.label+'</button>';
+    mobHtml += '<button class="mob-nav-btn'+act+'" data-view="'+item.v+'">' +
+      '<span class="mob-icon">'+item.icon+'</span>'+item.label+'</button>';
   });
-  var dc=$('dcontent');
-  if(!dc||!me)return;
+  $('sidebar-nav').innerHTML = sideHtml;
+  $('mob-nav-inner').innerHTML = mobHtml;
+}
+
+function setView(v){
+  curView = v;
+  agentDetailExt = null;
+  buildNav(); // refresh active states
+  renderView(v);
+}
+
+function renderView(v){
   try{
-    var html='';
+    var html = '';
     if(me.mg){
       switch(v){
-        case'overview':  html=mgrOverview();  break;
-        case'agents':    html=mgrAgents();    break;
-        case'rpc':       html=rpcAnalysis();  break;
-        case'voids':     html=voidsView();    break;
-        default:         html=analyticsView();
+        case'overview':  html=renderMgrOverview(); break;
+        case'agents':    html=renderMgrAgents();   break;
+        case'rpc':       html=renderRpc(true);     break;
+        case'voids':     html=renderMgrVoids();    break;
+        default:         html=renderAnalytics(true);
       }
-    }else{
+    } else {
       switch(v){
-        case'overview':
-        case'performance': html=agentView(me);     break;
-        case'rpc':         html=agentRpc(me);      break;
-        case'voids':       html=agentVoids(me);    break;
-        default:           html=agentAnalytics(me);
+        case'overview':  html=renderAgentDash(me);    break;
+        case'rpc':       html=renderAgentRpc(me);     break;
+        case'voids':     html=renderAgentVoids(me);   break;
+        default:         html=renderAgentAnalytics(me);
       }
     }
-    dc.innerHTML=html;
-    setTimeout(animateBars,150);
-  }catch(err){
-    console.error('setView['+v+'] error:',err);
-    dc.innerHTML='<div style="padding:40px;text-align:center;">'
-      +'<div style="font-size:40px;margin-bottom:12px;">⚠️</div>'
-      +'<div style="font-size:17px;font-weight:700;color:#f87171;">Something went wrong</div>'
-      +'<div style="font-size:13px;color:var(--on-dim);margin-top:6px;">'+err.message+'</div>'
-      +'<button onclick="setView('overview')" style="margin-top:20px;padding:10px 20px;'
-      +'background:var(--primary);color:var(--bg);border:none;border-radius:8px;'
-      +'font-weight:700;cursor:pointer;">↩ Back to Overview</button></div>';
+    $('main-content').innerHTML = html;
+  } catch(err){
+    $('main-content').innerHTML =
+      '<div style="padding:40px;text-align:center;">' +
+      '<div style="font-size:36px;margin-bottom:12px;">⚠️</div>' +
+      '<div style="font-size:16px;font-weight:700;color:#f87171;">Error loading view</div>' +
+      '<div style="font-size:12px;color:var(--dim);margin-top:6px;">'+err.message+'</div></div>';
+    console.error('[setView '+v+']', err);
   }
-}
-
-// ═══════════════════════════════════════════════════════════
-// CHARTS
-// ═══════════════════════════════════════════════════════════
-function donut(pctVal,color='#4edea3',size=200,sw=16){
-  const r=(size/2)-sw-2;
-  const circ=2*Math.PI*r;
-  const fill=Math.min(pctVal/100,1)*circ;
-  const id='d'+Math.random().toString(36).substr(2,5);
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(60,74,66,.4)" stroke-width="${sw}"/>
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
-      stroke-dasharray="${fill} ${circ}" stroke-dashoffset="0"
-      transform="rotate(-90 ${size/2} ${size/2})" stroke-linecap="round"/>
-  </svg>`;
-}
-
-function barChart(daily,maxVal,labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],todayIdx=4){
-  const m=maxVal||Math.max(...daily,1);
-  return `<div class="bars-wrap">${daily.map((v,i)=>{
-    const h=Math.max((v/m)*100,v>0?8:0);
-    const cls=v>0?(v===Math.max(...daily)?'hi':'med'):'';
-    return `<div class="bar-col">
-      <div class="bar-track"><div class="bar ${cls}" style="height:${h}%;"></div></div>
-      <span class="bar-lbl ${cls?'hi':''}">${labels[i]}</span>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-function animateBars(){
-  document.querySelectorAll('.mc-bf').forEach(el=>{
-    el.style.width=el.dataset.w||'0%';
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// TOP 3 BANNER (shared)
-// ═══════════════════════════════════════════════════════════
-function top3Banner(){
-  const top=TOP3.map(k=>AGENTS[k]);
-  return `<div class="t3bar fu">
-    ${top.map((a,i)=>`
-      ${i>0?'<div class="t3div"></div>':''}
-      <div class="t3it">
-        <div class="t3rk">#${i+1}</div>
-        <div class="t3av">${svgOf(a.ext)}</div>
-        <div>
-          <div class="t3nm">${a.name}${me&&me.ext===a.ext?' (You)':''}</div>
-          <div class="t3st">${fmt(a.net)}&nbsp;·&nbsp;RPC&nbsp;${fmt(agRpc(a))}</div>
-        </div>
-      </div>`).join('')}
-    <div class="elite-badge">
-      <span class="mso" style="color:var(--primary);font-size:18px;">trending_up</span>
-      <div class="elite-txt">Elite Tier<br>Active</div>
-    </div>
-  </div>`;
 }
 
 // ═══════════════════════════════════════════════════════════
 // MANAGER VIEWS
 // ═══════════════════════════════════════════════════════════
-function mgrOverview(){
-  const riskRed=SORTED.filter(a=>a.status==='critical');
-  const riskAmb=SORTED.filter(a=>a.status==='risk');
-  const topFeed=SORTED.slice(0,3);
-  return `
-  ${top3Banner()}
-  <div class="kpi-row fu1">
-    <div class="kpi" style="border-color:rgba(78,222,163,.35)">
-      <div class="kpi-lbl">Total Net Sales</div>
-      <div class="kpi-val" style="color:var(--primary)">${fmt(TEAM.net,2)}</div>
-      <div class="kpi-sub"><span style="color:var(--primary)">▲ 12.4%</span> vs last session</div>
-    </div>
-    <div class="kpi" style="border-color:rgba(245,158,11,.3)">
-      <div class="kpi-lbl">Avg RPC</div>
-      <div class="kpi-val" style="color:var(--amber)">${fmt(TEAM.avgRpc)}</div>
-      <div class="kpi-sub"><span class="mso" style="font-size:14px;color:var(--amber)">warning</span> Below threshold ($30)</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-lbl">Total Calls</div>
-      <div class="kpi-val">${TEAM.calls}</div>
-      <div class="kpi-sub"><span class="mso" style="font-size:14px;color:var(--on-dim)">schedule</span> Steady volume</div>
-    </div>
-    <div class="kpi" style="border-color:rgba(78,222,163,.25)">
-      <div class="kpi-lbl">Team Target</div>
-      <div class="kpi-val">${TEAM.tgtAch}%</div>
-      <div class="mc-bar" style="margin-top:10px"><div class="mc-bf" data-w="${Math.min(TEAM.tgtAch,100)}%" style="width:0%"></div></div>
-    </div>
-  </div>
-  <div class="mgr-grid fu2">
-    <div>
-      ${riskRed.map(a=>`
-      <div class="risk-c crit">
-        <div class="risk-hdr"><span class="mso" style="font-size:16px;color:var(--error)">error</span><span style="color:var(--error)">Critical Risk</span></div>
-        <div class="risk-agent">
-          <div>
-            <div class="risk-anm">${a.name}</div>
-            <div class="risk-adt">${a.rp.toFixed(2)}% Refund Rate</div>
-          </div>
-          <button class="btn-p" style="width:auto;padding:6px 14px;font-size:10px;" onclick="viewAgent('${a.ext}')">Coach Now</button>
-        </div>
-      </div>`).join('')}
-      ${riskAmb.length>0?`
-      <div class="risk-c warn">
-        <div class="risk-hdr"><span class="mso" style="font-size:16px;color:var(--amber)">warning</span><span style="color:var(--amber)">Refund Risk — Amber</span></div>
-        ${riskAmb.map(a=>`<div class="risk-agent">
-          <div><div class="risk-anm">${a.name}</div><div class="risk-adt">${a.rp.toFixed(1)}% refund rate</div></div>
-          <span class="badge ba">Monitoring</span>
-        </div>`).join('')}
-      </div>`:''}
-      <div class="feed-c">
-        <div class="feed-lbl">Live Revenue Feed</div>
-        ${topFeed.map((a,i)=>`<div class="feed-it">
-          <div class="feed-dot"></div>
-          <div><div class="feed-txt"><strong>${a.name}</strong> closed ${fmt(a.net/a.txn)}</div>
-          <div class="feed-time">${(i+1)*4+(i*3)} min ago</div></div>
-        </div>`).join('')}
-      </div>
-    </div>
-    <div class="tbl-card">
-      <div class="tbl-hdr">
-        <div class="tbl-title">Agent Performance</div>
-        <div class="tbl-filter"><span class="mso" style="font-size:16px">search</span><input id="tbl-q" placeholder="Filter agents..." oninput="filterTable(this.value)"/></div>
-      </div>
-      <div style="overflow-x:auto">
-        <table class="ptbl" id="perf-tbl">
-          <thead><tr>
-            <th onclick="sortTable('name')">Agent <span>↕</span></th>
-            <th onclick="sortTable('net')">Net Sales <span>↕</span></th>
-            <th onclick="sortTable('rpc')">RPC <span>↕</span></th>
-            <th onclick="sortTable('cr')">Close Rate <span>↕</span></th>
-            <th>Status</th>
-          </tr></thead>
-          <tbody id="tbl-body">${renderTableRows(SORTED)}</tbody>
-        </table>
-      </div>
-    </div>
-  </div>`;
-}
 
-function renderTableRows(agents,q=''){
-  return agents.filter(a=>!q||a.name.toLowerCase().includes(q.toLowerCase())).map(a=>{
-    const rpcVal=agRpc(a);
-    const statusBadge=a.status==='active'?`<span class="badge bg">Active</span>`:
-      a.status==='risk'?`<span class="badge ba">Risk</span>`:
-      `<span class="badge br">Critical</span>`;
-    const netColor=a.status==='critical'?'color:var(--error)':a.status==='risk'?'color:var(--amber)':'color:var(--primary)';
-    return `<tr onclick="viewAgent('${a.ext}')">
-      <td><div class="ag-cell"><div class="ag-av">${svgOf(a.ext)}</div><div class="ag-nm">${a.name}</div></div></td>
-      <td><span class="dn" style="${netColor}">${fmt(a.net)}</span></td>
-      <td><span class="dn" style="${rpcVal>=30?'color:var(--primary)':'color:var(--amber)'}">${fmt(rpcVal)}</span></td>
-      <td><span class="dn">${a.cr.toFixed(1)}%</span></td>
-      <td>${statusBadge}</td>
-    </tr>`;
+function renderTeamCoachingPanel(){
+  var t=TEAM_NOTES;
+  var kpis=t.kpis.map(function(k){
+    return '<div class="kpi" style="min-width:0;">'
+      +'<div class="kpi-lbl">'+k.label+'</div>'
+      +'<div style="font-size:14px;font-weight:800;color:var(--g);line-height:1.3;margin-bottom:4px;">'+k.val+'</div>'
+      +'<div class="kpi-sub">'+k.note+'</div></div>';
   }).join('');
+  var pris=t.priorities.map(function(p){
+    return '<div style="display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(60,74,66,.15);">'
+      +'<div style="font-size:22px;flex-shrink:0;margin-top:1px;">'+p.icon+'</div>'
+      +'<div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">'+p.title+'</div>'
+      +'<div style="font-size:12px;color:var(--dim);line-height:1.7;">'+p.text+'</div></div></div>';
+  }).join('');
+  return '<div style="background:var(--s3);border:1px solid rgba(60,74,66,.4);border-top:3px solid var(--g);border-radius:12px;padding:22px;margin-top:20px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;">'
+    +'<div><div style="font-size:16px;font-weight:800;">'+t.headline+'</div>'
+    +'<div style="font-size:12px;color:var(--dim);margin-top:3px;">Your action plan for the week ahead — based on real team data.</div></div>'
+    +'<div style="background:rgba(78,222,163,.12);border:1px solid rgba(78,222,163,.3);border-radius:8px;padding:8px 16px;text-align:center;">'
+    +'<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);">Team Achievement</div>'
+    +'<div style="font-size:24px;font-weight:800;color:var(--g);">'+t.score+'</div></div></div>'
+    +'<div class="kpi-grid" style="margin-bottom:4px;">'+kpis+'</div>'
+    +'<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g);padding:14px 0 4px;">🎯 Your 5 Priority Actions — This Week</div>'
+    +pris+'</div>';
 }
 
-let _sortCol='rank',_sortAsc=true;
-function sortTable(col){
-  if(_sortCol===col)_sortAsc=!_sortAsc;else{_sortCol=col;_sortAsc=true;}
-  const sorted=[...SORTED].sort((a,b)=>{
-    let av=a[col]||+(a.net/a.calls);
-    let bv=b[col]||+(b.net/b.calls);
-    if(col==='name'){av=a.name;bv=b.name;}
-    if(av<bv)return _sortAsc?-1:1;
-    if(av>bv)return _sortAsc?1:-1;
-    return 0;
-  });
-  $('tbl-body').innerHTML=renderTableRows(sorted);
-}
-function filterTable(q){$('tbl-body').innerHTML=renderTableRows(SORTED,q);}
-function viewAgent(ext){
-  const ag=AGENTS[ext];
-  curView='agents';
-  buildSideNav();buildMobNav();
-  $('dcontent').innerHTML=`
-    ${top3Banner()}
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <button class="btn-s" onclick="setView('agents')"><span class="mso">arrow_back</span> Back to All Agents</button>
-      <div style="font-size:12px;color:var(--on-dim)">Viewing: <strong style="color:var(--on)">${ag.name}'s Dashboard</strong></div>
-    </div>
-    ${agentView(ag,true)}`;
-  setTimeout(animateBars,100);
+function renderMgrOverview(){
+  var critAgents = SORTED.filter(function(a){return a.status==='critical';});
+  var riskAgents = SORTED.filter(function(a){return a.status==='risk';});
+  var topFeed = SORTED.slice(0,3);
+
+  var feedHtml = topFeed.map(function(a,i){
+    return '<div class="feed-item"><div class="feed-dot"></div>' +
+      '<div><div class="feed-txt"><strong>'+a.name+'</strong> closed '+fmt(a.net/a.txn)+'</div>' +
+      '<div class="feed-time">'+(i*5+2)+' min ago</div></div></div>';
+  }).join('');
+
+  var critHtml = critAgents.map(function(a){
+    return '<div class="risk-row"><div>' +
+      '<div class="risk-agent-name">'+a.name+'</div>' +
+      '<div style="font-size:11px;color:var(--dim);">'+a.rp.toFixed(1)+'% Refund Rate</div></div>' +
+      '<button class="badge badge-r" style="cursor:pointer;" data-agent="'+a.ext+'">Coach Now</button></div>';
+  }).join('');
+
+  var warnRows = riskAgents.map(function(a){
+    return '<div class="risk-row"><div class="risk-agent-name">'+a.name+'</div>' +
+      '<span class="badge badge-a">Monitoring</span></div>';
+  }).join('');
+
+  var tableRows = SORTED.map(function(a, idx){
+    var rv = agRpc(a);
+    var cls = idx===SORTED.length-1 ? ' tbl-last' : '';
+    var statusBadge = a.status==='active' ? '<span class="badge badge-g">Active</span>' :
+      a.status==='risk' ? '<span class="badge badge-a">Risk</span>' :
+      '<span class="badge badge-r">Critical</span>';
+    return '<tr class="agent-row'+cls+'" data-agent="'+a.ext+'">' +
+      '<td><div class="ag-cell">'+avatar(a,28)+'<strong>'+a.name+'</strong></div></td>' +
+      '<td style="color:'+(a.net>=800?'var(--g)':a.net>=400?'var(--amber)':'var(--red)')+';">'+fmt(a.net)+'</td>' +
+      '<td style="color:'+(rv>=30?'var(--g)':'var(--amber)')+';">'+fmt(rv)+'</td>' +
+      '<td>'+a.cr.toFixed(1)+'%</td>' +
+      '<td>'+statusBadge+'</td></tr>';
+  }).join('');
+
+  return '<div class="kpi-grid">' +
+    '<div class="kpi" style="border-color:rgba(78,222,163,.3)"><div class="kpi-lbl">Total Net Sales</div><div class="kpi-val" style="color:var(--g)">'+fmt(TEAM.net)+'</div><div class="kpi-sub">Gross: '+fmt(TEAM.gross)+'</div></div>' +
+    '<div class="kpi" style="border-color:rgba(245,158,11,.3)"><div class="kpi-lbl">Avg RPC</div><div class="kpi-val" style="color:var(--amber)">$'+TEAM.avgRpc.toFixed(2)+'</div><div class="kpi-sub">⚠️ Below $30 target</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Total Calls</div><div class="kpi-val">'+TEAM.calls+'</div><div class="kpi-sub">All 10 agents</div></div>' +
+    '<div class="kpi" style="border-color:rgba(78,222,163,.2)"><div class="kpi-lbl">Team Target</div><div class="kpi-val">'+TEAM.tgtAch+'%</div><div class="kpi-sub"><div class="pbar-track"><div class="pbar-fill" style="width:'+Math.min(TEAM.tgtAch,100)+'%;"></div></div></div></div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:300px 1fr;gap:16px;">' +
+    '<div>' +
+    (critAgents.length ? '<div class="risk risk-crit"><div class="risk-hdr" style="color:var(--red);">🚨 CRITICAL RISK</div>'+critHtml+'</div>' : '') +
+    (riskAgents.length ? '<div class="risk risk-warn"><div class="risk-hdr" style="color:var(--amber);">⚠️ REFUND RISK — AMBER</div>'+warnRows+'</div>' : '') +
+    '<div class="feed"><div class="feed-lbl">Live Revenue Feed</div>'+feedHtml+'</div>' +
+    '</div>' +
+    '<div class="tbl-card">' +
+    '<div class="tbl-hdr"><div class="tbl-title">Agent Performance</div>' +
+    '<div class="tbl-search">🔍 <input id="agent-search" placeholder="Filter agents…"/></div></div>' +
+    '<div style="overflow-x:auto"><table><thead><tr>' +
+    '<th>Agent</th><th>Net Sales</th><th>RPC</th><th>Close%</th><th>Status</th>' +
+    '</tr></thead><tbody id="agent-tbody">'+tableRows+'</tbody></table></div>' +
+    '</div></div>' + renderTeamCoachingPanel();
 }
 
-function mgrAgents(){
-  return `${top3Banner()}
-  <div class="tbl-card fu1">
-    <div class="tbl-hdr">
-      <div class="tbl-title">All Agents — Complete View</div>
-      <div class="tbl-filter"><span class="mso" style="font-size:16px">search</span><input id="tbl-q2" placeholder="Filter agents..." oninput="this.parentElement.parentElement.parentElement.querySelector('tbody').innerHTML=renderTableRows(SORTED,this.value)"/></div>
-    </div>
-    <div style="overflow-x:auto">
-      <table class="ptbl">
-        <thead><tr>
-          <th>Agent</th><th>Rank</th><th>Gross</th><th>Refund</th><th>Net</th>
-          <th>Ref%</th><th>Calls</th><th>RPC</th><th>Close%</th><th>AOV</th><th>Txns</th><th>Target</th><th>Ach%</th><th>Status</th>
-        </tr></thead>
-        <tbody>${SORTED.map(a=>{
-          const rpcVal=agRpc(a);
-          const statusBadge=a.status==='active'?`<span class="badge bg">Active</span>`:a.status==='risk'?`<span class="badge ba">Risk</span>`:`<span class="badge br">Critical</span>`;
-          return `<tr onclick="viewAgent('${a.ext}')">
-            <td><div class="ag-cell"><div class="ag-av">${svgOf(a.ext)}</div><div class="ag-nm">${a.name}</div></div></td>
-            <td><strong style="color:${a.rank<=3?'var(--primary)':'var(--on)'}">${a.rank===1?'🥇':a.rank===2?'🥈':a.rank===3?'🥉':'#'+a.rank}</strong></td>
-            <td class="dn">${fmt(a.gross)}</td>
-            <td class="dn" style="${a.refund>0?'color:var(--error)':'color:var(--on-dim)'}">${fmt(a.refund)}</td>
-            <td class="dn" style="${a.status==='critical'?'color:var(--error)':a.status==='risk'?'color:var(--amber)':'color:var(--primary)'}">${fmt(a.net)}</td>
-            <td class="dn" style="${a.rp>20?'color:var(--error)':a.rp>0?'color:var(--amber)':'color:var(--on-dim)'}">${a.rp.toFixed(1)}%</td>
-            <td class="dn">${a.calls}</td>
-            <td class="dn" style="${rpcVal>=30?'color:var(--primary)':'color:var(--amber)'}">${fmt(rpcVal)}</td>
-            <td class="dn">${a.cr.toFixed(1)}%</td>
-            <td class="dn">${fmt(a.aov)}</td>
-            <td class="dn">${a.txn}</td>
-            <td class="dn">$${a.tgt}</td>
-            <td class="dn" style="${a.ta>=100?'color:var(--primary)':a.ta>=75?'color:var(--amber)':'color:var(--error)'}">${a.ta.toFixed(1)}%</td>
-            <td>${statusBadge}</td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>
-    </div>
-  </div>`;
+function renderMgrAgents(){
+  var rows = SORTED.map(function(a, idx){
+    var rv = agRpc(a);
+    var cls = idx===SORTED.length-1 ? ' tbl-last' : '';
+    var sb = a.status==='active'?'<span class="badge badge-g">Active</span>':a.status==='risk'?'<span class="badge badge-a">Risk</span>':'<span class="badge badge-r">Critical</span>';
+    return '<tr class="agent-row'+cls+'" data-agent="'+a.ext+'">' +
+      '<td><div class="ag-cell">'+avatar(a,28)+'<strong>'+a.name+'</strong></div></td>' +
+      '<td style="color:'+(a.rank<=3?'var(--g)':'var(--on)')+'">'+
+      (a.rank===1?'🥇':a.rank===2?'🥈':a.rank===3?'🥉':'#'+a.rank)+'</td>' +
+      '<td>'+fmt(a.gross)+'</td>' +
+      '<td style="color:'+(a.refund>0?'var(--red)':'var(--dim)')+'">'+fmt(a.refund)+'</td>' +
+      '<td style="color:'+(a.net>=800?'var(--g)':a.net>=400?'var(--amber)':'var(--red)')+'"><strong>'+fmt(a.net)+'</strong></td>' +
+      '<td style="color:'+(a.rp>20?'var(--red)':a.rp>0?'var(--amber)':'var(--dim)')+'">'+a.rp.toFixed(1)+'%</td>' +
+      '<td>'+a.calls+'</td>' +
+      '<td style="color:'+(rv>=30?'var(--g)':'var(--amber)')+'">'+fmt(rv)+'</td>' +
+      '<td>'+a.cr.toFixed(1)+'%</td>' +
+      '<td>'+fmt(a.aov)+'</td>' +
+      '<td>'+a.txn+'</td>' +
+      '<td>$'+a.tgt+'</td>' +
+      '<td style="color:'+(a.ta>=100?'var(--g)':a.ta>=75?'var(--amber)':'var(--red)')+'">'+a.ta.toFixed(1)+'%</td>' +
+      '<td>'+sb+'</td></tr>';
+  }).join('');
+  return '<div class="tbl-card">' +
+    '<div class="tbl-hdr"><div class="tbl-title">All Agents — Complete View</div></div>' +
+    '<div style="overflow-x:auto"><table><thead><tr>' +
+    '<th>Agent</th><th>Rank</th><th>Gross</th><th>Refund</th><th>Net</th>' +
+    '<th>Ref%</th><th>Calls</th><th>RPC</th><th>Close%</th><th>AOV</th>' +
+    '<th>Txns</th><th>Target</th><th>Ach%</th><th>Status</th>' +
+    '</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 
-function rpcAnalysis(){
-  const max=Math.max(...SORTED.map(a=>agRpc(a)));
-  return `${top3Banner()}
-  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">RPC Analysis — vs $30.00 Target</div>
-  <div class="rpc-tbl fu2">
-    ${SORTED.map(a=>{
-      const rv=agRpc(a);
-      const over=rv>=30;
-      const w=Math.min((rv/Math.max(max,30))*100,100);
-      const fg=over?'var(--primary)':'var(--amber)';
-      return `<div class="rpc-row">
-        <div class="rpc-nm">${a.name}</div>
-        <div class="rpc-track">
-          <div class="rpc-fill" style="width:${w}%;background:${fg}">
-            <span class="rpc-fv" style="color:var(--bg)">${fmt(rv)}</span>
-          </div>
-          ${over?'':'<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--amber);font-weight:700;">$'+(30-rv).toFixed(2)+' to target</div>'}
-        </div>
-        <div class="rpc-val" style="color:${fg}">${fmt(rv)}</div>
-        <div class="rpc-st"><span style="color:${over?'var(--primary)':'var(--error)'};">${over?'🟢':'🔴'}</span></div>
-      </div>`;
-    }).join('')}
-  </div>
-  <div style="font-size:11px;color:var(--on-dim);margin-top:10px;">Scale: $0 – ${fmt(Math.max(max,30))} per call. Target line: $30.00. 🟢 = Above target | 🔴 = Below target</div>`;
+function renderRpc(isMgr){
+  var all = SORTED.map(function(a){return {a:a,rv:agRpc(a)};});
+  var max = Math.max.apply(null, all.map(function(x){return x.rv;}));
+  max = Math.max(max, 30);
+  var rowsHtml = all.sort(function(x,y){return y.rv-x.rv;}).map(function(x){
+    var over = x.rv >= 30;
+    var w    = Math.min((x.rv/max)*100, 100);
+    var fg   = over ? 'var(--g)' : 'var(--amber)';
+    var isMe = !isMgr && me && x.a.ext === me.ext;
+    var displayName, nameStyle, rowStyle;
+    if(isMgr){
+      displayName = x.a.name;
+      nameStyle   = 'color:var(--on);';
+      rowStyle    = '';
+    } else if(isMe){
+      displayName = x.a.name + ' ◀ You';
+      nameStyle   = 'color:var(--g);font-weight:800;';
+      rowStyle    = 'border-color:rgba(78,222,163,.5);background:rgba(78,222,163,.05);';
+    } else {
+      displayName = 'Agent ···';
+      nameStyle   = 'filter:blur(6px);user-select:none;color:var(--dim);pointer-events:none;';
+      rowStyle    = '';
+    }
+    return '<div class="rpc-row" style="'+rowStyle+'">' +
+      '<div class="rpc-name" style="'+nameStyle+'">'+displayName+'</div>' +
+      '<div class="rpc-track"><div class="rpc-fill" style="width:'+w+'%;background:'+fg+'">' +
+      '<span class="rpc-fv">'+fmt(x.rv)+'</span></div></div>' +
+      '<div class="rpc-val" style="color:'+fg+'">'+fmt(x.rv)+'</div>' +
+      '<div style="font-size:14px;">'+(over?'🟢':'🔴')+'</div></div>';
+  }).join('');
+  var legend = isMgr
+    ? '<div style="font-size:11px;color:var(--dim);margin-top:8px;">Full team view — all agents visible. 🟢 = Above $30 | 🔴 = Below target.</div>'
+    : '<div style="font-size:11px;color:var(--dim);margin-top:8px;display:flex;align-items:center;gap:6px;"><span style="background:rgba(60,74,66,.4);border-radius:4px;padding:2px 7px;font-weight:700;">🔒 Privacy</span> Other agents are anonymous. Only your position is shown.</div>';
+  return '<div class="sec-title">RPC Analysis — '+(isMgr?'Full Team':'Your Position')+'</div>' + rowsHtml + legend;
 }
 
-function voidsView(){
-  return `${top3Banner()}
-  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Void Sales — May 11–15, 2026</div>
-  <div class="tbl-card fu2">
-    <div class="tbl-hdr"><div class="tbl-title">Void & Refund Register</div></div>
-    <table class="void-tbl" style="padding:0;">
-      <thead><tr><th>Date</th><th>Customer</th><th>Agent</th><th>Plan</th><th>Refund Amount</th><th>Processed</th><th>Source</th></tr></thead>
-      <tbody>
-        <tr><td>May 12</td><td>Bradford L Beukelman</td><td><span style="color:var(--error);font-weight:700;">Jason</span></td><td>Lifetime</td><td style="color:var(--error);font-weight:700;">$349.00</td><td>May 14</td><td>Easy Resolve</td></tr>
-        <tr><td>Apr 30</td><td>Rose M Johnston</td><td><span style="color:var(--amber);font-weight:700;">Sam</span></td><td>5 Years</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14</td><td>Easy Resolve</td></tr>
-        <tr><td>Apr 02</td><td>Kevin Dillon</td><td><span style="color:var(--amber);font-weight:700;">Rob</span></td><td>3 Years</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13</td><td>Easy Resolve</td></tr>
-        <tr><td>—</td><td>Linda Rogovin</td><td style="color:var(--on-dim);font-style:italic;">Unassigned</td><td>—</td><td style="color:var(--on-dim);">$154.90 (sale)</td><td>May 12</td><td>Easy Resolve</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="kpi-row fu3" style="margin-top:16px;">
-    <div class="kpi"><div class="kpi-lbl">Total Refunds</div><div class="kpi-val" style="color:var(--error);">$653.89</div><div class="kpi-sub">3 team refunds this week</div></div>
-    <div class="kpi"><div class="kpi-lbl">Void Amount</div><div class="kpi-val" style="color:var(--error);">$349.00</div><div class="kpi-sub">Bradford L Beukelman — Jason</div></div>
-    <div class="kpi"><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:var(--amber);">8.70%</div><div class="kpi-sub">of assigned gross sales</div></div>
-    <div class="kpi"><div class="kpi-lbl">Chargebacks</div><div class="kpi-val" style="color:var(--primary);">$0.00</div><div class="kpi-sub">No chargebacks this week</div></div>
-  </div>`;
+function renderMgrVoids(){
+  return '<div class="sec-title">Void Sales — May 11–15, 2026</div>' +
+    '<div class="tbl-card" style="margin-bottom:16px;">' +
+    '<div class="tbl-hdr"><div class="tbl-title">Void & Refund Register</div></div>' +
+    '<div style="overflow-x:auto"><table class="void-tbl"><thead><tr>' +
+    '<th>Date</th><th>Customer</th><th>Agent</th><th>Plan</th><th>Amount</th><th>Processed</th></tr></thead>' +
+    '<tbody>' +
+    '<tr><td>May 12</td><td>Bradford L Beukelman</td><td style="color:var(--red);font-weight:700;">Jason</td><td>Lifetime</td><td style="color:var(--red);font-weight:700;">$349.00</td><td>May 14</td></tr>' +
+    '<tr><td>Apr 30</td><td>Rose M Johnston</td><td style="color:var(--amber);font-weight:700;">Sam</td><td>5 Years</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14</td></tr>' +
+    '<tr><td>Apr 02</td><td>Kevin Dillon</td><td style="color:var(--amber);font-weight:700;">Rob</td><td>3 Years</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13</td></tr>' +
+    '<tr><td>—</td><td>Linda Rogovin</td><td style="color:var(--dim);font-style:italic;">Unassigned</td><td>—</td><td style="color:var(--dim);">$154.90 (sale)</td><td>May 12</td></tr>' +
+    '</tbody></table></div></div>' +
+    '<div class="kpi-grid">' +
+    '<div class="kpi"><div class="kpi-lbl">Total Refunds</div><div class="kpi-val" style="color:var(--red)">$653.89</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Void Amount</div><div class="kpi-val" style="color:var(--red)">$349.00</div><div class="kpi-sub">Bradford L Beukelman</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:var(--amber)">8.70%</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Chargebacks</div><div class="kpi-val" style="color:var(--g)">$0.00</div><div class="kpi-sub">None this week ✅</div></div>' +
+    '</div>';
 }
 
-function analyticsView(){
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const teamDaily=SORTED.reduce((acc,a)=>{a.daily.forEach((v,i)=>acc[i]+=v);return acc;},[0,0,0,0,0,0,0]);
-  const maxD=Math.max(...teamDaily,1);
-  return `${top3Banner()}
-  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Analytics — Team Revenue Velocity</div>
-  <div class="chart-c fu2" style="margin-bottom:18px;">
-    <div class="chart-title">Team Daily Revenue — May 11–15</div>
-    <div class="chart-sub">Combined net sales per day across all agents.</div>
-    ${barChart(teamDaily,maxD,days,4)}
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;" class="fu3">
-    ${SORTED.map(a=>{
-      const mxD=Math.max(...a.daily,1);
-      return `<div class="kpi" onclick="viewAgent('${a.ext}')" style="cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <div style="width:24px;height:24px;border-radius:50%;overflow:hidden;">${svgOf(a.ext)}</div>
-          <div style="font-size:12px;font-weight:700;">${a.name}</div>
-        </div>
-        ${barChart(a.daily,mxD,['M','T','W','T','F','S','S'],4)}
-      </div>`;
-    }).join('')}
-  </div>`;
+function renderAnalytics(isMgr){
+  var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var teamDaily = [0,0,0,0,0,0,0];
+  SORTED.forEach(function(a){ a.daily.forEach(function(v,i){ teamDaily[i]+=v; }); });
+  var agentCards = SORTED.map(function(a){
+    var mxD = Math.max.apply(null, a.daily.concat([1]));
+    var shortLbls = ['M','T','W','T','F','S','S'];
+    return '<div class="kpi" style="cursor:pointer;" data-agent="'+a.ext+'">' +
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">'+avatar(a,20)+'<span style="font-size:12px;font-weight:700;">'+a.name+'</span></div>' +
+      bars(a.daily, shortLbls) + '</div>';
+  }).join('');
+  return '<div class="sec-title">Analytics — Team Revenue Velocity</div>' +
+    '<div class="chart-card" style="margin-bottom:16px;">' +
+    '<div class="chart-title">Team Daily Revenue — May 11–15</div>' +
+    '<div class="chart-sub">Combined gross sales per day across all agents.</div>' +
+    bars(teamDaily, days) + '</div>' +
+    '<div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr));">'+agentCards+'</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
 // AGENT VIEWS
 // ═══════════════════════════════════════════════════════════
-function agentView(a,fromMgr=false){
-  const top=TOP3.map(k=>AGENTS[k]);
-  const rpcVal=agRpc(a);
-  const rpcPct=rpcVal>=30?((rpcVal-30)/rpcVal*100+100).toFixed(0):((rpcVal/30)*100).toFixed(0);
-  const rpcLabel=rpcVal>=30?`+${((rpcVal/30-1)*100).toFixed(0)}%`:`${((rpcVal/30)*100).toFixed(0)}% of target`;
-  const maxD=Math.max(...a.daily,1);
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const rank2=SORTED.find(x=>x.rank===2);
-  const rank3=SORTED.find(x=>x.rank===3);
-  return `
-  <div class="lb-banner fu">
-    <div>
-      <div class="lb-tag">Top Performer · Current Leaderboard Position</div>
-    </div>
-    <div class="lb-me">
-      <div class="lb-pos-big">${a.rank}.</div>
-      <div class="lb-me-av">${svgOf(a.ext)}</div>
-      <div class="lb-me-nm">${a.name}${fromMgr?'':' (You)'}</div>
-    </div>
-    <div class="lb-others">
-      <div class="lb-oth"><div class="lb-oth-av">${svgOf(rank2.ext)}</div> 2.&nbsp;${rank2.name}</div>
-      <div class="lb-oth"><div class="lb-oth-av">${svgOf(rank3.ext)}</div> 3.&nbsp;${rank3.name}</div>
-    </div>
-  </div>
-  <div class="welcome-hdr fu1">Welcome back, ${a.name}</div>
-  <div class="insight-c fu2">
-    <div class="insight-icon ${a.insight.warn?'warn':''}">
-      <span class="mso" style="color:${a.insight.warn?'var(--error)':'var(--primary)'}">${a.insight.warn?'warning':'auto_awesome'}</span>
-    </div>
-    <div>
-      <div class="insight-title ${a.insight.warn?'warn':''}">${a.insight.title}</div>
-      <div class="insight-body">${a.insight.body}</div>
-    </div>
-  </div>
-  <div class="mrow fu3">
-    <div class="mc">
-      <div class="mc-pct" style="color:${a.ta>=100?'var(--primary)':'var(--amber)'}">
-        <span class="mso" style="font-size:15px;">credit_card_off</span>${a.ta>=100?'+'+(a.ta-100).toFixed(0):(a.ta-100).toFixed(0)}%
-      </div>
-      <div class="mc-lbl">Net Sales</div>
-      <div class="mc-val" style="color:var(--primary)">${fmt(a.net)}</div>
-      <div class="mc-tgt"><span>Target: $${a.tgt.toLocaleString()}</span><span style="color:var(--primary)">${a.ta>=100?'Success':'On Track'}</span></div>
-      <div class="mc-bar"><div class="mc-bf ${a.ta>=100?'over':a.ta<30?'crit':''}" data-w="${Math.min(a.ta,100)}%" style="width:0%"></div></div>
-    </div>
-    <div class="mc">
-      <div class="mc-pct" style="color:${rpcVal>=30?'var(--primary)':'var(--amber)'}">
-        <span class="mso" style="font-size:15px;">trending_up</span>${rpcLabel}
-      </div>
-      <div class="mc-lbl">RPC</div>
-      <div class="mc-val">${rpcVal.toFixed(2)}</div>
-      <div class="mc-tgt"><span>Target: 30.00</span><span style="color:${rpcVal>=30?'var(--primary)':'var(--amber)'}">${rpcVal>=30?'Elite':'Improve'}</span></div>
-      <div class="mc-bar"><div class="mc-bf ${rpcVal>=30?'over':'crit'}" data-w="${Math.min((rpcVal/50)*100,100)}%" style="width:0%"></div></div>
-    </div>
-    <div class="mc">
-      <div class="mc-pct" style="color:${a.cr>=18.5?'var(--primary)':'var(--on-dim)'}">
-        <span class="mso" style="font-size:15px;">check_circle</span>${a.cr>=18.5?'Top 1%':'Avg'}
-      </div>
-      <div class="mc-lbl">Close Rate</div>
-      <div class="mc-val">${a.cr.toFixed(1)}%</div>
-      <div class="mc-tgt"><span>Team Avg: 13.93%</span><span style="color:${a.cr>13.93?'var(--primary)':'var(--amber)'}">${a.cr>13.93?'Crushing':'Improve'}</span></div>
-      <div class="mc-bar"><div class="mc-bf" data-w="${Math.min((a.cr/40)*100,100)}%" style="width:0%"></div></div>
-    </div>
-    <div class="nxt-c">
-      <div class="nxt-lbl">Next Target</div>
-      <div class="nxt-title">Scale call<br>volume</div>
-      <div class="nxt-desc">${a.focus.split('.')[0]}.</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;">
-        <div class="mc-bar" style="flex:1;margin-right:10px"><div class="mc-bf" data-w="${Math.min((a.calls/30)*100,100)}%" style="width:0%"></div></div>
-        <span style="color:var(--on-dim)">${a.calls}/30</span>
-      </div>
-    </div>
-  </div>
-  <div class="charts-row fu4">
-    <div class="chart-c">
-      <div class="chart-title">Target Achievement</div>
-      <div class="chart-sub">${a.ta>=100?'You have exceeded your base weekly goal. Your current velocity suggests strong month-end performance.':'Keep pushing — every call is a step closer to your weekly target. Focus on high-value plan pitches.'}</div>
-      <div class="donut-wrap">${donut(Math.min(a.ta,100),a.ta>=100?'#4edea3':a.ta<30?'#ef4444':'#f59e0b')}
-        <div class="donut-ctr">
-          <div class="donut-pct" style="color:${a.ta>=100?'var(--primary)':a.ta<30?'var(--error)':'var(--amber)'}">${a.ta.toFixed(1)}%</div>
-          <div class="donut-lbl">of target</div>
-        </div>
-      </div>
-      <div class="donut-extras">
-        <div class="donut-ex"><div class="donut-ex-l">Projected Bonus</div><div class="donut-ex-v" style="color:var(--primary)">${a.ta>=100?fmt(a.net*0.1):'$0.00'}</div></div>
-        <div class="donut-ex"><div class="donut-ex-l">Tier Status</div><div class="donut-ex-v" style="color:${a.ta>=200?'var(--primary)':a.ta>=100?'#adc6ff':a.ta>=75?'var(--amber)':'var(--on-dim)'}">${a.ta>=765?'Diamond Elite':a.ta>=200?'Gold Plus':a.ta>=100?'Gold':a.ta>=75?'Silver':'Standard'}</div></div>
-      </div>
-    </div>
-    <div class="chart-c">
-      <div class="chart-title">Performance Velocity</div>
-      <div class="chart-sub">Daily revenue output — May 11–15, 2026.</div>
-      ${barChart(a.daily,maxD,days,4)}
-      <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--on-dim);margin-bottom:6px">Performance Breakdown</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          ${a.str.map(s=>`<span style="background:rgba(78,222,163,.1);color:var(--primary);border:1px solid rgba(78,222,163,.2);padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;">✓ ${s}</span>`).join('')}
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
-          ${a.weak.map(w=>`<span style="background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;">→ ${w}</span>`).join('')}
-        </div>
-      </div>
-    </div>
-  </div>`;
+
+function renderCoachingBlock(a){
+  var c=COACHING[a.ext];
+  if(!c) return '';
+  var gc=c.gradeColor;
+  var btnClr=(gc==='var(--g)')?'var(--gdk)':'#fff';
+  var acts=c.actions.map(function(ac){
+    return '<div style="display:flex;gap:12px;padding:13px 0;border-bottom:1px solid rgba(60,74,66,.15);">'
+      +'<div style="font-size:20px;flex-shrink:0;margin-top:1px;">'+ac.icon+'</div>'
+      +'<div style="font-size:13px;color:var(--dim);line-height:1.7;">'+ac.text+'</div></div>';
+  }).join('');
+  return '<div style="background:var(--s3);border:1px solid rgba(60,74,66,.4);border-top:3px solid '+gc+';border-radius:12px;padding:22px;margin-top:20px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">'
+    +'<div style="width:44px;height:44px;border-radius:10px;background:'+gc+';display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:'+btnClr+';">'+c.grade+'</div>'
+    +'<div><div style="font-size:16px;font-weight:800;">'+c.headline+'</div>'
+    +'<div style="font-size:12px;color:var(--dim);margin-top:2px;">Coach's Analysis — May 11-15, 2026</div></div></div>'
+    +'<div style="font-size:13px;color:var(--on);line-height:1.7;padding:12px 14px;background:var(--s4);border-radius:8px;margin-bottom:8px;">'+c.summary+'</div>'
+    +'<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g);padding:10px 0 4px;">Action Items for Next Week</div>'
+    +acts+'</div>';
 }
 
-function agentRpc(a){
-  const rpcVal=agRpc(a);
-  const top=SORTED.map(x=>({name:x.name,rv:agRpc(x),isMe:x.ext===a.ext}));
-  const max=Math.max(...top.map(x=>x.rv),30);
-  return `${top3Banner()}
-  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">RPC Analysis — Your Position</div>
-  <div class="rpc-tbl fu2">
-    ${top.sort((a,b)=>b.rv-a.rv).map(x=>{
-      const over=x.rv>=30;
-      const w=Math.min((x.rv/max)*100,100);
-      const fg=over?'var(--primary)':'var(--amber)';
-      const hlt=x.isMe?'border-color:rgba(78,222,163,.4);box-shadow:0 0 0 1px rgba(78,222,163,.2);':'';
-      return `<div class="rpc-row" style="${hlt}">
-        <div class="rpc-nm" style="${x.isMe?'color:var(--primary);':''}">${x.name}${x.isMe?' ◀':''}</div>
-        <div class="rpc-track">
-          <div class="rpc-fill" style="width:${w}%;background:${fg}">
-            <span class="rpc-fv" style="color:var(--bg)">${fmt(x.rv)}</span>
-          </div>
-        </div>
-        <div class="rpc-val" style="color:${fg}">${fmt(x.rv)}</div>
-        <div class="rpc-st">${over?'🟢':'🔴'}</div>
-      </div>`;
-    }).join('')}
-  </div>`;
+function renderAgentDash(a){
+  var rv = agRpc(a);
+  var rank2 = SORTED.find(function(x){return x.rank===2;});
+  var rank3 = SORTED.find(function(x){return x.rank===3;});
+  var rpcColor = rv>=30 ? 'var(--g)' : 'var(--amber)';
+  var rpcLabel = rv>=30 ? '+'+((rv/30-1)*100).toFixed(0)+'%' : (rv/30*100).toFixed(0)+'% of target';
+  var taColor = a.ta>=100?'var(--g)':a.ta>=75?'var(--amber)':'var(--red)';
+  var taDisplay = a.ta>=100 ? '+'+((a.ta-100).toFixed(0))+'%' : (a.ta-100).toFixed(0)+'%';
+  var donutColor = a.ta>=100?'#4edea3':a.ta<30?'#ef4444':'#f59e0b';
+
+  return '<div class="lb-banner">' +
+    '<div><div class="t3-lbl">Leaderboard Position</div></div>' +
+    '<div class="lb-pos">'+a.rank+'.</div>' +
+    '<div style="display:flex;align-items:center;gap:7px;">'+avatar(a,28)+'<strong>'+a.name+' (You)</strong></div>' +
+    '<div class="lb-others">' +
+    '<span>2. '+rank2.name+'</span><span>3. '+rank3.name+'</span>' +
+    '</div></div>' +
+
+    '<div style="font-size:clamp(22px,4vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:16px;">Welcome back, '+a.name+'</div>' +
+
+    '<div class="insight'+(a.insight.warn?' warn':'')+'"><div class="insight-icon">'+(a.insight.warn?'⚠️':'✨')+'</div>' +
+    '<div><div class="insight-title">'+a.insight.title+'</div>' +
+    '<div class="insight-body">'+a.insight.body+'</div></div></div>' +
+
+    '<div class="kpi-grid">' +
+    '<div class="kpi" style="border-color:rgba(78,222,163,.3)"><div class="kpi-lbl" style="display:flex;justify-content:space-between;">Net Sales <span style="color:'+taColor+'">'+taDisplay+'</span></div><div class="kpi-val" style="color:var(--g)">'+fmt(a.net)+'</div><div class="kpi-sub">Target: $'+a.tgt.toLocaleString()+'</div><div class="pbar-track"><div class="pbar-fill'+(a.ta>=100?' over':a.ta<30?' crit':'')+'" style="width:'+Math.min(a.ta,100)+'%;"></div></div></div>' +
+    '<div class="kpi" style="border-color:'+(rv>=30?'rgba(78,222,163,.3)':'rgba(245,158,11,.3)')+'"><div class="kpi-lbl" style="display:flex;justify-content:space-between;">RPC <span style="color:'+rpcColor+'">'+rpcLabel+'</span></div><div class="kpi-val" style="color:'+rpcColor+'">'+fmt(rv)+'</div><div class="kpi-sub">'+(rv>=30?'✅ Above':'❌ Below')+' $30 target</div><div class="pbar-track"><div class="pbar-fill'+(rv>=30?' over':' crit')+'" style="width:'+Math.min((rv/50)*100,100)+'%;"></div></div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Calls</div><div class="kpi-val">'+a.calls+'</div><div class="kpi-sub">'+a.txn+' transactions</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Close Rate</div><div class="kpi-val">'+a.cr.toFixed(1)+'%</div><div class="kpi-sub">Team avg: 13.93%</div></div>' +
+    '</div>' +
+
+    '<div class="charts-row">' +
+    '<div class="chart-card"><div class="chart-title">Target Achievement</div>' +
+    '<div class="chart-sub">'+(a.ta>=100?'Target exceeded! You are performing at elite level.':'Keep pushing — every call moves you closer.')+'</div>' +
+    '<div class="donut-wrap">'+donut(Math.min(a.ta,100), donutColor)+
+    '<div class="donut-ctr"><div class="donut-pct" style="color:'+donutColor+';">'+a.ta.toFixed(1)+'%</div>' +
+    '<div class="donut-lbl">of target</div></div></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">' +
+    '<div style="background:var(--s4);border-radius:8px;padding:11px;"><div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:4px;">Tier Status</div>' +
+    '<div style="font-size:14px;font-weight:700;color:'+(a.ta>=100?'var(--g)':a.ta>=75?'var(--amber)':'var(--dim)')+';">'+(a.ta>=765?'Diamond Elite':a.ta>=200?'Gold Plus':a.ta>=100?'Gold':a.ta>=75?'Silver':'Standard')+'</div></div>' +
+    '<div style="background:var(--s4);border-radius:8px;padding:11px;"><div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:4px;">AOV</div>' +
+    '<div style="font-size:14px;font-weight:700;">'+fmt(a.aov)+'</div></div>' +
+    '</div></div>' +
+
+    '<div class="chart-card"><div class="chart-title">Performance Velocity</div>' +
+    '<div class="chart-sub">Daily gross sales — May 11–15, 2026.</div>' +
+    bars(a.daily, ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']) +
+    '<div style="margin-top:14px;">' +
+    '<div style="font-size:10px;color:var(--dim);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Strengths</div>' +
+    '<div class="tags" style="margin-bottom:10px;">'+a.str.map(function(s){return '<span class="tag-g">✓ '+s+'</span>';}).join('')+'</div>' +
+    '<div style="font-size:10px;color:var(--dim);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Improve</div>' +
+    '<div class="tags">'+a.weak.map(function(w){return '<span class="tag-r">→ '+w+'</span>';}).join('')+'</div>' +
+    '</div></div></div>' +
+
+    '<div class="focus-box" style="margin-top:16px;">' +
+    '<div class="focus-lbl">🎯 Key Focus — Next Week</div>' +
+    '<p style="font-size:13px;line-height:1.65;color:var(--dim);">'+a.focus+'</p></div>' + renderCoachingBlock(a);
 }
 
-function agentVoids(a){
-  const hasVoid=a.refund>0;
-  return `${top3Banner()}
-  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Voids & Refunds — ${a.name}</div>
-  ${hasVoid?`
-  <div class="tbl-card fu2">
-    <div class="tbl-hdr"><div class="tbl-title">Refund Register</div></div>
-    <table class="void-tbl">
-      <thead><tr><th>Customer</th><th>Amount</th><th>Processed</th><th>Status</th></tr></thead>
-      <tbody>
-        ${a.ext==='1001'?`<tr><td>Bradford L Beukelman</td><td style="color:var(--error);font-weight:700;">$349.00</td><td>May 14, 2026</td><td><span class="badge br">Void Processed</span></td></tr>`:''}
-        ${a.ext==='1009'?`<tr><td>Rose M Johnston</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14, 2026</td><td><span class="badge ba">Refunded</span></td></tr>`:''}
-        ${a.ext==='1006'?`<tr><td>Kevin Dillon</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13, 2026</td><td><span class="badge ba">Refunded</span></td></tr>`:''}
-      </tbody>
-    </table>
-  </div>
-  <div class="kpi-row fu3" style="margin-top:14px;">
-    <div class="kpi"><div class="kpi-lbl">Refund Total</div><div class="kpi-val" style="color:var(--error)">${fmt(a.refund)}</div></div>
-    <div class="kpi"><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:var(--amber)">${a.rp.toFixed(2)}%</div><div class="kpi-sub">of gross sales</div></div>
-    <div class="kpi"><div class="kpi-lbl">Net Impact</div><div class="kpi-val" style="color:var(--error)">−${fmt(a.refund)}</div></div>
-  </div>`:`
-  <div style="background:rgba(78,222,163,.07);border:1px solid rgba(78,222,163,.2);border-radius:12px;padding:40px;text-align:center;" class="fu2">
-    <span class="mso" style="font-size:48px;color:var(--primary)">verified</span>
-    <div style="font-size:20px;font-weight:700;color:var(--primary);margin-top:12px;">Clean Record</div>
-    <div style="font-size:14px;color:var(--on-dim);margin-top:6px;">Zero refunds this week. Excellent retention!</div>
-  </div>`}`;
+function renderAgentRpc(a){
+  return '<div class="sec-title">RPC Analysis — Your Position vs Team</div>' + renderRpc(false);
 }
 
-function agentAnalytics(a){
-  const maxD=Math.max(...a.daily,1);
-  return `${top3Banner()}
-  <div style="margin-bottom:14px;font-size:17px;font-weight:700;" class="fu1">Analytics — ${a.name}</div>
-  <div class="chart-c fu2" style="margin-bottom:16px;">
-    <div class="chart-title">Daily Revenue Velocity — May 11–15</div>
-    <div class="chart-sub">Your day-by-day gross sales performance for the reporting week.</div>
-    ${barChart(a.daily,maxD,['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],4)}
-  </div>
-  <div class="kpi-row fu3">
-    <div class="kpi"><div class="kpi-lbl">Gross Sales</div><div class="kpi-val">${fmt(a.gross)}</div></div>
-    <div class="kpi"><div class="kpi-lbl">Refunds</div><div class="kpi-val" style="color:${a.refund>0?'var(--error)':'var(--primary)'}">${fmt(a.refund)}</div></div>
-    <div class="kpi"><div class="kpi-lbl">Net Sales</div><div class="kpi-val" style="color:var(--primary)">${fmt(a.net)}</div></div>
-    <div class="kpi"><div class="kpi-lbl">Avg Order</div><div class="kpi-val">${fmt(a.aov)}</div><div class="kpi-sub">${a.txn} transactions</div></div>
-  </div>`;
+function renderAgentVoids(a){
+  if(a.refund <= 0){
+    return '<div class="sec-title">Voids & Refunds — '+a.name+'</div>' +
+      '<div style="background:rgba(78,222,163,.07);border:1px solid rgba(78,222,163,.2);border-radius:12px;padding:40px;text-align:center;">' +
+      '<div style="font-size:40px;margin-bottom:12px;">✅</div>' +
+      '<div style="font-size:18px;font-weight:700;color:var(--g);">Clean Record</div>' +
+      '<div style="font-size:13px;color:var(--dim);margin-top:6px;">Zero refunds this week. Excellent retention!</div></div>';
+  }
+  var rows = '';
+  if(a.ext==='1001') rows += '<tr><td>Bradford L Beukelman</td><td style="color:var(--red);font-weight:700;">$349.00</td><td>May 14, 2026</td><td><span class="badge badge-r">Void</span></td></tr>';
+  if(a.ext==='1009') rows += '<tr><td>Rose M Johnston</td><td style="color:var(--amber);font-weight:700;">$154.90</td><td>May 14, 2026</td><td><span class="badge badge-a">Refunded</span></td></tr>';
+  if(a.ext==='1006') rows += '<tr><td>Kevin Dillon</td><td style="color:var(--amber);font-weight:700;">$149.99</td><td>May 13, 2026</td><td><span class="badge badge-a">Refunded</span></td></tr>';
+  return '<div class="sec-title">Voids & Refunds — '+a.name+'</div>' +
+    '<div class="tbl-card" style="margin-bottom:14px;">' +
+    '<div class="tbl-hdr"><div class="tbl-title">Refund Register</div></div>' +
+    '<table class="void-tbl"><thead><tr><th>Customer</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>' +
+    '<tbody>'+rows+'</tbody></table></div>' +
+    '<div class="kpi-grid">' +
+    '<div class="kpi"><div class="kpi-lbl">Refund Total</div><div class="kpi-val" style="color:var(--red)">'+fmt(a.refund)+'</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:var(--amber)">'+a.rp.toFixed(2)+'%</div><div class="kpi-sub">of gross sales</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Net Impact</div><div class="kpi-val" style="color:var(--red)">−'+fmt(a.refund)+'</div></div>' +
+    '</div>';
 }
 
-// ─── Expose all functions called from inline HTML onclick handlers ────────────
-// Required for sandboxed iframes (Claude artifacts, Azure strict CSP, etc.)
-// where function declarations inside <script> may not reach the global window.
-window.openMgrPanel  = openMgrPanel;
-window.closeMgrPanel = closeMgrPanel;
-window.doMgrLogin    = doMgrLogin;
-window.doLogin       = doLogin;
-window.doLogout      = doLogout;
-window.togglePass    = togglePass;
-window.toggleMgrPass = toggleMgrPass;
-window.previewLogin  = previewLogin;
-window.clearErr      = clearErr;
-window.setView       = setView;
-window.viewAgent     = viewAgent;
-window.sortTable     = sortTable;
-window.filterTable   = filterTable;
-window.flashRefresh  = flashRefresh;
-window.renderTableRows = renderTableRows;
+function renderAgentAnalytics(a){
+  return '<div class="sec-title">Analytics — '+a.name+'</div>' +
+    '<div class="chart-card" style="margin-bottom:14px;">' +
+    '<div class="chart-title">Daily Revenue Velocity</div>' +
+    '<div class="chart-sub">Your gross sales per day — May 11–15, 2026.</div>' +
+    bars(a.daily, ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']) + '</div>' +
+    '<div class="kpi-grid">' +
+    '<div class="kpi"><div class="kpi-lbl">Gross Sales</div><div class="kpi-val">'+fmt(a.gross)+'</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Refunds</div><div class="kpi-val" style="color:'+(a.refund>0?'var(--red)':'var(--g)')+'">'+fmt(a.refund)+'</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Net Sales</div><div class="kpi-val" style="color:var(--g)">'+fmt(a.net)+'</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Avg Order</div><div class="kpi-val">'+fmt(a.aov)+'</div><div class="kpi-sub">'+a.txn+' transactions</div></div>' +
+    '</div>';
+}
+
+// Agent detail (manager drill-down)
+function viewAgentDetail(ext){
+  var a = AGENTS[ext];
+  if(!a) return;
+  agentDetailExt = ext;
+  var html = '<button class="back-btn" id="back-to-agents">← Back to All Agents</button>' +
+    '<div style="font-size:11px;color:var(--dim);margin-bottom:14px;">Viewing: <strong style="color:var(--on);">'+a.name+"'s Dashboard</strong></div>" +
+    renderAgentDash(a);
+  $('main-content').innerHTML = html;
+}
+
+// Agent search/filter (manager overview)
+function filterAgentTable(q){
+  var tbody = $('agent-tbody');
+  if(!tbody) return;
+  var filtered = SORTED.filter(function(a){
+    return !q || a.name.toLowerCase().indexOf(q.toLowerCase()) > -1;
+  });
+  tbody.innerHTML = filtered.map(function(a, idx){
+    var rv = agRpc(a);
+    var cls = idx===filtered.length-1 ? ' tbl-last' : '';
+    var sb = a.status==='active'?'<span class="badge badge-g">Active</span>':a.status==='risk'?'<span class="badge badge-a">Risk</span>':'<span class="badge badge-r">Critical</span>';
+    return '<tr class="agent-row'+cls+'" data-agent="'+a.ext+'">' +
+      '<td><div class="ag-cell">'+avatar(a,28)+'<strong>'+a.name+'</strong></div></td>' +
+      '<td style="color:'+(a.net>=800?'var(--g)':a.net>=400?'var(--amber)':'var(--red)')+';">'+fmt(a.net)+'</td>' +
+      '<td style="color:'+(rv>=30?'var(--g)':'var(--amber)')+';">'+fmt(rv)+'</td>' +
+      '<td>'+a.cr.toFixed(1)+'%</td>' +
+      '<td>'+sb+'</td></tr>';
+  }).join('');
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// FORGOT PASSWORD
+// ═══════════════════════════════════════════════════════════
+var WA_NUMBER = '919501511889';
+
+function buildWaMessage(agent){
+  return 'Hi there,%0A%0A' +
+    'I hope you are doing well.%0A%0A' +
+    'I am reaching out to request assistance with my login credentials for the *TeamPulse Sales Performance Dashboard*.%0A%0A' +
+    '*My Details:*%0A' +
+    '• Name: *' + agent.name + '*%0A' +
+    '• Extension: *' + agent.ext + '*%0A' +
+    '• Team: Sales%0A%0A' +
+    'I seem to have misplaced my Access Key and am currently unable to log into the dashboard.' +
+    ' Could you please help me recover or reset my credentials at your earliest convenience%3F%0A%0A' +
+    'I truly appreciate your time and support.%0A%0A' +
+    'Warm regards,%0A' +
+    agent.name + ' (Ext ' + agent.ext + ')';
+}
+
+function fpMatchAgent(){
+  var ext  = ($('fp-ext').value  || '').trim().replace(/\s/g,'');
+  var name = ($('fp-name').value || '').trim().toLowerCase();
+  // Try extension first
+  if(ext && AGENTS[ext]) return AGENTS[ext];
+  // Try name match
+  if(name){
+    var found = null;
+    Object.values(AGENTS).forEach(function(a){
+      if(a.name.toLowerCase() === name || a.name.toLowerCase().startsWith(name)) found = a;
+    });
+    return found;
+  }
+  return null;
+}
+
+function fpUpdatePreview(){
+  var agent = fpMatchAgent();
+  var preview = $('fp-preview');
+  var err     = $('fp-err');
+  err.classList.remove('show');
+  if(agent){
+    $('fp-av').innerHTML = avatar(agent, 36);
+    $('fp-agent-name').textContent = agent.name + (agent.mg ? ' · Manager' : '');
+    $('fp-agent-ext').textContent  = 'Extension: ' + agent.ext;
+    $('fp-msg-preview').innerHTML  =
+      '<strong style="color:var(--g);">Preview of WhatsApp message:</strong><br/><br/>' +
+      'Hi there,<br/><br/>' +
+      'I am reaching out to request assistance with my login credentials for the <em>TeamPulse Sales Dashboard</em>.<br/><br/>' +
+      '<strong>Name:</strong> ' + agent.name + '<br/>' +
+      '<strong>Extension:</strong> ' + agent.ext + '<br/><br/>' +
+      'I seem to have misplaced my Access Key. Could you please help me recover it?<br/><br/>' +
+      'Warm regards, ' + agent.name + ' (Ext ' + agent.ext + ')';
+    preview.style.display = 'block';
+    // Cross-fill the other field
+    if($('fp-ext').value.trim()  === '') $('fp-ext').value  = agent.ext;
+    if($('fp-name').value.trim() === '') $('fp-name').value = agent.name;
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function openForgotModal(){
+  var m = $('forgot-modal');
+  m.classList.add('open');
+  $('fp-ext').value  = '';
+  $('fp-name').value = '';
+  $('fp-preview').style.display = 'none';
+  $('fp-err').classList.remove('show');
+  setTimeout(function(){ $('fp-ext').focus(); }, 200);
+}
+
+function closeForgotModal(){
+  $('forgot-modal').classList.remove('open');
+}
+
+function onFpSend(){
+  var agent = fpMatchAgent();
+  var err   = $('fp-err');
+  if(!agent){
+    err.textContent = 'Please enter a valid Extension or Name so we can identify you.';
+    err.classList.add('show');
+    return;
+  }
+  var url = 'https://wa.me/' + WA_NUMBER + '?text=' + buildWaMessage(agent);
+  window.open(url, '_blank');
+  // Show success state briefly
+  var btn = $('fp-send-btn');
+  btn.textContent = '✅ WhatsApp opened!';
+  btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+  setTimeout(function(){
+    btn.textContent = '📲 Send Recovery Request via WhatsApp';
+    btn.style.background = '';
+    closeForgotModal();
+  }, 2500);
+}
+
+// ═══════════════════════════════════════════════════════════
+// EVENT LISTENERS — All set here, no inline handlers anywhere
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
+
+  // ── LOGIN ──────────────────────────────────────────────
+  $('ext-input').addEventListener('input',   onExtInput);
+  $('ext-input').addEventListener('paste',   function(){ setTimeout(onExtInput, 20); });
+  $('pass-input').addEventListener('keydown',function(e){ if(e.key==='Enter') onLogin(); });
+  $('signin-btn').addEventListener('click',  onLogin);
+  $('toggle-pass').addEventListener('click', onTogglePass);
+
+  // ── MANAGER MODAL ──────────────────────────────────────
+  $('mgr-access-btn').addEventListener('click',  openMgrModal);
+  $('modal-close').addEventListener('click',     closeMgrModal);
+  $('modal-cancel').addEventListener('click',    closeMgrModal);
+  $('toggle-mgr-pass').addEventListener('click', onToggleMgrPass);
+  $('mgr-login-btn').addEventListener('click',   onMgrLogin);
+  $('mgr-pass-input').addEventListener('keydown',function(e){ if(e.key==='Enter') onMgrLogin(); });
+  $('mgr-modal').addEventListener('click',       function(e){ if(e.target===this) closeMgrModal(); });
+
+  // ── LOGOUT ─────────────────────────────────────────────
+  $('logout-btn').addEventListener('click',     onLogout);
+  $('top-logout-btn').addEventListener('click', onLogout);
+
+  // ── NAV — event delegation on sidebar + mobile nav ─────
+  $('sidebar-nav').addEventListener('click', function(e){
+    var btn = e.target.closest('[data-view]');
+    if(btn) setView(btn.dataset.view);
+  });
+  $('mob-nav-inner').addEventListener('click', function(e){
+    var btn = e.target.closest('[data-view]');
+    if(btn) setView(btn.dataset.view);
+  });
+
+  // ── CONTENT — event delegation for everything dynamic ──
+  $('main-content').addEventListener('click', function(e){
+    // Agent row → drill-down
+    var row = e.target.closest('.agent-row[data-agent]');
+    if(row){ viewAgentDetail(row.dataset.agent); return; }
+    // Badge button in risk section
+    var badge = e.target.closest('[data-agent]');
+    if(badge){ viewAgentDetail(badge.dataset.agent); return; }
+    // Back to all agents
+    if(e.target.id==='back-to-agents'||e.target.closest('#back-to-agents')){ setView('agents'); return; }
+    // Back to overview (error screen)
+    if(e.target.id==='back-overview-btn'||e.target.closest('#back-overview-btn')){ setView('overview'); return; }
+  });
+
+  // ── SEARCH — delegation on document ────────────────────
+  document.addEventListener('input', function(e){
+    if(e.target.id === 'agent-search') filterAgentTable(e.target.value);
+  });
+
+  // ── FORGOT PASSWORD ────────────────────────────────────
+  $('forgot-pwd-link').addEventListener('click',  openForgotModal);
+  $('forgot-close').addEventListener('click',     closeForgotModal);
+  $('fp-cancel-btn').addEventListener('click',    closeForgotModal);
+  $('fp-send-btn').addEventListener('click',      onFpSend);
+  $('fp-ext').addEventListener('input',           fpUpdatePreview);
+  $('fp-ext').addEventListener('paste',           function(){ setTimeout(fpUpdatePreview, 20); });
+  $('fp-name').addEventListener('input',          fpUpdatePreview);
+  $('fp-ext').addEventListener('keydown',         function(e){ if(e.key==='Enter') $('fp-name').focus(); });
+  $('fp-name').addEventListener('keydown',        function(e){ if(e.key==='Enter') onFpSend(); });
+  $('forgot-modal').addEventListener('click',     function(e){ if(e.target===this) closeForgotModal(); });
+
+
+
+});
 </script>
-<!-- ══ MANAGER PANEL MODAL (shown on tap of Manager Access) ══ -->
-  <div id="mgr-panel"
-       style="display:none;position:fixed;inset:0;z-index:300;
-              background:rgba(7,8,12,.88);backdrop-filter:blur(14px);
-              -webkit-backdrop-filter:blur(14px);
-              align-items:center;justify-content:center;padding:20px;">
-    <div style="background:var(--surf-c);border:1px solid rgba(60,74,66,.5);
-                border-top:1px solid rgba(78,222,163,.25);
-                border-radius:16px;padding:32px 28px;
-                max-width:360px;width:100%;
-                position:relative;animation:fu .3s ease both;
-                box-shadow:0 0 60px rgba(78,222,163,.08);">
-
-      <!-- Close -->
-      <button onclick="closeMgrPanel()" type="button"
-              style="position:absolute;top:10px;right:12px;background:none;border:none;
-                     cursor:pointer;color:var(--on-dim);
-                     font-family:'Material Symbols Outlined';font-size:22px;
-                     transition:color .2s;line-height:1;">close</button>
-
-      <!-- Manager identity -->
-      <div style="text-align:center;margin-bottom:24px;">
-        <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;
-                    border:2px solid var(--primary);margin:0 auto 10px;
-                    box-shadow:0 0 20px rgba(78,222,163,.2);">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5pUQDq2nt7hyBmF5HnXbUHgHbFx5DkRj7dEPEGGI85wRcvDmNmdgZPWzl3xOaF6z_hzoHS1DGlQLML8Tri-aOOgTxuNjRDPAv-oW4sx2eRrASbQmaC9Lmd0Nif6ZLwdrrh2f8cygxhRv9G4Oq0m0BKxQKX5K90UiBL83nd9aQ1AxKmJwbkz3IeI74w4kZ8WIfvC1Tak3pIyag8VN1Hog7gW6HgwGzqzyqErsaU1AxytnvgDRFloIe9-D-iANaQdgfSRLFXm53fGOc"
-               alt="Jason" style="width:100%;height:100%;object-fit:cover;"/>
-        </div>
-        <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;">Jason</div>
-        <div style="display:inline-flex;align-items:center;gap:5px;margin-top:4px;
-                    padding:3px 10px;background:rgba(78,222,163,.1);
-                    border:1px solid rgba(78,222,163,.25);border-radius:999px;">
-          <span class="mso" style="font-size:14px;color:var(--primary);">admin_panel_settings</span>
-          <span style="font-size:11px;font-weight:700;color:var(--primary);letter-spacing:.05em;">MANAGER · EXT 1001</span>
-        </div>
-      </div>
-
-      <!-- Access Key field -->
-      <label class="l-lbl" style="display:block;margin-bottom:6px;">Enter your Access Key</label>
-      <div class="l-ig" style="margin-bottom:8px;">
-        <span class="mso">key</span>
-        <input class="inp" id="mgr-pass" placeholder="6-digit access key"
-               type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6"
-               autocomplete="off" autocorrect="off" autocapitalize="off"
-               name="mgr-nofill"
-               oninput="$$('mgr-err').style.display='none';"
-               onkeydown="if(event.key==='Enter')doMgrLogin();"/>
-        <button type="button" onclick="toggleMgrPass()"
-                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
-                       background:none;border:none;cursor:pointer;color:var(--on-dim);
-                       font-family:'Material Symbols Outlined';font-size:18px;padding:4px;"
-                id="mgr-pass-eye">visibility</button>
-      </div>
-
-      <!-- Manager-specific error -->
-      <div id="mgr-err"
-           style="display:none;font-size:12px;color:#f87171;
-                  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);
-                  border-radius:6px;padding:8px 12px;margin-bottom:12px;text-align:center;">
-      </div>
-
-      <!-- Login button -->
-      <button class="btn-p" id="mgr-login-btn" onclick="doMgrLogin()" type="button"
-              style="margin-bottom:10px;">
-        Login as Manager&nbsp;<span class="mso">admin_panel_settings</span>
-      </button>
-      <button type="button" onclick="closeMgrPanel()"
-              style="width:100%;padding:10px;background:none;
-                     border:1px solid rgba(60,74,66,.4);border-radius:8px;
-                     color:var(--on-dim);font-size:12px;font-weight:600;
-                     cursor:pointer;font-family:'Geist',sans-serif;
-                     transition:all .2s;letter-spacing:.04em;"
-              onmouseenter="this.style.borderColor='rgba(60,74,66,.8)'"
-              onmouseleave="this.style.borderColor='rgba(60,74,66,.4)'">
-        Cancel
-      </button>
-    </div>
-  </div>
 </body>
 </html>
